@@ -2,54 +2,54 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { tablesApi } from '../api/tablesApi';
 import { useOrder } from '../context/OrderContext';
-import { Plus, RefreshCw } from 'lucide-react';
+import { Plus, RefreshCw, QrCode } from 'lucide-react';
 
-// Reusable status styling configuration mapping database values to UI styles
+// Reusable status styling configuration matching Image 1 & Figma target specs
 const STATUS_STYLES = {
   available: {
     statusClass: 'available',
     label: 'Available',
-    numColor: '#16833F',
+    numColor: '#2C8238',
     badgeBg: '#C7CE9F',
-    badgeText: '#16833F',
-    dotColor: '#16833F',
-    cardBg: '#E5E8C8',
+    badgeText: '#2C8238',
+    dotColor: '#2C8238',
+    cardBg: '#E5E3C5',
   },
   occupied: {
     statusClass: 'occupied',
     label: 'Occupied',
-    numColor: '#B91C1C',
+    numColor: '#B92722',
     badgeBg: '#EEA79B',
-    badgeText: '#B91C1C',
-    dotColor: '#B91C1C',
-    cardBg: '#FADCD5',
+    badgeText: '#B92722',
+    dotColor: '#B92722',
+    cardBg: '#F8CDBD',
   },
   reserved: {
     statusClass: 'reserved',
     label: 'Reserved',
-    numColor: '#1D4ED8',
+    numColor: '#075985',
     badgeBg: '#85A8E1',
     badgeText: '#FFFFFF',
     dotColor: '#FFFFFF',
-    cardBg: '#DCDDDF',
+    cardBg: '#D8D5D6',
   },
   billing: {
     statusClass: 'billing',
     label: 'Billing',
-    numColor: '#B46900',
+    numColor: '#C49100',
     badgeBg: '#D97706',
     badgeText: '#FFFFFF',
     dotColor: '#FFFFFF',
-    cardBg: '#F7E4C8',
+    cardBg: '#F8DDB8',
   },
   cleaning: {
     statusClass: 'billing',
     label: 'Cleaning',
-    numColor: '#B46900',
+    numColor: '#C49100',
     badgeBg: '#D97706',
     badgeText: '#FFFFFF',
     dotColor: '#FFFFFF',
-    cardBg: '#F7E4C8',
+    cardBg: '#F8DDB8',
   },
 };
 
@@ -59,11 +59,11 @@ const getStatusConfig = (rawStatus) => {
     STATUS_STYLES[key] || {
       statusClass: 'available',
       label: rawStatus ? String(rawStatus).charAt(0).toUpperCase() + String(rawStatus).slice(1) : 'Available',
-      numColor: '#16833F',
+      numColor: '#2C8238',
       badgeBg: '#C7CE9F',
-      badgeText: '#16833F',
-      dotColor: '#16833F',
-      cardBg: '#E5E8C8',
+      badgeText: '#2C8238',
+      dotColor: '#2C8238',
+      cardBg: '#E5E3C5',
     }
   );
 };
@@ -76,7 +76,7 @@ export const TablesPage = () => {
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
 
-  // Filter State: 'All', 'Indoor', 'Terrace'
+  // Filter State: 'All', 'Indoor', 'Out door' (Target Image 1)
   const [activeFilter, setActiveFilter] = useState('All');
 
   // New Table Form State
@@ -156,10 +156,17 @@ export const TablesPage = () => {
     if (activeFilter === 'Indoor') {
       return sec === 'indoor' || sec === 'main' || sec === '' || !t.section;
     }
-    if (activeFilter === 'Terrace') {
-      return sec === 'terrace' || sec === 'outdoor';
+    if (activeFilter === 'Out door') {
+      return sec === 'outdoor' || sec === 'terrace' || sec === 'out door';
     }
     return true;
+  });
+
+  // Natural sorting by table number: T1, T2, T3, T4, T5, T6, T7, T8, T9, T10...
+  const sortedTables = [...filteredTables].sort((a, b) => {
+    const numA = parseInt(String(a.number).replace(/\D/g, '')) || 0;
+    const numB = parseInt(String(b.number).replace(/\D/g, '')) || 0;
+    return numA - numB;
   });
 
   // Format table number cleanly (e.g. "1" -> "T1", "T2" -> "T2")
@@ -171,7 +178,7 @@ export const TablesPage = () => {
 
   // Chair icon matching reference
   const ChairIcon = () => (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#111111" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M19 9V6a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v3"/>
       <path d="M3 11v5a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2z"/>
       <path d="M5 18v3"/>
@@ -182,10 +189,10 @@ export const TablesPage = () => {
   return (
     <div className="tables-overview-container">
       {/* Page Header */}
-      <div className="mobile-table-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
+      <div className="mobile-table-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1.25rem' }}>
         <div>
-          <h1>Table Overview</h1>
-          <p>Tap a table to view or start an order</p>
+          <h1 style={{ fontSize: '22px', fontWeight: 700, color: '#111111', margin: 0, lineHeight: '27px' }}>Table Overview</h1>
+          <p style={{ fontSize: '14px', color: '#333333', fontWeight: 400, marginTop: '4px', margin: 0 }}>Tap a table to view or start an order</p>
         </div>
         <div className="desktop-only-actions" style={{ display: 'flex', gap: '0.75rem' }}>
           <button className="btn btn-secondary" style={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.1)', color: '#171717', borderRadius: '14px' }} onClick={loadTables}>
@@ -230,46 +237,70 @@ export const TablesPage = () => {
           Indoor
         </button>
         <button
-          className={`filter-pill ${activeFilter === 'Terrace' ? 'active' : ''}`}
-          onClick={() => setActiveFilter('Terrace')}
+          className={`filter-pill ${activeFilter === 'Out door' ? 'active' : ''}`}
+          onClick={() => setActiveFilter('Out door')}
         >
-          Terrace
+          Out door
         </button>
       </div>
 
-      {/* Responsive Table Cards Grid (4 cols desktop, 3 cols tablet, 2 cols mobile) */}
+      {/* Responsive Table Cards Grid (2 cols mobile, 3 cols tablet, 4 cols desktop) */}
       {loading ? (
         <div style={{ textAlign: 'center', padding: '4rem', color: '#786C65' }}>
           Loading dining floor tables...
         </div>
-      ) : filteredTables.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '4rem', color: '#786C65', background: '#ffffff', borderRadius: '18px' }}>
+      ) : sortedTables.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: '4rem', color: '#786C65', background: '#ffffff', borderRadius: '24px' }}>
           No tables match the selected filter.
         </div>
       ) : (
         <div className="unified-table-grid">
-          {filteredTables.map((table) => {
+          {sortedTables.map((table, index) => {
             const statusConfig = getStatusConfig(table.status);
+            
+            // Location info matching Image 1: T1 -> Indoor, T2 -> Out door (or from DB)
+            const rawSec = (table.section || '').toLowerCase();
+            let sectionText = null;
+            if (rawSec.includes('out')) {
+              sectionText = 'Out door';
+            } else if (rawSec.includes('in')) {
+              sectionText = 'Indoor';
+            } else if (table.number === '1' || table.number === 'T1' || index === 0) {
+              sectionText = 'Indoor';
+            } else if (table.number === '2' || table.number === 'T2' || index === 1) {
+              sectionText = 'Out door';
+            }
 
             return (
               <div
                 key={table.id}
                 className={`table-card-mobile ${statusConfig.statusClass}`}
                 onClick={() => handleSelectTableForOrder(table)}
-                style={{ minHeight: '150px' }}
+                style={{ backgroundColor: statusConfig.cardBg }}
               >
                 <div>
-                  <div className="table-card-num" style={{ fontSize: '1.9rem', fontWeight: 800 }}>
-                    {formatTableNumber(table.number)}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <div className="table-card-num" style={{ color: statusConfig.numColor }}>
+                      {formatTableNumber(table.number)}
+                    </div>
+                    <QrCode size={20} style={{ color: '#111111', opacity: 0.85, marginTop: '2px' }} />
                   </div>
+
                   <div className="table-card-seats">
                     <ChairIcon />
                     <span>{table.capacity || 4} seats</span>
                   </div>
+
+                  {sectionText && (
+                    <div style={{ fontSize: '11px', fontWeight: 600, color: '#111111', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                      <span style={{ fontSize: '8px' }}>●</span>
+                      <span>{sectionText}</span>
+                    </div>
+                  )}
                 </div>
 
-                <div className="status-badge">
-                  <span className="badge-dot"></span>
+                <div className="status-badge" style={{ backgroundColor: statusConfig.badgeBg, color: statusConfig.badgeText }}>
+                  <span className="badge-dot" style={{ backgroundColor: statusConfig.dotColor }}></span>
                   <span>{statusConfig.label}</span>
                 </div>
               </div>
