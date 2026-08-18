@@ -60,13 +60,16 @@ class MarkOrderReadyView(APIView):
         except Order.DoesNotExist:
             return Response({'error': 'Order not found'}, status=404)
 
-        if order.status not in ['pending', 'placed', 'confirmed', 'preparing']:
+        if order.status not in ['pending', 'placed', 'confirmed', 'preparing', 'ready']:
             return Response({'error': f'Order is {order.status}, not in kitchen'}, status=400)
 
         order.status = 'ready'
         order.items.exclude(status='cancelled').update(status='ready')
         order.save()
         return Response(OrderSerializer(order).data)
+
+    def post(self, request, order_id):
+        return self.patch(request, order_id)
 
 
 class MarkOrderPreparingView(APIView):
@@ -79,10 +82,19 @@ class MarkOrderPreparingView(APIView):
         except Order.DoesNotExist:
             return Response({'error': 'Order not found'}, status=404)
 
-        if order.status not in ['pending', 'placed', 'confirmed']:
+        if order.status not in ['pending', 'placed', 'confirmed', 'preparing']:
             return Response({'error': f'Order is {order.status}, cannot start preparing'}, status=400)
 
         order.status = 'preparing'
         order.items.exclude(status='cancelled').update(status='preparing')
         order.save()
+
+        if order.table:
+            order.table.status = 'occupied'
+            order.table.save()
+
         return Response(OrderSerializer(order).data)
+
+    def post(self, request, order_id):
+        return self.patch(request, order_id)
+

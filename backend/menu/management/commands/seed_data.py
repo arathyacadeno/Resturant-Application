@@ -53,51 +53,99 @@ class Command(BaseCommand):
             kitchen.set_password('kitchen123')
             kitchen.save()
 
-        # 3. Dining Tables
+        # 4. Dining Tables
         for i in range(1, 11):
             DiningTable.objects.get_or_create(
                 number=f"T{i}",
                 defaults={'name': f"Table {i}", 'capacity': 4, 'status': 'available'}
             )
 
-        # 4. Categories & Menu Items
+        # 5. Categories & Menu Items
         cats = [
-            ('Starters', '🥗', 1),
-            ('Main Course', '🍛', 2),
-            ('Beverages', '🥤', 3),
-            ('Desserts', '🍨', 4),
+            ('Coffee', '☕', 1),
+            ('Non Coffee', '🥤', 2),
+            ('Food', '🍛', 3),
+            ('Snack', '🥪', 4),
         ]
         for name, icon, order in cats:
-            cat_obj, _ = Category.objects.get_or_create(
+            Category.objects.get_or_create(
                 name=name,
                 defaults={'icon': icon, 'sort_order': order}
             )
 
-        starters = Category.objects.filter(name='Starters').first()
-        if starters:
+        coffee_cat = Category.objects.filter(name='Coffee').first()
+        food_cat = Category.objects.filter(name='Food').first()
+        snack_cat = Category.objects.filter(name='Snack').first()
+
+        if coffee_cat:
             MenuItem.objects.get_or_create(
-                name='Paneer Tikka',
+                name='Cappuccino',
                 defaults={
-                    'category': starters,
-                    'price': 280,
-                    'half_price': 170,
-                    'quarter_price': 100,
+                    'category': coffee_cat,
+                    'price': 150.00,
+                    'half_price': 100.00,
+                    'quarter_price': 60.00,
                     'is_veg': True,
-                    'description': 'Grilled cottage cheese cubes marinated in spiced yogurt.',
+                    'description': 'Rich espresso with steamed milk foam.',
+                    'image': 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=400&auto=format&fit=crop&q=80',
                     'is_available': True,
                 }
             )
             MenuItem.objects.get_or_create(
-                name='Chilli Chicken (Dry)',
+                name='Cappuccino Special',
                 defaults={
-                    'category': starters,
-                    'price': 299,
-                    'half_price': 180,
-                    'quarter_price': 110,
-                    'is_veg': False,
-                    'description': 'Crispy chicken tossed in fiery Indo-Chinese garlic sauce.',
+                    'category': coffee_cat,
+                    'price': 150.00,
+                    'half_price': 100.00,
+                    'quarter_price': 60.00,
+                    'is_veg': True,
+                    'description': 'Double shot creamy cappuccino with caramel drizzle.',
+                    'image': 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=400&auto=format&fit=crop&q=80',
                     'is_available': True,
                 }
             )
 
-        self.stdout.write(self.style.SUCCESS('PostgreSQL Database seeded successfully!'))
+        if food_cat:
+            MenuItem.objects.get_or_create(
+                name='Biriyani',
+                defaults={
+                    'category': food_cat,
+                    'price': 350.00,
+                    'half_price': 220.00,
+                    'quarter_price': 120.00,
+                    'is_veg': False,
+                    'description': 'Fragrant basmati rice cooked with authentic spices.',
+                    'image': 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=400&auto=format&fit=crop&q=80',
+                    'is_available': True,
+                }
+            )
+            MenuItem.objects.get_or_create(
+                name='Arabic Salad',
+                defaults={
+                    'category': food_cat,
+                    'price': 150.00,
+                    'half_price': 90.00,
+                    'quarter_price': 50.00,
+                    'is_veg': True,
+                    'description': 'Fresh garden vegetables with feta, olive oil, and herbs.',
+                    'image': 'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=400&auto=format&fit=crop&q=80',
+                    'is_available': True,
+                }
+            )
+
+        if snack_cat:
+            MenuItem.objects.get_or_create(
+                name='Club Sandwich',
+                defaults={
+                    'category': snack_cat,
+                    'price': 180.00,
+                    'half_price': 110.00,
+                    'quarter_price': 70.00,
+                    'is_veg': True,
+                    'description': 'Triple-decker toasted sandwich with cheese & veggies.',
+                    'image': 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=400&auto=format&fit=crop&q=80',
+                    'is_available': True,
+                }
+            )
+
+        self.stdout.write(self.style.SUCCESS('PostgreSQL Database seeded with reference categories & items!'))
