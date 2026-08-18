@@ -1034,30 +1034,54 @@ h1, h2, h3, h4, h5, h6 {
   }
 
   .tables-overview-container {
-    padding: 1.25rem 22px 110px 22px !important;
+    padding: 1.25rem 24px 110px 24px !important;
     min-height: 100vh !important;
     border-radius: 0 !important;
-    background-color: #FDE6D0 !important;
+    background-color: #FDE6D1 !important;
+    max-width: 402px !important;
+    margin: 0 auto !important;
   }
 
   .unified-stats-row {
+    width: 350.06px !important;
     max-width: 100% !important;
-    gap: 0.75rem !important;
+    gap: 12px !important;
+  }
+
+  .mobile-filter-pills {
+    width: 350.06px !important;
+    max-width: 100% !important;
   }
 
   .unified-table-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 16px !important;
+    width: 350.06px !important;
+    max-width: 100% !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 20px 16px !important;
     grid-auto-rows: 149px !important;
+    min-height: 501px !important;
+  }
+
+  .table-card-mobile {
+    width: 100% !important;
+    height: 149px !important;
+    min-height: 149px !important;
+    border-radius: 24px !important;
+    padding: 18px 17px !important;
+    box-shadow: 0 8px 24px rgba(80, 50, 30, 0.12) !important;
+    border: 1px solid rgba(255, 255, 255, 0.85) !important;
   }
 
   .mobile-bottom-nav {
     display: flex !important;
     position: fixed !important;
-    left: 16px !important;
-    right: 16px !important;
+    left: 24px !important;
+    right: 24px !important;
+    width: 350.06px !important;
+    max-width: calc(100% - 48px) !important;
+    margin: 0 auto !important;
     bottom: 16px !important;
-    height: 74px !important;
+    height: 76px !important;
     background: #ffffff !important;
     border-radius: 28px !important;
     box-shadow: 0 12px 36px rgba(0, 0, 0, 0.12) !important;
@@ -1071,6 +1095,6 @@ h1, h2, h3, h4, h5, h6 {
   .bottom-nav-item.active {
     background-color: #3E2522 !important;
     color: #ffffff !important;
-    border-radius: 20px !important;
+    border-radius: 18px !important;
   }
 }
