@@ -187,7 +187,7 @@ export const TablesPage = () => {
           <h1>Table Overview</h1>
           <p>Tap a table to view or start an order</p>
         </div>
-        <div style={{ display: 'flex', gap: '0.75rem' }}>
+        <div className="desktop-only-actions" style={{ display: 'flex', gap: '0.75rem' }}>
           <button className="btn btn-secondary" style={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.1)', color: '#171717', borderRadius: '14px' }} onClick={loadTables}>
             <RefreshCw size={16} /> Refresh
           </button>
