@@ -858,7 +858,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ==========================================================================
-   Unified Desktop & Mobile Tables Page Design (Warm Palette & Responsive Grid)
+   Figma Target Match: Mobile & Desktop Tables Overview
    ========================================================================== */
 .tables-overview-container {
   display: flex;
@@ -866,7 +866,7 @@ h1, h2, h3, h4, h5, h6 {
   width: 100%;
   box-sizing: border-box;
   padding: 1.5rem;
-  background-color: #FCE6D2;
+  background-color: #FDE6D1;
   min-height: calc(100vh - 2rem);
   border-radius: 20px;
 }
@@ -880,12 +880,151 @@ h1, h2, h3, h4, h5, h6 {
   width: 100%;
 }
 
+.mobile-stat-card {
+  background: #FFFDFC !important;
+  border-radius: 20px !important;
+  padding: 1rem 0.5rem !important;
+  text-align: center !important;
+  box-shadow: 0 12px 25px rgba(70, 40, 25, 0.15) !important;
+  border: 1px solid rgba(255, 255, 255, 0.85) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 102px !important;
+}
+
+.stat-num-free {
+  font-size: 31px !important;
+  font-weight: 700 !important;
+  color: #2E8139 !important;
+  line-height: 1 !important;
+  margin-bottom: 0.25rem !important;
+  font-family: 'Outfit', sans-serif !important;
+}
+
+.stat-num-occupied {
+  font-size: 31px !important;
+  font-weight: 700 !important;
+  color: #C62828 !important;
+  line-height: 1 !important;
+  margin-bottom: 0.25rem !important;
+  font-family: 'Outfit', sans-serif !important;
+}
+
+.stat-num-total {
+  font-size: 31px !important;
+  font-weight: 700 !important;
+  color: #3C2926 !important;
+  line-height: 1 !important;
+  margin-bottom: 0.25rem !important;
+  font-family: 'Outfit', sans-serif !important;
+}
+
+.stat-label-text {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: 1px !important;
+  color: #625958 !important;
+  text-transform: uppercase !important;
+}
+
+.mobile-filter-pills {
+  display: flex !important;
+  gap: 0.75rem !important;
+  margin-bottom: 1.25rem !important;
+  overflow-x: auto !important;
+  scrollbar-width: none !important;
+  max-width: 100% !important;
+}
+
+.filter-pill {
+  height: 37px !important;
+  padding: 0 1.4rem !important;
+  border-radius: 20px !important;
+  font-size: 0.88rem !important;
+  font-weight: 700 !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  background: #ffffff !important;
+  color: #111111 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  white-space: nowrap !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.filter-pill.active {
+  background: #402622 !important;
+  color: #ffffff !important;
+  border-color: #402622 !important;
+  box-shadow: 0 4px 14px rgba(64, 38, 34, 0.25) !important;
+}
+
 .unified-table-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 1.25rem;
+  gap: 16px;
   width: 100%;
   box-sizing: border-box;
+}
+
+.table-card-mobile {
+  border-radius: 24px !important;
+  padding: 18px 17px !important;
+  min-height: 153px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  box-shadow: 0 8px 24px rgba(80, 50, 30, 0.12) !important;
+  border: 1px solid rgba(255, 255, 255, 0.85) !important;
+  cursor: pointer !important;
+  transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+  box-sizing: border-box !important;
+  position: relative !important;
+}
+
+.table-card-mobile:active {
+  transform: scale(0.98) !important;
+}
+
+.table-card-num {
+  font-size: 37px !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.02em !important;
+  font-family: 'Outfit', sans-serif !important;
+  line-height: 1 !important;
+}
+
+.table-card-seats {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.35rem !important;
+  font-size: 0.84rem !important;
+  font-weight: 600 !important;
+  color: #111111 !important;
+  margin-top: 0.35rem !important;
+  margin-bottom: 0.25rem !important;
+}
+
+.status-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.35rem !important;
+  height: 26px !important;
+  padding: 0 12px !important;
+  border-radius: 9px !important;
+  font-size: 0.78rem !important;
+  font-weight: 700 !important;
+  width: fit-content !important;
+}
+
+.badge-dot {
+  width: 6px !important;
+  height: 6px !important;
+  border-radius: 50% !important;
+  display: inline-block !important;
 }
 
 @media (max-width: 1200px) {
@@ -896,19 +1035,72 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 @media (max-width: 768px) {
+  .desktop-only-actions {
+    display: none !important;
+  }
+
   .tables-overview-container {
-    padding: 1.15rem 0.25rem 5.5rem 0.25rem !important;
+    padding: 1.25rem 24px 110px 24px !important;
     min-height: 100vh !important;
     border-radius: 0 !important;
+    background-color: #FDE6D1 !important;
+    max-width: 402px !important;
+    margin: 0 auto !important;
   }
 
   .unified-stats-row {
+    width: 350.06px !important;
     max-width: 100% !important;
-    gap: 0.65rem !important;
+    gap: 12px !important;
+  }
+
+  .mobile-filter-pills {
+    width: 350.06px !important;
+    max-width: 100% !important;
   }
 
   .unified-table-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 0.75rem !important;
+    width: 350.06px !important;
+    max-width: 100% !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 20px 16px !important;
+    grid-auto-rows: 149px !important;
+    min-height: 501px !important;
+  }
+
+  .table-card-mobile {
+    width: 100% !important;
+    height: 149px !important;
+    min-height: 149px !important;
+    border-radius: 24px !important;
+    padding: 18px 17px !important;
+    box-shadow: 0 8px 24px rgba(80, 50, 30, 0.12) !important;
+    border: 1px solid rgba(255, 255, 255, 0.85) !important;
+  }
+
+  .mobile-bottom-nav {
+    display: flex !important;
+    position: fixed !important;
+    left: 24px !important;
+    right: 24px !important;
+    width: 350.06px !important;
+    max-width: calc(100% - 48px) !important;
+    margin: 0 auto !important;
+    bottom: 16px !important;
+    height: 76px !important;
+    background: #ffffff !important;
+    border-radius: 28px !important;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.12) !important;
+    z-index: 9999 !important;
+    align-items: center !important;
+    justify-content: space-around !important;
+    padding: 0 12px !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+  }
+
+  .bottom-nav-item.active {
+    background-color: #402622 !important;
+    color: #ffffff !important;
+    border-radius: 18px !important;
   }
 }
