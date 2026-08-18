@@ -278,7 +278,7 @@ export const POSPage = () => {
 
           .pos-page-container {
             display: grid;
-            grid-template-columns: minmax(0, 1fr) 360px;
+            grid-template-columns: minmax(0, 1fr) 390px;
             gap: 20px;
             width: 100%;
             max-width: 100%;
@@ -396,9 +396,9 @@ export const POSPage = () => {
 
         /* Desktop Current Order Panel */
         .desktop-cart-panel {
-          width: 360px;
-          min-width: 360px;
-          max-width: 360px;
+          width: 390px;
+          min-width: 390px;
+          max-width: 390px;
           box-sizing: border-box;
           background: #ffffff;
           border-radius: 20px;
@@ -466,10 +466,6 @@ export const POSPage = () => {
             <button className="filter-btn-pill" title="Filter Menu">
               <SlidersHorizontal size={16} />
               <span>Filter</span>
-            </button>
-
-            <button className="search-action-btn" onClick={() => setShowLogoutModal(true)} title="Logout of Account">
-              <LogOut size={18} />
             </button>
           </div>
 
