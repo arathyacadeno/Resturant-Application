@@ -417,12 +417,16 @@ export const POSPage = () => {
             display: none !important;
           }
 
+          .pos-page-wrapper {
+            padding-bottom: 165px !important;
+          }
+
           .mobile-cart-float-bar {
             display: flex !important;
             position: fixed !important;
             left: 16px !important;
             right: 16px !important;
-            bottom: 86px !important;
+            bottom: 102px !important;
             background: #350707 !important;
             color: #ffffff !important;
             border-radius: 20px !important;
