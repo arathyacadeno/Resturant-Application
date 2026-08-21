@@ -23,7 +23,7 @@ const STATUS_STYLES = {
     badgeBg: '#EEA79B',
     badgeText: '#B92722',
     dotColor: '#B92722',
-    cardBg: '#F5C6B5',
+    cardBg: '#C711001A',
   },
   reserved: {
     statusClass: 'reserved',
@@ -135,9 +135,32 @@ export const TablesPage = () => {
     }
   };
 
+  // Selected Occupied Table Bottom Sheet State
+  const [selectedOccupiedTable, setSelectedOccupiedTable] = useState(null);
+
   const handleSelectTableForOrder = (table) => {
+    const isMobile = window.innerWidth <= 768;
+    const isOccupied = ['occupied', 'billing'].includes((table.status || '').toLowerCase());
+    
+    if (isMobile && isOccupied) {
+      setSelectedOccupiedTable(table);
+      return;
+    }
+
     setSelectedTable(table);
     navigate('/pos');
+  };
+
+  const handleViewBill = (table) => {
+    setSelectedTable(table);
+    setSelectedOccupiedTable(null);
+    navigate('/billing');
+  };
+
+  const handleViewOrder = (table) => {
+    setSelectedTable(table);
+    setSelectedOccupiedTable(null);
+    navigate('/pos', { state: { openOrderSheet: true } });
   };
 
   // Dynamic Statistics computed strictly from backend database tables
@@ -391,6 +414,69 @@ export const TablesPage = () => {
                 Create Dining Table
               </button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Mobile Occupied Table Bottom-Sheet Detail Modal */}
+      {selectedOccupiedTable && (
+        <div className="table-modal-overlay" onClick={() => setSelectedOccupiedTable(null)}>
+          <div className="occupied-table-sheet" onClick={(e) => e.stopPropagation()}>
+            <div className="occupied-sheet-header">
+              <span className="occupied-sheet-location">
+                {(selectedOccupiedTable.section || '').toLowerCase().includes('out')
+                  ? 'Outdoor Seating'
+                  : 'Indoor Seating'}
+              </span>
+              <button
+                className="occupied-sheet-close"
+                onClick={() => setSelectedOccupiedTable(null)}
+                aria-label="Close"
+              >
+                &times;
+              </button>
+            </div>
+
+            <div className="occupied-sheet-body">
+              <div className="occupied-sheet-avatar">
+                <img
+                  src="/tables-icon.png"
+                  alt="Table Icon"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = '/Dining table.png';
+                  }}
+                />
+              </div>
+              <div className="occupied-sheet-info">
+                <h3 className="occupied-sheet-title">
+                  {formatTableNumber(selectedOccupiedTable.number)}
+                </h3>
+                <div className="occupied-sheet-status">
+                  <span className="status-dot"></span>
+                  <span>
+                    {(selectedOccupiedTable.status || '').toLowerCase() === 'billing'
+                      ? 'Billing in Progress'
+                      : 'Dining in Progress'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="occupied-sheet-actions">
+              <button
+                className="btn-view-bill"
+                onClick={() => handleViewBill(selectedOccupiedTable)}
+              >
+                View Bill
+              </button>
+              <button
+                className="btn-view-order"
+                onClick={() => handleViewOrder(selectedOccupiedTable)}
+              >
+                View Order
+              </button>
+            </div>
           </div>
         </div>
       )}

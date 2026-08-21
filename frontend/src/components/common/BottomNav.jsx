@@ -35,10 +35,15 @@ export const BottomNav = () => {
         className={`bottom-nav-item ${currentPath === '/pos' || currentPath === '/' ? 'active' : ''}`}
       >
         <div className="bottom-nav-icon-wrapper">
-          <ShoppingBag size={20} />
-          {totalCartCount > 0 && (
-            <span className="cart-badge-count">{totalCartCount}</span>
-          )}
+          <img
+            src="/order.png"
+            alt="Orders"
+            className="bottom-nav-icon-img"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = '/tables-icon.png';
+            }}
+          />
         </div>
         <span className="bottom-nav-label">Orders</span>
       </NavLink>
