@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { menuApi } from '../api/menuApi';
 import { tablesApi } from '../api/tablesApi';
 import { useOrder } from '../context/OrderContext';
@@ -19,8 +19,9 @@ import {
 } from 'lucide-react';
 
 export const POSPage = () => {
-  const { logout } = useAuth();
+  const { logout, openProfile, user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = () => {
     logout();
@@ -42,6 +43,7 @@ export const POSPage = () => {
     cartItems,
     selectedTable,
     setSelectedTable,
+    loadingActiveOrder,
     orderType,
     setOrderType,
     customerName,
@@ -91,14 +93,21 @@ export const POSPage = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (location.state?.openOrderSheet) {
+      setShowMobileCart(true);
+    }
+  }, [location.state]);
+
   const handlePlaceOrder = async () => {
     try {
       setOrderSuccess(null);
-      const res = await placeOrder();
-      setOrderSuccess(`Order #${res.id} sent to kitchen!`);
-      setShowMobileCart(false);
+      await placeOrder();
+      setOrderSuccess('Order Sent to Kitchen 🔥');
       fetchData();
-      setTimeout(() => setOrderSuccess(null), 5000);
+      setTimeout(() => {
+        setOrderSuccess(null);
+      }, 3000);
     } catch (err) {
       const errorMsg =
         err.response?.data?.detail ||
@@ -455,22 +464,36 @@ export const POSPage = () => {
             </div>
           )}
 
-          {/* Search Bar Row */}
-          <div className="pos-search-bar">
+          {/* Search Bar & Profile Avatar Row */}
+          <div className="pos-mobile-top-bar">
             <div className="search-input-box">
-              <Search size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+              <Search size={18} className="search-icon-svg" />
               <input
                 type="text"
-                placeholder="Search menu items..."
+                placeholder="Search coffee..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
 
-            <button className="filter-btn-pill" title="Filter Menu">
-              <SlidersHorizontal size={16} />
-              <span>Filter</span>
-            </button>
+            {/* Profile Avatar Trigger */}
+            <div
+              className="pos-mobile-avatar-trigger"
+              onClick={openProfile}
+              title="Open Profile"
+            >
+              {user?.avatar ? (
+                <img
+                  src={user.avatar}
+                  alt="User Avatar"
+                  style={{ width: '42px', height: '42px', borderRadius: '50%', objectFit: 'cover', border: '1.5px solid #ffffff', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                />
+              ) : (
+                <div style={{ width: '42px', height: '42px', borderRadius: '50%', backgroundColor: '#F5F1EF', border: '1.5px solid #ffffff', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '1rem', color: '#350505' }}>
+                  {user?.username ? user.username[0].toUpperCase() : 'A'}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Dynamic Category Filter Pills */}
@@ -569,7 +592,22 @@ export const POSPage = () => {
                           disabled={!item.is_available}
                           onClick={() => addToCart(item, currentPortion)}
                         >
-                          <ShoppingBag size={14} /> {item.is_available ? 'Add' : 'Out of Stock'}
+                          {item.is_available ? (
+                            <>
+                              <img
+                                src="/cart-icon.png"
+                                alt="Cart"
+                                className="add-cart-icon-img"
+                                onError={(e) => {
+                                  e.target.onerror = null;
+                                  e.target.src = '/Frame 26.png';
+                                }}
+                              />
+                              <span>Add</span>
+                            </>
+                          ) : (
+                            <span>Out of Stock</span>
+                          )}
                         </button>
                       )}
                     </div>
@@ -707,103 +745,150 @@ export const POSPage = () => {
           </div>
         </div>
 
-        {/* Mobile Floating Cart Summary Bar */}
+        {/* Mobile Floating View Order Pill */}
         {cartItems.length > 0 && (
-          <div className="mobile-cart-float-bar" onClick={() => setShowMobileCart(true)}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#ffffff', color: '#350707', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '0.9rem', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}>
-                {cartItems.reduce((s, i) => s + i.quantity, 0)}
-              </div>
-              <div style={{ textAlign: 'left' }}>
-                <div style={{ fontSize: '0.72rem', opacity: 0.85, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Active Order Ticket</div>
-                <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#ffffff', lineHeight: 1.1 }}>₹{subtotal.toFixed(2)}</div>
-              </div>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontWeight: 700, fontSize: '0.85rem', background: 'rgba(255, 255, 255, 0.15)', padding: '0.4rem 0.85rem', borderRadius: '14px' }}>
-              <span>Review Order</span>
-              <ChevronUp size={16} />
-            </div>
+          <div className="view-order-pill" onClick={() => setShowMobileCart(true)}>
+            <span>View your Order 👀</span>
+          </div>
+        )}
+
+        {/* Order Sent to Kitchen Floating Pill */}
+        {orderSuccess && (
+          <div className="order-sent-pill">
+            <span>Order Sent to Kitchen 🔥</span>
           </div>
         )}
 
         {/* Mobile Slide-Up Order Drawer Modal */}
         {showMobileCart && (
-          <div className="modal-backdrop" style={{ zIndex: 10000 }}>
-            <div className="modal-content" style={{ borderRadius: '24px 24px 0 0', position: 'fixed', bottom: 0, left: 0, right: 0, margin: '0 auto', maxWidth: '100vw', maxHeight: '88vh', padding: '1.5rem 1.25rem 6.5rem 1.25rem', overflowY: 'auto', zIndex: 10001 }}>
-              <div className="modal-header">
-                <h3 style={{ fontSize: '1.2rem', fontWeight: 800 }}>Review Order Ticket</h3>
-                <button className="modal-close" onClick={() => setShowMobileCart(false)}><X size={20} /></button>
+          <div className="order-overlay" onClick={() => setShowMobileCart(false)}>
+            <div className="order-sheet" onClick={(e) => e.stopPropagation()}>
+              {/* Header */}
+              <div className="order-sheet-header">
+                <h2 className="order-sheet-title">Your Order</h2>
+                <button
+                  className="order-sheet-close"
+                  onClick={() => setShowMobileCart(false)}
+                  aria-label="Close"
+                >
+                  &times;
+                </button>
               </div>
 
-              {orderType === 'dine_in' && (
-                <div className="form-group" style={{ marginBottom: '1rem' }}>
-                  <label>Select Table</label>
-                  <select
-                    className="form-select"
-                    value={selectedTable?.id || ''}
-                    onChange={(e) => {
-                      const t = tables.find((tbl) => tbl.id === parseInt(e.target.value));
-                      setSelectedTable(t || null);
+              {/* Table Info Pill Container */}
+              <div className="order-table-card">
+                <div className="order-table-card-left">
+                  <img
+                    src="/tables-icon.png"
+                    alt="Table Icon"
+                    className="order-table-icon"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = '/Dining table.png';
                     }}
-                  >
-                    <option value="">-- Choose Dining Table --</option>
-                    {tables.map((tbl) => (
-                      <option key={tbl.id} value={tbl.id}>
-                        Table #{tbl.number} ({tbl.capacity} Seats) - {tbl.status}
-                      </option>
-                    ))}
-                  </select>
+                  />
+                  <span className="order-table-name">
+                    {selectedTable ? `Table ${selectedTable.number}` : 'Table 1'}
+                  </span>
                 </div>
-              )}
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', marginBottom: '1rem' }}>
-                <input
-                  type="text"
-                  className="form-input"
-                  placeholder="Cust. Name"
-                  value={customerName}
-                  onChange={(e) => setCustomerName(e.target.value)}
-                />
-                <input
-                  type="text"
-                  className="form-input"
-                  placeholder="Phone No"
-                  value={customerPhone}
-                  onChange={(e) => setCustomerPhone(e.target.value)}
-                />
+                <div className="order-table-card-right">
+                  <span>
+                    {orderType === 'dine_in' ? 'Dine In' : 'Takeaway'} ·{' '}
+                    {(selectedTable?.section || '').toLowerCase().includes('out') ? 'Outdoor' : 'Indoor'} ·{' '}
+                    {selectedTable?.capacity || 4} seats
+                  </span>
+                </div>
               </div>
 
-              <div style={{ maxHeight: '250px', overflowY: 'auto', marginBottom: '1rem' }}>
-                {cartItems.map((item, idx) => (
-                  <div key={idx} style={{ padding: '0.75rem 0', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div>
-                      <div style={{ fontWeight: 700, fontSize: '0.9rem' }}>{item.menu_item.name} ({item.portion})</div>
-                      <div style={{ color: '#B77D55', fontWeight: 700, fontSize: '0.85rem' }}>₹{(item.unit_price * item.quantity).toFixed(2)}</div>
-                    </div>
-
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <button className="btn btn-secondary btn-sm" onClick={() => updateQuantity(item.menu_item.id, item.portion, -1)}>-</button>
-                      <span style={{ fontWeight: 700 }}>{item.quantity}</span>
-                      <button className="btn btn-secondary btn-sm" onClick={() => updateQuantity(item.menu_item.id, item.portion, 1)}>+</button>
-                    </div>
+              {/* Cart Items List */}
+              <div className="order-cart-list">
+                {loadingActiveOrder ? (
+                  <div style={{ textAlign: 'center', padding: '24px 0', color: '#6F625C', fontSize: '14px', fontWeight: 600 }}>
+                    Loading order...
                   </div>
-                ))}
+                ) : cartItems.length === 0 ? (
+                  <div style={{ textAlign: 'center', padding: '24px 0', color: '#6F625C', fontSize: '14px' }}>
+                    No active order items found for this table.
+                  </div>
+                ) : (
+                  cartItems.map((item, idx) => {
+                    const itemPrice = (item.unit_price || item.menu_item?.price || 0) * item.quantity;
+                    return (
+                      <div key={`${item.menu_item.id}-${item.portion}-${idx}`} className="order-cart-item">
+                        <div className="order-item-left">
+                          <span className="order-item-name">
+                            {item.menu_item.name}
+                            {item.portion && item.portion !== 'Full' ? ` (${item.portion})` : ''}
+                          </span>
+                        </div>
+
+                        <div className="order-item-qty">
+                          <button
+                            className="order-qty-btn"
+                            onClick={() => updateQuantity(item.menu_item.id, item.portion, -1)}
+                          >
+                            −
+                          </button>
+                          <span className="order-qty-num">{item.quantity}</span>
+                          <button
+                            className="order-qty-btn"
+                            onClick={() => updateQuantity(item.menu_item.id, item.portion, 1)}
+                          >
+                            +
+                          </button>
+                        </div>
+
+                        <div className="order-item-right">
+                          <span className="order-item-price">
+                            ₹{itemPrice.toFixed(2)}
+                          </span>
+                          <button
+                            className="order-item-remove"
+                            onClick={() => removeFromCart(item.menu_item.id, item.portion)}
+                            title="Remove item"
+                          >
+                            &times;
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', fontSize: '1.2rem', fontWeight: 800 }}>
-                <span>Total Amount</span>
-                <span style={{ color: '#B77D55' }}>₹{subtotal.toFixed(2)}</span>
+              {/* Order Summary Card */}
+              <div className="order-summary-card">
+                <div className="summary-row">
+                  <span>Subtotal</span>
+                  <span>₹{subtotal.toFixed(2)}</span>
+                </div>
+                <div className="summary-row">
+                  <span>GST (5%)</span>
+                  <span>₹{(subtotal * 0.05).toFixed(2)}</span>
+                </div>
+                <div className="summary-divider"></div>
+                <div className="summary-row summary-total">
+                  <span>Total</span>
+                  <span>₹{(subtotal * 1.05).toFixed(2)}</span>
+                </div>
               </div>
 
-              <button
-                className="btn btn-primary btn-lg"
-                style={{ width: '100%', backgroundColor: '#350707' }}
-                disabled={cartItems.length === 0 || isSubmitting}
-                onClick={handlePlaceOrder}
-              >
-                <Send size={18} />
-                <span>{isSubmitting ? 'Sending Order...' : 'Send Order to Kitchen'}</span>
-              </button>
+              {/* Bottom Action Buttons */}
+              <div className="order-sheet-actions">
+                <button
+                  className="btn-add-item"
+                  onClick={() => setShowMobileCart(false)}
+                >
+                  Add Item
+                </button>
+                <button
+                  className="btn-place-order"
+                  disabled={cartItems.length === 0 || isSubmitting}
+                  onClick={handlePlaceOrder}
+                >
+                  {isSubmitting ? 'Placing...' : 'Place Order'}
+                </button>
+              </div>
             </div>
           </div>
         )}

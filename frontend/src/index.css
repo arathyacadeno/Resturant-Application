@@ -1221,5 +1221,637 @@ h1, h2, h3, h4, h5, h6 {
   .bottom-nav-item.active img {
     filter: none !important;
   }
+
+  /* Occupied Table Detail Bottom Sheet */
+  .table-modal-overlay {
+    position: fixed !important;
+    inset: 0 !important;
+    background: rgba(0, 0, 0, 0.16) !important;
+    backdrop-filter: blur(4px) !important;
+    -webkit-backdrop-filter: blur(4px) !important;
+    z-index: 10000 !important;
+    animation: fadeInOverlay 0.25s ease-out !important;
+  }
+
+  .occupied-table-sheet {
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background: #FFFFFF !important;
+    border-radius: 28px 28px 0 0 !important;
+    padding: 24px 28px 28px 28px !important;
+    z-index: 10001 !important;
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.12) !important;
+    animation: occupiedSheetUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    box-sizing: border-box !important;
+  }
+
+  @keyframes fadeInOverlay {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes occupiedSheetUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+
+  .occupied-sheet-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 20px !important;
+  }
+
+  .occupied-sheet-location {
+    font-size: 15px !important;
+    font-weight: 500 !important;
+    color: #6F625C !important;
+  }
+
+  .occupied-sheet-close {
+    width: 30px !important;
+    height: 30px !important;
+    border-radius: 50% !important;
+    background: #FFFFFF !important;
+    border: 1px solid #E4E4E4 !important;
+    color: #6F625C !important;
+    font-size: 20px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    line-height: 1 !important;
+    padding: 0 !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05) !important;
+  }
+
+  .occupied-sheet-body {
+    display: flex !important;
+    align-items: center !important;
+    gap: 16px !important;
+    margin-bottom: 24px !important;
+  }
+
+  .occupied-sheet-avatar {
+    width: 60px !important;
+    height: 60px !important;
+    border-radius: 50% !important;
+    background: #F8F4F1 !important;
+    border: 2px solid #E4D7D0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0 !important;
+  }
+
+  .occupied-sheet-avatar img {
+    width: 28px !important;
+    height: 28px !important;
+    object-fit: contain !important;
+    filter: none !important;
+    opacity: 1 !important;
+  }
+
+  .occupied-sheet-info {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+  }
+
+  .occupied-sheet-title {
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    color: #171717 !important;
+    margin: 0 !important;
+    line-height: 1.2 !important;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  }
+
+  .occupied-sheet-status {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    font-size: 14px !important;
+    color: #6F625C !important;
+    font-weight: 400 !important;
+  }
+
+  .occupied-sheet-status .status-dot {
+    width: 8px !important;
+    height: 8px !important;
+    border-radius: 50% !important;
+    background: #C62828 !important;
+    display: inline-block !important;
+  }
+
+  .occupied-sheet-actions {
+    display: flex !important;
+    gap: 10px !important;
+    width: 100% !important;
+  }
+
+  .btn-view-bill {
+    flex: 1 !important;
+    height: 42px !important;
+    background: #FFFFFF !important;
+    border: 1.5px solid #350505 !important;
+    color: #350505 !important;
+    border-radius: 22px !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.15s ease !important;
+  }
+
+  .btn-view-order {
+    flex: 1 !important;
+    height: 42px !important;
+    background: #350505 !important;
+    border: 1.5px solid #350505 !important;
+    color: #FFFFFF !important;
+    border-radius: 22px !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.15s ease !important;
+  }
+
+  /* POS / Orders Page Mobile Styling */
+  .pos-page-wrapper {
+    background-color: #FCE4D0 !important;
+    background: #FCE4D0 !important;
+    min-height: 100vh !important;
+    max-width: 430px !important;
+    width: 100% !important;
+    margin: 0 auto !important;
+    padding: 24px 21px 110px 21px !important;
+    box-sizing: border-box !important;
+  }
+
+  .pos-mobile-top-bar {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    margin-bottom: 18px !important;
+    width: 100% !important;
+  }
+
+  .pos-mobile-top-bar .search-input-box {
+    flex: 1 !important;
+    height: 42px !important;
+    background: #FFFFFF !important;
+    border-radius: 24px !important;
+    display: flex !important;
+    align-items: center !important;
+    padding: 0 16px !important;
+    box-shadow: 0 4px 14px rgba(70, 40, 25, 0.06) !important;
+    position: relative !important;
+    border: none !important;
+  }
+
+  .pos-mobile-top-bar .search-input-box input {
+    width: 100% !important;
+    height: 100% !important;
+    border: none !important;
+    outline: none !important;
+    background: transparent !important;
+    font-size: 14px !important;
+    color: #171717 !important;
+    padding-left: 28px !important;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  }
+
+  .pos-mobile-top-bar .search-icon-svg {
+    position: absolute !important;
+    left: 14px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    color: #94a3b8 !important;
+  }
+
+  .pos-mobile-avatar-trigger {
+    cursor: pointer !important;
+    flex-shrink: 0 !important;
+  }
+
+  .category-scroll-row {
+    display: flex !important;
+    gap: 10px !important;
+    margin-bottom: 20px !important;
+    overflow-x: auto !important;
+    scrollbar-width: none !important;
+    white-space: nowrap !important;
+    width: 100% !important;
+  }
+
+  .category-pill {
+    height: 38px !important;
+    padding: 0 18px !important;
+    border-radius: 22px !important;
+    font-size: 13.5px !important;
+    font-weight: 600 !important;
+    background: #FFFFFF !important;
+    color: #4F4743 !important;
+    border: 1px solid rgba(0, 0, 0, 0.06) !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    white-space: nowrap !important;
+  }
+
+  .category-pill.active {
+    background: #350505 !important;
+    color: #FFFFFF !important;
+    border-color: #350505 !important;
+    box-shadow: 0 4px 12px rgba(53, 5, 5, 0.2) !important;
+  }
+
+  .food-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 16px !important;
+    width: 100% !important;
+  }
+
+  .food-card {
+    background: #FFFFFF !important;
+    border-radius: 18px !important;
+    padding: 10px !important;
+    box-shadow: 0 4px 14px rgba(70, 40, 25, 0.06) !important;
+    border: 1px solid rgba(255, 255, 255, 0.85) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    min-height: 240px !important;
+    box-sizing: border-box !important;
+  }
+
+  .food-card-img {
+    width: 100% !important;
+    height: 135px !important;
+    object-fit: cover !important;
+    border-radius: 12px !important;
+    margin-bottom: 6px !important;
+  }
+
+  .add-cart-btn {
+    width: 100% !important;
+    height: 28px !important;
+    border-radius: 10px !important;
+    background: #B77D56 !important;
+    color: #FFFFFF !important;
+    border: none !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    box-shadow: 0 3px 8px rgba(183, 125, 86, 0.25) !important;
+  }
+
+  .add-cart-btn img,
+  .add-cart-icon-img {
+    width: 16px !important;
+    height: 16px !important;
+    object-fit: contain !important;
+    flex-shrink: 0 !important;
+    filter: brightness(0) invert(1) !important;
+  }
+
+  .quantity-control-bar {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    border: 1px solid #B77D56 !important;
+    border-radius: 10px !important;
+    height: 32px !important;
+    padding: 0 6px !important;
+    background: #FFFFFF !important;
+  }
+
+  .qty-btn {
+    width: 24px !important;
+    height: 24px !important;
+    border-radius: 6px !important;
+    background: transparent !important;
+    color: #B77D56 !important;
+    border: none !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    font-weight: 700 !important;
+  }
+
+  .view-order-pill {
+    position: fixed !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    bottom: 88px !important;
+    background: #350505 !important;
+    color: #FFFFFF !important;
+    height: 42px !important;
+    min-width: 190px !important;
+    max-width: calc(100vw - 48px) !important;
+    padding: 0 22px !important;
+    border-radius: 24px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    z-index: 1100 !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2) !important;
+    cursor: pointer !important;
+    transition: transform 0.15s ease !important;
+  }
+
+  .view-order-pill:active {
+    transform: translateX(-50%) scale(0.96) !important;
+  }
+
+  /* Order Sent to Kitchen Floating Pill */
+  .order-sent-pill {
+    position: fixed !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    bottom: 120px !important;
+    background: #350505 !important;
+    color: #FFFFFF !important;
+    height: 42px !important;
+    padding: 0 20px !important;
+    border-radius: 24px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 13.5px !important;
+    font-weight: 500 !important;
+    z-index: 10005 !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25) !important;
+    animation: fadeInOverlay 0.25s ease-out !important;
+    white-space: nowrap !important;
+    width: auto !important;
+    max-width: 90vw !important;
+  }
+
+  /* Your Order Bottom Sheet */
+  .order-overlay {
+    position: fixed !important;
+    inset: 0 !important;
+    background: rgba(0, 0, 0, 0.16) !important;
+    backdrop-filter: blur(4px) !important;
+    -webkit-backdrop-filter: blur(4px) !important;
+    z-index: 10000 !important;
+    animation: fadeInOverlay 0.25s ease-out !important;
+  }
+
+  .order-sheet {
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background: #FAF6F0 !important;
+    border-radius: 28px 28px 0 0 !important;
+    padding: 24px 20px 24px 20px !important;
+    z-index: 10001 !important;
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.12) !important;
+    animation: orderSheetUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    max-height: 78vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    box-sizing: border-box !important;
+    overflow-y: auto !important;
+  }
+
+  @keyframes orderSheetUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+
+  .order-sheet-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 16px !important;
+  }
+
+  .order-sheet-title {
+    font-size: 24px !important;
+    font-weight: 700 !important;
+    color: #171717 !important;
+    margin: 0 !important;
+    line-height: 1.2 !important;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  }
+
+  .order-sheet-close {
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50% !important;
+    background: #FFFFFF !important;
+    border: 1px solid #E4E4E4 !important;
+    color: #6F625C !important;
+    font-size: 18px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    line-height: 1 !important;
+    padding: 0 !important;
+  }
+
+  .order-table-card {
+    border: 1px solid #350505 !important;
+    border-radius: 22px !important;
+    padding: 10px 16px !important;
+    margin-bottom: 18px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    background: #FFFFFF !important;
+  }
+
+  .order-table-card-left {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+  }
+
+  .order-table-icon {
+    width: 24px !important;
+    height: 24px !important;
+    object-fit: contain !important;
+  }
+
+  .order-table-name {
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    color: #171717 !important;
+  }
+
+  .order-table-card-right {
+    font-size: 13px !important;
+    color: #6F625C !important;
+    font-weight: 500 !important;
+  }
+
+  .order-cart-list {
+    display: flex !important;
+    flex-direction: column !important;
+    margin-bottom: 18px !important;
+  }
+
+  .order-cart-item {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 12px 0 !important;
+  }
+
+  .order-cart-item + .order-cart-item {
+    border-top: 1px dashed #C9BDB7 !important;
+  }
+
+  .order-item-left {
+    flex: 1 !important;
+    padding-right: 8px !important;
+  }
+
+  .order-item-name {
+    font-size: 14.5px !important;
+    font-weight: 600 !important;
+    color: #171717 !important;
+    line-height: 1.3 !important;
+  }
+
+  .order-item-qty {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    border: 1px solid #350505 !important;
+    border-radius: 10px !important;
+    background: #FFFFFF !important;
+    height: 32px !important;
+    padding: 0 8px !important;
+    min-width: 84px !important;
+  }
+
+  .order-qty-btn {
+    background: transparent !important;
+    border: none !important;
+    color: #350505 !important;
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    cursor: pointer !important;
+    padding: 0 4px !important;
+  }
+
+  .order-qty-num {
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    color: #171717 !important;
+  }
+
+  .order-item-right {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    margin-left: 12px !important;
+  }
+
+  .order-item-price {
+    font-size: 14.5px !important;
+    font-weight: 700 !important;
+    color: #171717 !important;
+  }
+
+  .order-item-remove {
+    background: transparent !important;
+    border: none !important;
+    color: #94A3B8 !important;
+    font-size: 18px !important;
+    cursor: pointer !important;
+    padding: 0 2px !important;
+    line-height: 1 !important;
+  }
+
+  .order-summary-card {
+    border: 1px solid #350505 !important;
+    border-radius: 18px !important;
+    background: #FFFFFF !important;
+    padding: 16px !important;
+    margin-bottom: 20px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+
+  .summary-row {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    font-size: 14px !important;
+    color: #6F625C !important;
+    font-weight: 500 !important;
+  }
+
+  .summary-divider {
+    border-top: 1px dashed #C9BDB7 !important;
+    margin: 4px 0 !important;
+  }
+
+  .summary-total {
+    font-size: 16.5px !important;
+    font-weight: 700 !important;
+    color: #171717 !important;
+  }
+
+  .order-sheet-actions {
+    display: flex !important;
+    gap: 10px !important;
+    width: 100% !important;
+  }
+
+  .btn-add-item {
+    flex: 1 !important;
+    height: 42px !important;
+    background: #FFFFFF !important;
+    border: 1.5px solid #350505 !important;
+    color: #350505 !important;
+    border-radius: 22px !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .btn-place-order {
+    flex: 1 !important;
+    height: 42px !important;
+    background: #350505 !important;
+    border: 1.5px solid #350505 !important;
+    color: #FFFFFF !important;
+    border-radius: 22px !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
 }
 

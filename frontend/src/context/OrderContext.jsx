@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useEffect, useContext } from 'react';
 import { ordersApi } from '../api/ordersApi';
 
 const OrderContext = createContext();
@@ -6,11 +6,62 @@ const OrderContext = createContext();
 export const OrderProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
   const [selectedTable, setSelectedTable] = useState(null);
+  const [activeTableOrder, setActiveTableOrder] = useState(null);
+  const [loadingActiveOrder, setLoadingActiveOrder] = useState(false);
   const [orderType, setOrderType] = useState('dine_in'); // dine_in, takeaway, delivery, swiggy, zomato
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
   const [orderNotes, setOrderNotes] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const loadActiveTableOrder = async (tableId) => {
+    if (!tableId) {
+      setActiveTableOrder(null);
+      setCartItems([]);
+      return;
+    }
+    setLoadingActiveOrder(true);
+    try {
+      const orderData = await ordersApi.getActiveTableOrder(tableId);
+      if (orderData && orderData.id && Array.isArray(orderData.items)) {
+        setActiveTableOrder(orderData);
+        setCustomerName(orderData.customer_name || '');
+        setCustomerPhone(orderData.customer_phone || '');
+        const formattedItems = orderData.items.map((item) => ({
+          order_item_id: item.id,
+          menu_item: {
+            id: item.menu_item,
+            name: item.menu_item_name || 'Item',
+            price: parseFloat(item.unit_price),
+            image: item.menu_item_image || '',
+          },
+          quantity: item.quantity,
+          unit_price: parseFloat(item.unit_price),
+          portion: item.portion || 'Full',
+          notes: item.notes || '',
+        }));
+        setCartItems(formattedItems);
+      } else {
+        setActiveTableOrder(null);
+        setCartItems([]);
+      }
+    } catch (err) {
+      console.error('Error fetching active table order:', err);
+      setActiveTableOrder(null);
+      setCartItems([]);
+    } finally {
+      setLoadingActiveOrder(false);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedTable?.id) {
+      loadActiveTableOrder(selectedTable.id);
+    } else {
+      setActiveTableOrder(null);
+      setCartItems([]);
+    }
+  }, [selectedTable?.id]);
 
   const addToCart = (menuItem, portion = 'Full') => {
     setCartItems((prev) => {
@@ -37,24 +88,49 @@ export const OrderProvider = ({ children }) => {
     });
   };
 
-  const removeFromCart = (menuItemId, portion) => {
+  const removeFromCart = async (menuItemId, portion) => {
+    const targetItem = cartItems.find(
+      (item) => item.menu_item.id === menuItemId && item.portion === portion
+    );
+    
     setCartItems((prev) =>
       prev.filter((item) => !(item.menu_item.id === menuItemId && item.portion === portion))
     );
+
+    if (targetItem?.order_item_id) {
+      try {
+        await ordersApi.updateOrderItem(targetItem.order_item_id, { quantity: 0 });
+      } catch (err) {
+        console.error('Failed to remove order item on backend:', err);
+      }
+    }
   };
 
-  const updateQuantity = (menuItemId, portion, delta) => {
+  const updateQuantity = async (menuItemId, portion, delta) => {
+    let updatedQty = 0;
+    let targetItem = null;
+
     setCartItems((prev) => {
       return prev
         .map((item) => {
           if (item.menu_item.id === menuItemId && item.portion === portion) {
+            targetItem = item;
             const newQty = item.quantity + delta;
+            updatedQty = newQty;
             return newQty > 0 ? { ...item, quantity: newQty } : null;
           }
           return item;
         })
         .filter(Boolean);
     });
+
+    if (targetItem?.order_item_id) {
+      try {
+        await ordersApi.updateOrderItem(targetItem.order_item_id, { quantity: updatedQty });
+      } catch (err) {
+        console.error('Failed to update order item quantity on backend:', err);
+      }
+    }
   };
 
   const updateItemNotes = (menuItemId, portion, notes) => {
@@ -70,6 +146,7 @@ export const OrderProvider = ({ children }) => {
   const clearCart = () => {
     setCartItems([]);
     setSelectedTable(null);
+    setActiveTableOrder(null);
     setCustomerName('');
     setCustomerPhone('');
     setOrderNotes('');
@@ -91,24 +168,41 @@ export const OrderProvider = ({ children }) => {
 
     setIsSubmitting(true);
     try {
-      const payload = {
-        table: orderType === 'dine_in' ? (selectedTable?.id || null) : null,
-        order_type: orderType,
-        customer_name: customerName,
-        customer_phone: customerPhone,
-        notes: orderNotes,
-        items: cartItems.map((item) => ({
+      if (activeTableOrder && activeTableOrder.id) {
+        const itemsPayload = cartItems.map((item) => ({
           menu_item: item.menu_item.id,
           quantity: item.quantity,
           unit_price: item.unit_price,
           portion: item.portion,
           notes: item.notes,
-        })),
-      };
+        }));
+        const res = await ordersApi.addItemsToOrder(activeTableOrder.id, itemsPayload);
+        if (selectedTable?.id) {
+          await loadActiveTableOrder(selectedTable.id);
+        }
+        return res;
+      } else {
+        const payload = {
+          table: orderType === 'dine_in' ? (selectedTable?.id || null) : null,
+          order_type: orderType,
+          customer_name: customerName,
+          customer_phone: customerPhone,
+          notes: orderNotes,
+          items: cartItems.map((item) => ({
+            menu_item: item.menu_item.id,
+            quantity: item.quantity,
+            unit_price: item.unit_price,
+            portion: item.portion,
+            notes: item.notes,
+          })),
+        };
 
-      const createdOrder = await ordersApi.createOrder(payload);
-      clearCart();
-      return createdOrder;
+        const createdOrder = await ordersApi.createOrder(payload);
+        if (orderType === 'dine_in' && selectedTable?.id) {
+          await loadActiveTableOrder(selectedTable.id);
+        }
+        return createdOrder;
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -120,6 +214,9 @@ export const OrderProvider = ({ children }) => {
         cartItems,
         selectedTable,
         setSelectedTable,
+        activeTableOrder,
+        loadingActiveOrder,
+        loadActiveTableOrder,
         orderType,
         setOrderType,
         customerName,
