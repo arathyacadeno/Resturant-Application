@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { tablesApi } from '../api/tablesApi';
 import { useOrder } from '../context/OrderContext';
+import { useAuth } from '../context/AuthContext';
 import { Plus, RefreshCw, QrCode } from 'lucide-react';
 
-// Reusable status styling configuration matching Image 1 & Figma target specs
+// Reusable status styling configuration matching reference image specs
 const STATUS_STYLES = {
   available: {
     statusClass: 'available',
@@ -13,7 +14,7 @@ const STATUS_STYLES = {
     badgeBg: '#C7CE9F',
     badgeText: '#2C8238',
     dotColor: '#2C8238',
-    cardBg: '#E5E3C5',
+    cardBg: '#E7E0C5',
   },
   occupied: {
     statusClass: 'occupied',
@@ -22,7 +23,7 @@ const STATUS_STYLES = {
     badgeBg: '#EEA79B',
     badgeText: '#B92722',
     dotColor: '#B92722',
-    cardBg: '#F8CDBD',
+    cardBg: '#F5C6B5',
   },
   reserved: {
     statusClass: 'reserved',
@@ -31,7 +32,7 @@ const STATUS_STYLES = {
     badgeBg: '#85A8E1',
     badgeText: '#FFFFFF',
     dotColor: '#FFFFFF',
-    cardBg: '#D8D5D6',
+    cardBg: '#D5D5D8',
   },
   billing: {
     statusClass: 'billing',
@@ -40,7 +41,7 @@ const STATUS_STYLES = {
     badgeBg: '#D97706',
     badgeText: '#FFFFFF',
     dotColor: '#FFFFFF',
-    cardBg: '#F8DDB8',
+    cardBg: '#F4D7AA',
   },
   cleaning: {
     statusClass: 'billing',
@@ -49,7 +50,7 @@ const STATUS_STYLES = {
     badgeBg: '#D97706',
     badgeText: '#FFFFFF',
     dotColor: '#FFFFFF',
-    cardBg: '#F8DDB8',
+    cardBg: '#F4D7AA',
   },
 };
 
@@ -63,7 +64,7 @@ const getStatusConfig = (rawStatus) => {
       badgeBg: '#C7CE9F',
       badgeText: '#2C8238',
       dotColor: '#2C8238',
-      cardBg: '#E5E3C5',
+      cardBg: '#E7E0C5',
     }
   );
 };
@@ -71,12 +72,13 @@ const getStatusConfig = (rawStatus) => {
 export const TablesPage = () => {
   const navigate = useNavigate();
   const { setSelectedTable } = useOrder();
+  const { user, openProfile } = useAuth();
 
   const [tables, setTables] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
 
-  // Filter State: 'All', 'Indoor', 'Out door' (Target Image 1)
+  // Filter State: 'All', 'Indoor', 'Out door'
   const [activeFilter, setActiveFilter] = useState('All');
 
   // New Table Form State
@@ -162,45 +164,68 @@ export const TablesPage = () => {
     return true;
   });
 
-  // Natural sorting by table number: T1, T2, T3, T4, T5, T6, T7, T8, T9, T10...
+  // Natural sorting by table number: T 1, T 2, T 3, T 4...
   const sortedTables = [...filteredTables].sort((a, b) => {
     const numA = parseInt(String(a.number).replace(/\D/g, '')) || 0;
     const numB = parseInt(String(b.number).replace(/\D/g, '')) || 0;
     return numA - numB;
   });
 
-  // Format table number cleanly (e.g. "1" -> "T1", "T2" -> "T2")
+  // Format table number with space (e.g. "1" -> "T 1", "T2" -> "T 2")
   const formatTableNumber = (num) => {
-    if (!num) return 'T1';
-    const str = String(num).trim();
-    return str.startsWith('T') || str.startsWith('t') ? str.toUpperCase() : `T${str}`;
+    if (!num) return 'T 1';
+    const str = String(num).trim().replace(/^T/i, '').trim();
+    return `T ${str || '1'}`;
   };
 
-  // Chair icon matching reference
-  const ChairIcon = () => (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#111111" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M19 9V6a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v3"/>
-      <path d="M3 11v5a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2z"/>
-      <path d="M5 18v3"/>
-      <path d="M19 18v3"/>
+  // Seated person icon matching attached reference image
+  const SeatedPersonIcon = () => (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      style={{ flexShrink: 0 }}
+    >
+      <circle cx="10" cy="3" r="2.2" />
+      <path d="M 8.5 7 C 8.2 7 8 7.2 8.1 7.5 L 9.2 12.5 C 9.3 13 9.7 13.5 10.3 13.5 L 16.5 13.5 C 17.1 13.5 17.6 13.9 17.8 14.5 L 20 20 C 20.2 20.5 19.8 21 19.2 21 C 18.8 21 18.5 20.7 18.3 20.3 L 16.3 15.3 L 11.2 15.3 C 9.8 15.3 8.6 14.3 8.3 12.9 L 7.3 7.8 C 7.2 7.3 7.6 7 8.5 7 Z" />
+      <path d="M 5 5 L 6.2 14.5 C 6.5 16.5 8 17.5 10 17.5 L 18 17.5" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 
   return (
     <div className="tables-overview-container">
-      {/* Page Header */}
-      <div className="mobile-table-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1.25rem' }}>
+      {/* Page Header with Dynamic User Avatar */}
+      <div className="mobile-table-header">
         <div>
-          <h1 style={{ fontSize: '22px', fontWeight: 700, color: '#111111', margin: 0, lineHeight: '27px' }}>Table Overview</h1>
-          <p style={{ fontSize: '14px', color: '#333333', fontWeight: 400, marginTop: '4px', margin: 0 }}>Tap a table to view or start an order</p>
+          <h1 className="table-title">Table Overview</h1>
+          <p className="table-subtitle">Tap a table to view or start an order</p>
         </div>
-        <div className="desktop-only-actions" style={{ display: 'flex', gap: '0.75rem' }}>
-          <button className="btn btn-secondary" style={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.1)', color: '#171717', borderRadius: '14px' }} onClick={loadTables}>
-            <RefreshCw size={16} /> Refresh
-          </button>
-          <button className="btn btn-primary" style={{ background: '#E87500', borderColor: '#E87500', color: '#ffffff', borderRadius: '14px', fontWeight: 700 }} onClick={() => setShowAddModal(true)}>
-            <Plus size={16} /> Add Table
-          </button>
+        
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          {/* Mobile Profile Avatar Trigger */}
+          <div
+            onClick={openProfile}
+            style={{ cursor: 'pointer' }}
+            title="Open Profile"
+          >
+            {user?.avatar ? (
+              <img src={user.avatar} alt="User Avatar" style={{ width: '42px', height: '42px', borderRadius: '50%', objectFit: 'cover', border: '1.5px solid #ffffff', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
+            ) : (
+              <div style={{ width: '42px', height: '42px', borderRadius: '50%', backgroundColor: '#F5F1EF', border: '1.5px solid #ffffff', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '1rem', color: '#350505' }}>
+                {user?.username ? user.username[0].toUpperCase() : 'A'}
+              </div>
+            )}
+          </div>
+
+          <div className="desktop-only-actions" style={{ display: 'flex', gap: '0.75rem' }}>
+            <button className="btn btn-secondary" style={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.1)', color: '#171717', borderRadius: '14px' }} onClick={loadTables}>
+              <RefreshCw size={16} /> Refresh
+            </button>
+            <button className="btn btn-primary" style={{ background: '#350505', borderColor: '#350505', color: '#ffffff', borderRadius: '14px', fontWeight: 700 }} onClick={() => setShowAddModal(true)}>
+              <Plus size={16} /> Add Table
+            </button>
+          </div>
         </div>
       </div>
 
@@ -208,7 +233,7 @@ export const TablesPage = () => {
       <div className="unified-stats-row">
         <div className="mobile-stat-card">
           <span className="stat-num-free">{freeCount}</span>
-          <span className="stat-label-text">FREE</span>
+          <span className="stat-label-text">AVAILABLE</span>
         </div>
 
         <div className="mobile-stat-card">
@@ -244,7 +269,7 @@ export const TablesPage = () => {
         </button>
       </div>
 
-      {/* Responsive Table Cards Grid (2 cols mobile, 3 cols tablet, 4 cols desktop) */}
+      {/* Table Cards Grid */}
       {loading ? (
         <div style={{ textAlign: 'center', padding: '4rem', color: '#786C65' }}>
           Loading dining floor tables...
@@ -258,7 +283,7 @@ export const TablesPage = () => {
           {sortedTables.map((table, index) => {
             const statusConfig = getStatusConfig(table.status);
             
-            // Location info matching Image 1: T1 -> Indoor, T2 -> Out door (or from DB)
+            // Location info matching reference image: T1 -> Indoor, T2 -> Out door (or from DB)
             const rawSec = (table.section || '').toLowerCase();
             let sectionText = null;
             if (rawSec.includes('out')) {
@@ -283,11 +308,17 @@ export const TablesPage = () => {
                     <div className="table-card-num" style={{ color: statusConfig.numColor }}>
                       {formatTableNumber(table.number)}
                     </div>
-                    <QrCode size={20} style={{ color: '#111111', opacity: 0.85, marginTop: '2px' }} />
                   </div>
 
                   <div className="table-card-seats">
-                    <ChairIcon />
+                    <img
+                      src="/people-icon.png"
+                      alt="Seats"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = '/Vector.png';
+                      }}
+                    />
                     <span>{table.capacity || 4} seats</span>
                   </div>
 
