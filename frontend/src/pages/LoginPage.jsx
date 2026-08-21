@@ -50,14 +50,14 @@ export const LoginPage = () => {
           display: flex;
           background-color: #ffffff;
           font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-          overflow: hidden;
+          overflow-x: hidden;
         }
 
         /* Desktop Split Layout (50% left, 50% right) */
         .brand-section {
           width: 50%;
           height: 100vh;
-          background-color: #B77D55;
+          background-color: #B77D56;
           display: flex;
           justify-content: center;
           align-items: center;
@@ -166,7 +166,7 @@ export const LoginPage = () => {
         }
 
         .underline-input:focus {
-          border-bottom-color: #B77D55;
+          border-bottom-color: #B77D56;
         }
 
         .password-wrapper {
@@ -191,7 +191,7 @@ export const LoginPage = () => {
         .login-btn {
           width: 100%;
           height: 52px;
-          background-color: #350707;
+          background-color: #350505;
           color: #ffffff;
           border: none;
           border-radius: 10px;
@@ -199,7 +199,7 @@ export const LoginPage = () => {
           font-weight: 700;
           cursor: pointer;
           margin-top: 1rem;
-          box-shadow: 0 8px 20px rgba(53, 7, 7, 0.35);
+          box-shadow: 0 8px 20px rgba(53, 5, 5, 0.35);
           transition: all 0.2s ease;
           display: flex;
           align-items: center;
@@ -208,7 +208,7 @@ export const LoginPage = () => {
 
         .login-btn:hover {
           transform: translateY(-1px);
-          box-shadow: 0 10px 24px rgba(53, 7, 7, 0.45);
+          box-shadow: 0 10px 24px rgba(53, 5, 5, 0.45);
         }
 
         .error-badge {
@@ -229,18 +229,35 @@ export const LoginPage = () => {
           .login-container {
             flex-direction: column;
             min-height: 100vh;
-            overflow-y: auto;
+            min-height: 100dvh;
+            width: 100%;
+            overflow-x: hidden;
+            background-color: #ffffff;
           }
 
           .brand-section {
             width: 100%;
-            height: 310px;
+            height: 44vh;
+            min-height: 290px;
+            max-height: 380px;
+            background-color: #B77D56;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            flex-shrink: 0;
           }
 
           .logo-box {
-            width: 110px;
-            height: 110px;
+            width: 105px;
+            height: 105px;
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            background-color: #000000;
             margin-top: -20px;
+            z-index: 2;
           }
 
           .desktop-divider {
@@ -250,34 +267,85 @@ export const LoginPage = () => {
           .mobile-wave {
             display: block;
             position: absolute;
-            bottom: 0;
+            bottom: -1px;
             left: 0;
             width: 100%;
-            height: 85px;
+            height: 95px;
             pointer-events: none;
+            z-index: 1;
           }
 
           .form-section {
             width: 100%;
             height: auto;
             flex: 1;
-            padding: 1rem 2rem 2.5rem 2rem;
+            padding: 1.25rem 1.75rem 2.5rem 1.75rem;
             align-items: flex-start;
+            background-color: #ffffff;
+            z-index: 2;
+          }
+
+          .form-content {
+            max-width: 100%;
           }
 
           .welcome-title {
-            font-size: 2.1rem;
+            font-size: clamp(1.85rem, 7.5vw, 2.05rem);
+            font-weight: 500;
+            color: #1a1715;
+            margin-bottom: 0.35rem;
+            letter-spacing: -0.01em;
           }
 
           .welcome-subtitle {
             font-size: 0.95rem;
+            color: #78716c;
             margin-bottom: 2rem;
+            line-height: 1.35;
+            font-weight: 400;
+          }
+
+          .login-form {
+            gap: 1.5rem;
+          }
+
+          .underline-group {
+            margin-bottom: 0.25rem;
+          }
+
+          .underline-label {
+            font-size: 0.95rem;
+            color: #78716c;
+            margin-bottom: 0.2rem;
+            font-weight: 400;
+          }
+
+          .underline-input {
+            border-bottom: 1px solid #71717a;
+            padding: 0.4rem 0;
+            font-size: 1rem;
+            color: #1c1917;
+          }
+
+          .eye-btn {
+            color: #71717a;
+            padding: 0.2rem;
+          }
+
+          .login-btn {
+            height: 46px;
+            background-color: #350505;
+            border-radius: 9999px;
+            font-size: 1rem;
+            font-weight: 700;
+            margin-top: 1.25rem;
+            box-shadow: 0 8px 18px rgba(53, 5, 5, 0.25);
           }
         }
       `}</style>
 
       <div className="login-container">
-        {/* Left Section (Brown #B77D55 on Desktop / Header on Mobile) */}
+        {/* Upper Section (Brown #B77D56) */}
         <div className="brand-section">
           <div className="logo-box">
             <img src="/logo.png" alt="T Clock Logo" className="logo-img" />
@@ -288,13 +356,16 @@ export const LoginPage = () => {
             <path d="M 0 0 C 110 250, 10 550, 140 800 L 140 0 Z" fill="#ffffff" />
           </svg>
 
-          {/* Mobile Bottom Curve Wave (Bottom of header panel on mobile) */}
+          {/* Mobile Organic Wave Transition (Bottom of brown section) */}
           <svg className="mobile-wave" viewBox="0 0 500 150" preserveAspectRatio="none">
-            <path d="M 0 45 C 110 135, 220 5, 500 115 L 500 150 L 0 150 Z" fill="#ffffff" />
+            <path
+              d="M 0 45 C 60 95, 120 115, 170 115 C 230 115, 280 50, 330 50 C 390 50, 440 115, 500 125 L 500 150 L 0 150 Z"
+              fill="#ffffff"
+            />
           </svg>
         </div>
 
-        {/* Right Section (White #ffffff Form on Desktop / Body on Mobile) */}
+        {/* Lower Section (White #ffffff Form) */}
         <div className="form-section">
           <div className="form-content">
             <h1 className="welcome-title">Welcome back</h1>
@@ -327,7 +398,7 @@ export const LoginPage = () => {
                   <input
                     type={showPassword ? 'text' : 'password'}
                     className="underline-input"
-                    style={{ paddingRight: '2rem' }}
+                    style={{ paddingRight: '2.5rem' }}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
@@ -354,3 +425,4 @@ export const LoginPage = () => {
     </>
   );
 };
+
