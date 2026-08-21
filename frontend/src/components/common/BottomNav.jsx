@@ -1,32 +1,40 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { ShoppingBag, Grid, Receipt, UtensilsCrossed } from 'lucide-react';
+import { ShoppingBag, Grid, Receipt, QrCode } from 'lucide-react';
 import { useOrder } from '../../context/OrderContext';
-import { useAuth } from '../../context/AuthContext';
 
 export const BottomNav = () => {
   const location = useLocation();
   const { cartItems } = useOrder();
-  const { user } = useAuth();
+  const currentPath = location.pathname;
 
   const totalCartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-  const isAdmin = user?.role === 'admin';
 
   return (
     <nav className="mobile-bottom-nav">
       <NavLink
         to="/tables"
-        className={({ isActive }) => `bottom-nav-item ${isActive ? 'active' : ''}`}
+        className={`bottom-nav-item ${currentPath === '/tables' ? 'active' : ''}`}
       >
-        <Grid size={20} />
+        <div className="bottom-nav-icon-wrapper">
+          <img
+            src="/tables-icon.png"
+            alt="Tables"
+            className="bottom-nav-icon-img"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = '/Dining table.png';
+            }}
+          />
+        </div>
         <span className="bottom-nav-label">Tables</span>
       </NavLink>
 
       <NavLink
         to="/pos"
-        className={({ isActive }) => `bottom-nav-item ${isActive || location.pathname === '/' ? 'active' : ''}`}
+        className={`bottom-nav-item ${currentPath === '/pos' || currentPath === '/' ? 'active' : ''}`}
       >
-        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div className="bottom-nav-icon-wrapper">
           <ShoppingBag size={20} />
           {totalCartCount > 0 && (
             <span className="cart-badge-count">{totalCartCount}</span>
@@ -37,23 +45,27 @@ export const BottomNav = () => {
 
       <NavLink
         to="/billing"
-        className={({ isActive }) => `bottom-nav-item ${isActive ? 'active' : ''}`}
+        className={`bottom-nav-item ${currentPath === '/billing' ? 'active' : ''}`}
       >
-        <Receipt size={20} />
+        <div className="bottom-nav-icon-wrapper">
+          <Receipt size={20} />
+        </div>
         <span className="bottom-nav-label">Billing</span>
       </NavLink>
 
-      {isAdmin && (
-        <NavLink
-          to="/menu"
-          className={({ isActive }) => `bottom-nav-item ${isActive ? 'active' : ''}`}
-        >
-          <UtensilsCrossed size={20} />
-          <span className="bottom-nav-label">Menu</span>
-        </NavLink>
-      )}
+      <NavLink
+        to="/menu"
+        className={`bottom-nav-item ${currentPath === '/menu' ? 'active' : ''}`}
+      >
+        <div className="bottom-nav-icon-wrapper">
+          <QrCode size={20} />
+        </div>
+        <span className="bottom-nav-label">QR Code</span>
+      </NavLink>
     </nav>
   );
 };
+
+
 
 

@@ -16,7 +16,7 @@ import { useAuth } from '../../context/AuthContext';
 
 export const MobileHeader = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const { user, logout } = useAuth();
+  const { user, logout, openProfile } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -205,7 +205,13 @@ export const MobileHeader = () => {
             </ul>
 
             <div style={{ paddingTop: '1rem', borderTop: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+              <div
+                style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer' }}
+                onClick={() => {
+                  setDrawerOpen(false);
+                  openProfile();
+                }}
+              >
                 <div className="avatar-circle">
                   {user?.username ? user.username[0].toUpperCase() : 'U'}
                 </div>

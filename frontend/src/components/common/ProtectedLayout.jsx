@@ -3,6 +3,7 @@ import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { Sidebar } from './Sidebar';
 import { BottomNav } from './BottomNav';
+import { ProfileSheet } from './ProfileSheet';
 
 export const ProtectedLayout = () => {
   const { user, loading } = useAuth();
@@ -14,7 +15,7 @@ export const ProtectedLayout = () => {
         display: 'flex', 
         alignItems: 'center', 
         justifyContent: 'center', 
-        backgroundColor: '#FCE8D5',
+        backgroundColor: '#FCE4D0',
         color: '#350707'
       }}>
         <div style={{ textAlign: 'center' }}>
@@ -39,8 +40,10 @@ export const ProtectedLayout = () => {
         </main>
       </div>
       <BottomNav />
+      <ProfileSheet />
     </div>
   );
 };
+
 
 

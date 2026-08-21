@@ -9,6 +9,10 @@ export const AuthProvider = ({ children }) => {
     return saved ? JSON.parse(saved) : null;
   });
   const [loading, setLoading] = useState(true);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+
+  const openProfile = () => setIsProfileOpen(true);
+  const closeProfile = () => setIsProfileOpen(false);
 
   const fetchProfile = async () => {
     try {
@@ -49,13 +53,15 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('user_info');
     setUser(null);
+    setIsProfileOpen(false);
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, fetchProfile }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, fetchProfile, isProfileOpen, openProfile, closeProfile }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
 export const useAuth = () => useContext(AuthContext);
+
