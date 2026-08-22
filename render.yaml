@@ -12,7 +12,7 @@ services:
       - key: RENDER
         value: "true"
       - key: DATABASE_URL
-        value: postgresql://postgres.cryiqjwpzuvgxipmzymk:Rajeeshmitha12@aws-0-ap-southeast-2.pooler.supabase.com:6543/postgres
+        value: postgresql://neondb_owner:npg_6UPocWs9DjSY@ep-hidden-recipe-azlq7kgu-pooler.c-3.ap-southeast-1.aws.neon.tech/neondb?sslmode=require
       - key: SECRET_KEY
         generateValue: true
       - key: PYTHON_VERSION
