@@ -4,6 +4,7 @@ services:
   - type: web
     name: restaurant-backend
     runtime: python
+    region: singapore
     buildCommand: ./build.sh
     startCommand: gunicorn tclock.wsgi:application
     rootDir: backend
@@ -29,4 +30,4 @@ services:
         destination: /index.html
     envVars:
       - key: VITE_API_URL
-        value: https://restaurant-backend.onrender.com/api
+        value: https://t-clock-application.onrender.com/api
