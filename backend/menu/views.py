@@ -28,7 +28,7 @@ class CategoryListCreateView(generics.ListCreateAPIView):
 class CategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = [IsAdmin]
+    permission_classes = [IsAuthenticated]
 
 
 class MenuItemListCreateView(generics.ListCreateAPIView):
@@ -48,21 +48,26 @@ class MenuItemListCreateView(generics.ListCreateAPIView):
     def get_permissions(self):
         if self.request.method == 'GET':
             return [AllowAny()]
-        return [IsAdmin()]
+        return [IsAuthenticated()]
 
 
 class MenuItemDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = MenuItem.objects.all()
     serializer_class = MenuItemSerializer
     parser_classes = [MultiPartParser, FormParser, JSONParser]
-    permission_classes = [IsAdmin]
+    permission_classes = [IsAuthenticated]
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class ToggleItemAvailabilityView(generics.UpdateAPIView):
     """PATCH /api/menu/items/<id>/toggle/ — quickly toggle availability."""
     queryset = MenuItem.objects.all()
     serializer_class = MenuItemSerializer
-    permission_classes = [IsAdmin]
+    permission_classes = [IsAuthenticated]
 
     def patch(self, request, *args, **kwargs):
         item = self.get_object()

@@ -59,7 +59,7 @@ class OrderItem(models.Model):
     ]
 
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
-    menu_item = models.ForeignKey('menu.MenuItem', on_delete=models.PROTECT)
+    menu_item = models.ForeignKey('menu.MenuItem', on_delete=models.SET_NULL, null=True, blank=True)
     quantity = models.IntegerField(default=1)
     unit_price = models.DecimalField(max_digits=8, decimal_places=2)
     portion = models.CharField(max_length=20, default='Full', blank=True)

@@ -272,13 +272,9 @@ export const TablesPage = () => {
         guestName.trim(),
         arrivalTime.trim()
       );
-      setResSuccess('Reservation Confirmed ✓');
       await loadTables();
       setSelectedReservedTable(null);
       setSelectedAvailableTable(null);
-      setTimeout(() => {
-        setResSuccess(null);
-      }, 3000);
     } catch (err) {
       const msg = err.response?.data?.error || err.message || 'Failed to create reservation';
       setResError(msg);
