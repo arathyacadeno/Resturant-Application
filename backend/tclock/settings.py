@@ -73,15 +73,20 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'tclock.wsgi.application'
 
-try:
-    import dj_database_url
+import os
+import dj_database_url
+
+# Use Supabase PostgreSQL in Production (Render environment)
+if os.environ.get('RENDER'):
     DATABASES = {
         'default': dj_database_url.config(
-            default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+            default=os.environ.get('DATABASE_URL'),
             conn_max_age=600,
+            ssl_require=True
         )
     }
-except ImportError:
+else:
+    # Use SQLite for Local Development
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',

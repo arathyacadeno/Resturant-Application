@@ -138,6 +138,8 @@ export const TablesPage = () => {
   // Selected Table Bottom Sheet State
   const [selectedOccupiedTable, setSelectedOccupiedTable] = useState(null);
   const [selectedReservedTable, setSelectedReservedTable] = useState(null);
+  const [selectedAvailableTable, setSelectedAvailableTable] = useState(null);
+  const [showReserveForm, setShowReserveForm] = useState(false);
 
   // Reservation Form State
   const [guestName, setGuestName] = useState('');
@@ -155,6 +157,15 @@ export const TablesPage = () => {
       setShowCancelConfirm(false);
     }
   }, [selectedReservedTable]);
+
+  useEffect(() => {
+    if (selectedAvailableTable) {
+      setGuestName('');
+      setArrivalTime('');
+      setResError(null);
+      setShowReserveForm(false);
+    }
+  }, [selectedAvailableTable]);
 
   const formatArrivalTime = (timeStr) => {
     if (!timeStr) return '';
@@ -181,8 +192,12 @@ export const TablesPage = () => {
         setSelectedOccupiedTable(table);
         return;
       }
-      if (['reserved', 'available'].includes(status)) {
+      if (status === 'reserved' || table.active_reservation) {
         setSelectedReservedTable(table);
+        return;
+      }
+      if (status === 'available') {
+        setSelectedAvailableTable(table);
         return;
       }
     }
@@ -237,7 +252,10 @@ export const TablesPage = () => {
     }
   };
 
-  const handleConfirmReservation = async () => {
+  const handleConfirmReservation = async (targetTable = null) => {
+    const tableToReserve = targetTable || selectedReservedTable || selectedAvailableTable;
+    if (!tableToReserve) return;
+
     if (!guestName.trim()) {
       setResError('Guest name is required');
       return;
@@ -251,13 +269,14 @@ export const TablesPage = () => {
     setResError(null);
     try {
       await tablesApi.createReservation(
-        selectedReservedTable.id,
+        tableToReserve.id,
         guestName.trim(),
         arrivalTime.trim()
       );
       setResSuccess('Reservation Confirmed ✓');
       await loadTables();
       setSelectedReservedTable(null);
+      setSelectedAvailableTable(null);
       setTimeout(() => {
         setResSuccess(null);
       }, 3000);
@@ -587,18 +606,19 @@ export const TablesPage = () => {
         </div>
       )}
 
-      {/* Mobile Reserved / Available Table Bottom Sheet Modal */}
+      {/* Mobile Reserved Table Details Bottom Sheet (RESERVED STATE ONLY) */}
       {selectedReservedTable && (
-        <div className="table-modal-overlay" onClick={() => setSelectedReservedTable(null)}>
-          <div className="reserved-table-sheet" onClick={(e) => e.stopPropagation()}>
-            <div className="reserved-sheet-header">
-              <span className="reserved-sheet-location">
+        <div className="reserved-overlay" onClick={() => setSelectedReservedTable(null)}>
+          <div className="reserved-details-sheet" onClick={(e) => e.stopPropagation()}>
+            <div className="reserved-sheet-header" style={{ marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span className="reserved-title" style={{ fontSize: '11px', color: '#85807D', fontWeight: 400 }}>
                 {(selectedReservedTable.section || '').toLowerCase().includes('out')
                   ? 'Outdoor Seating'
                   : 'Indoor Seating'}
               </span>
               <button
-                className="reserved-sheet-close"
+                className="reserved-close"
+                style={{ width: '22px', height: '22px', borderRadius: '50%', background: '#FFFFFF', border: '1px solid #E5E0DC', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#77716D', fontSize: '12px', cursor: 'pointer' }}
                 onClick={() => setSelectedReservedTable(null)}
                 aria-label="Close"
               >
@@ -606,83 +626,163 @@ export const TablesPage = () => {
               </button>
             </div>
 
-            {/* Check if table is ALREADY reserved with saved reservation data */}
-            {(selectedReservedTable.status || '').toLowerCase() === 'reserved' ||
-            selectedReservedTable.active_reservation ? (
-              <>
-                {/* Reserved Details Body */}
-                <div className="reserved-sheet-body">
-                  <div className="reserved-sheet-avatar">
-                    <img
-                      src="/tables-icon.png"
-                      alt="Table Icon"
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = '/Dining table.png';
-                      }}
-                    />
-                  </div>
-                  <div className="reserved-sheet-info">
-                    <h3 className="reserved-sheet-title">
-                      Table {selectedReservedTable.number}
-                    </h3>
-                    <div className="reserved-sheet-status">
-                      <span className="reserved-dot"></span>
-                      <span className="reserved-by-text">
-                        Reserved by{' '}
-                        {selectedReservedTable.active_reservation?.guest_name || guestName || 'Guest'}{' '}
-                        ·{' '}
-                        {formatArrivalTime(
-                          selectedReservedTable.active_reservation?.arrival_time || arrivalTime
-                        )}
-                      </span>
-                    </div>
-                  </div>
+            {/* Table Information Section */}
+            <div className="reserved-sheet-body" style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '20px' }}>
+              <div className="table-icon-wrapper" style={{ width: '46px', height: '46px', borderRadius: '50%', background: '#F8F4F1', border: '1px solid #E5D9D2', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <img
+                  src="/tables-icon.png"
+                  alt="Table Icon"
+                  style={{ width: '24px', height: '24px', objectFit: 'contain' }}
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = '/Dining table.png';
+                  }}
+                />
+              </div>
+              <div className="reserved-sheet-info" style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#171717', margin: 0, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                  Table {String(selectedReservedTable.number).replace(/^T/i, '')}
+                </h3>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span className="reserved-dot" style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#7A9FD3', display: 'inline-block' }}></span>
+                  <span className="reserved-info" style={{ color: '#85807D', fontSize: '9px', fontWeight: 400 }}>
+                    Reserved by{' '}
+                    {selectedReservedTable.active_reservation?.guest_name || guestName || 'Guest'}{' '}
+                    ·{' '}
+                    {formatArrivalTime(
+                      selectedReservedTable.active_reservation?.arrival_time || arrivalTime || '7:30 PM'
+                    )}
+                  </span>
                 </div>
+              </div>
+            </div>
 
-                {/* Reserved Details Actions */}
-                <div className="reserved-sheet-actions" style={{ marginTop: '24px' }}>
-                  <button
-                    className="start-order-btn"
-                    onClick={() => handleStartOrderFromReserved(selectedReservedTable)}
-                  >
-                    Start Order
-                  </button>
-                  <button
-                    className="cancel-reservation-btn"
-                    onClick={() => setShowCancelConfirm(true)}
-                  >
-                    Cancel Reservation
-                  </button>
+            {/* Action Buttons: Start Order & Cancel Reservation */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%', marginTop: '8px' }}>
+              <button
+                className="start-order-btn"
+                style={{
+                  width: '100%',
+                  height: '28px',
+                  background: '#350505',
+                  color: '#FFFFFF',
+                  border: 'none',
+                  borderRadius: '18px',
+                  fontSize: '10px',
+                  fontWeight: 600,
+                  cursor: 'pointer'
+                }}
+                onClick={() => handleStartOrderFromReserved(selectedReservedTable)}
+              >
+                Start Order
+              </button>
+              <button
+                className="cancel-reservation-btn"
+                style={{
+                  width: '100%',
+                  height: '28px',
+                  background: '#FFFFFF',
+                  color: '#350505',
+                  border: '1px solid #350505',
+                  borderRadius: '18px',
+                  fontSize: '10px',
+                  fontWeight: 600,
+                  cursor: 'pointer'
+                }}
+                onClick={() => setShowCancelConfirm(true)}
+              >
+                Cancel Reservation
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Mobile Available Table Bottom Sheet Modal (AVAILABLE STATE ONLY) */}
+      {selectedAvailableTable && (
+        <div className="table-modal-overlay" onClick={() => setSelectedAvailableTable(null)}>
+          <div className="reserved-table-sheet" onClick={(e) => e.stopPropagation()}>
+            <div className="reserved-sheet-header">
+              <span className="reserved-sheet-location">
+                {(selectedAvailableTable.section || '').toLowerCase().includes('out')
+                  ? 'Outdoor Seating'
+                  : 'Indoor Seating'}
+              </span>
+              <button
+                className="reserved-sheet-close"
+                onClick={() => setSelectedAvailableTable(null)}
+                aria-label="Close"
+              >
+                &times;
+              </button>
+            </div>
+
+            <div className="reserved-sheet-body">
+              <div className="reserved-sheet-avatar">
+                <img
+                  src="/tables-icon.png"
+                  alt="Table Icon"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = '/Dining table.png';
+                  }}
+                />
+              </div>
+              <div className="reserved-sheet-info">
+                <h3 className="reserved-sheet-title">
+                  Table {selectedAvailableTable.number}
+                </h3>
+                <div className="reserved-sheet-status">
+                  <span className="status-dot-green"></span>
+                  <span>Ready for service</span>
                 </div>
-              </>
+              </div>
+            </div>
+
+            {!showReserveForm ? (
+              <div className="reserved-sheet-actions" style={{ marginTop: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <button
+                  className="start-order-btn"
+                  style={{
+                    width: '100%',
+                    height: '46px',
+                    borderRadius: '24px',
+                    background: '#350505',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    fontSize: '15px',
+                    fontWeight: 700,
+                    cursor: 'pointer'
+                  }}
+                  onClick={() => {
+                    setSelectedTable(selectedAvailableTable);
+                    setSelectedAvailableTable(null);
+                    navigate('/pos');
+                  }}
+                >
+                  Start Order
+                </button>
+                <button
+                  className="reserve-this-table-btn"
+                  style={{
+                    width: '100%',
+                    height: '46px',
+                    borderRadius: '24px',
+                    background: '#FFFFFF',
+                    color: '#350505',
+                    border: '1.5px solid #350505',
+                    fontSize: '15px',
+                    fontWeight: 700,
+                    cursor: 'pointer'
+                  }}
+                  onClick={() => setShowReserveForm(true)}
+                >
+                  Reserve this Table
+                </button>
+              </div>
             ) : (
               <>
-                {/* Initial Reservation Form for Available Tables */}
-                <div className="reserved-sheet-body">
-                  <div className="reserved-sheet-avatar">
-                    <img
-                      src="/tables-icon.png"
-                      alt="Table Icon"
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = '/Dining table.png';
-                      }}
-                    />
-                  </div>
-                  <div className="reserved-sheet-info">
-                    <h3 className="reserved-sheet-title">
-                      Table {selectedReservedTable.number}
-                    </h3>
-                    <div className="reserved-sheet-status">
-                      <span className="status-dot-green"></span>
-                      <span>Ready for service</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Reservation Form */}
-                <div className="reservation-form-group">
+                <div className="reservation-form-group" style={{ marginTop: '14px' }}>
                   <label className="reservation-label">Guest Name</label>
                   <input
                     type="text"
@@ -708,7 +808,18 @@ export const TablesPage = () => {
                 <div className="reserved-sheet-actions" style={{ marginTop: '18px' }}>
                   <button
                     className="confirm-reservation-btn"
-                    onClick={handleConfirmReservation}
+                    style={{
+                      width: '100%',
+                      height: '44px',
+                      borderRadius: '24px',
+                      background: '#350505',
+                      color: '#FFFFFF',
+                      border: 'none',
+                      fontSize: '14px',
+                      fontWeight: 600,
+                      cursor: 'pointer'
+                    }}
+                    onClick={() => handleConfirmReservation(selectedAvailableTable)}
                     disabled={isSubmittingRes}
                   >
                     {isSubmittingRes ? 'Confirming...' : 'Confirm Reservation'}

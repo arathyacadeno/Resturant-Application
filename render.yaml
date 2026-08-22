@@ -1,0 +1,32 @@
+# Render Blueprint configuration for T-Clock Restaurant POS
+services:
+  # 1. Django Backend Web Service
+  - type: web
+    name: restaurant-backend
+    runtime: python
+    buildCommand: ./build.sh
+    startCommand: gunicorn tclock.wsgi:application
+    rootDir: backend
+    envVars:
+      - key: RENDER
+        value: "true"
+      - key: DATABASE_URL
+        value: postgresql://postgres.cryiqjwpzuvgxipmzymk:Rajeeshmitha12@aws-0-ap-southeast-2.pooler.supabase.com:6543/postgres
+      - key: SECRET_KEY
+        generateValue: true
+      - key: PYTHON_VERSION
+        value: 3.10.12
+
+  # 2. React Frontend Static Site
+  - type: static
+    name: restaurant-frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    rootDir: frontend
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        value: https://restaurant-backend.onrender.com/api
