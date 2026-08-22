@@ -53,17 +53,33 @@ export const BottomNav = () => {
         className={`bottom-nav-item ${currentPath === '/billing' ? 'active' : ''}`}
       >
         <div className="bottom-nav-icon-wrapper">
-          <Receipt size={20} />
+          <img
+            src="/Bill.png"
+            alt="Billing"
+            className="bottom-nav-icon-img"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = '/tables-icon.png';
+            }}
+          />
         </div>
         <span className="bottom-nav-label">Billing</span>
       </NavLink>
 
       <NavLink
-        to="/menu"
-        className={`bottom-nav-item ${currentPath === '/menu' ? 'active' : ''}`}
+        to="/qr"
+        className={`bottom-nav-item ${currentPath === '/qr' ? 'active' : ''}`}
       >
         <div className="bottom-nav-icon-wrapper">
-          <QrCode size={20} />
+          <img
+            src="/qr.png"
+            alt="QR Code"
+            className="bottom-nav-icon-img"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = '/tables-icon.png';
+            }}
+          />
         </div>
         <span className="bottom-nav-label">QR Code</span>
       </NavLink>

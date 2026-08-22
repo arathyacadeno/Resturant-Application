@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { billingApi } from '../api/billingApi';
 import { ordersApi } from '../api/ordersApi';
 import { authApi } from '../api/authApi';
-import { Receipt, Printer, Share2, Plus, RefreshCw, CheckCircle, CreditCard } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { Receipt, Printer, Share2, Plus, RefreshCw, CheckCircle, CreditCard, XCircle } from 'lucide-react';
 
 export const BillingPage = () => {
+  const { user, openProfile } = useAuth();
   const [bills, setBills] = useState([]);
   const [activeOrders, setActiveOrders] = useState([]);
   const [settings, setSettings] = useState(null);
@@ -20,6 +22,42 @@ export const BillingPage = () => {
   const [taxPercent, setTaxPercent] = useState(5); // default 5% GST
   const [paymentMode, setPaymentMode] = useState('cash');
 
+  // Mobile View Bill Bottom Sheet state
+  const [selectedBillOrder, setSelectedBillOrder] = useState(null);
+  const [isIncludeGst, setIsIncludeGst] = useState(true);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('cash');
+  const [settlingBill, setSettlingBill] = useState(false);
+  const [settleSuccessToast, setSettleSuccessToast] = useState(false);
+
+  const handleOpenViewBillSheet = (order) => {
+    setSelectedBillOrder(order);
+    setIsIncludeGst(true);
+    setSelectedPaymentMethod('cash');
+  };
+
+  const handleSettleBill = async () => {
+    if (!selectedBillOrder) return;
+    setSettlingBill(true);
+    try {
+      await billingApi.generateBill({
+        order_id: selectedBillOrder.id,
+        include_gst: isIncludeGst,
+        tax_percent: isIncludeGst ? 5 : 0,
+        discount_amount: 0,
+        payment_method: selectedPaymentMethod,
+      });
+
+      setSelectedBillOrder(null);
+      setSettleSuccessToast(true);
+      setTimeout(() => setSettleSuccessToast(false), 3000);
+      loadData();
+    } catch (err) {
+      alert(err.response?.data?.error || err.response?.data?.detail || 'Failed to settle bill');
+    } finally {
+      setSettlingBill(false);
+    }
+  };
+
   const loadData = async () => {
     setLoading(true);
     try {
@@ -34,9 +72,9 @@ export const BillingPage = () => {
 
       const allOrders = ordersRes.results || ordersRes;
       if (Array.isArray(allOrders)) {
-        // Filter active unbilled orders (e.g. ready, served, preparing, confirmed, pending)
+        // Filter active unbilled orders with items
         const unbilled = allOrders.filter(
-          (o) => o.status !== 'billed' && o.status !== 'cancelled'
+          (o) => o.status !== 'billed' && o.status !== 'cancelled' && Array.isArray(o.items) && o.items.length > 0
         );
         setActiveOrders(unbilled);
       } else {
@@ -58,6 +96,24 @@ export const BillingPage = () => {
     const interval = setInterval(loadData, 6000);
     return () => clearInterval(interval);
   }, []);
+
+  const handleMarkReady = async (orderId) => {
+    try {
+      await ordersApi.updateOrderStatus(orderId, 'ready');
+      loadData();
+    } catch (err) {
+      console.error('Failed to mark order as ready:', err);
+    }
+  };
+
+  const handleMarkServed = async (orderId) => {
+    try {
+      await ordersApi.updateOrderStatus(orderId, 'served');
+      loadData();
+    } catch (err) {
+      console.error('Failed to mark order as served:', err);
+    }
+  };
 
   const handleOpenGenerateForOrder = (orderId) => {
     setSelectedOrderId(String(orderId));
@@ -109,172 +165,289 @@ export const BillingPage = () => {
   };
 
   return (
-    <div>
-      <div className="page-header">
-        <div className="page-title">
-          <h1>Billing & Invoicing</h1>
-          <p>Generate customer invoices, record payments, and print receipts</p>
-        </div>
-        <div style={{ display: 'flex', gap: '0.75rem' }}>
-          <button className="btn btn-secondary" onClick={loadData}>
-            <RefreshCw size={16} /> Refresh
-          </button>
-          <button className="btn btn-primary" onClick={() => setShowGenerateModal(true)}>
-            <Plus size={16} /> Generate New Bill
-          </button>
-        </div>
-      </div>
-
-      {/* ==================== ACTIVE UNBILLED ORDERS SECTION ==================== */}
-      <div style={{ marginBottom: '2rem' }}>
-        <h2 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '0.85rem', color: '#171717', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <CreditCard size={20} color="#d97706" />
-          <span>Active Orders Pending Payment ({activeOrders.length})</span>
-        </h2>
-
-        {activeOrders.length === 0 ? (
-          <div className="glass-card" style={{ textAlign: 'center', padding: '2rem 1rem', color: 'var(--text-muted)' }}>
-            No pending orders waiting for payment. Incoming orders ready from kitchen will appear here automatically.
+    <div className="billing-page-wrapper">
+      {/* ==================== MOBILE BILLING VIEW ==================== */}
+      <div className="mobile-billing-view">
+        {/* Top Header Bar */}
+        <div className="billing-header">
+          <div className="billing-header-content">
+            <h1 className="billing-title">Billing Counter</h1>
+            <p className="billing-subtitle">
+              {activeOrders.length} {activeOrders.length === 1 ? 'order' : 'orders'} · track kitchen to payment
+            </p>
           </div>
-        ) : (
-          <div className="grid-3" style={{ gap: '1rem' }}>
-            {activeOrders.map((ord) => (
-              <div
-                key={ord.id}
-                className="glass-card"
-                style={{
-                  borderLeft: ord.status === 'ready' ? '4px solid var(--status-success)' : '4px solid var(--accent-amber)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                  padding: '1.15rem'
-                }}
-              >
-                <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
-                    <div>
-                      <h3 style={{ fontSize: '1.15rem', margin: 0 }}>Order #{ord.id}</h3>
-                      <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--accent-amber)' }}>
-                        {ord.table ? `Table ${ord.table}` : (ord.order_type || 'Dine-In').toUpperCase()}
-                      </span>
-                    </div>
-                    <span className={`badge ${ord.status === 'ready' ? 'badge-green' : 'badge-amber'}`} style={{ textTransform: 'capitalize' }}>
-                      {ord.status}
+          <div
+            className="billing-header-avatar-wrapper"
+            onClick={openProfile}
+            title="User Profile"
+          >
+            {user?.avatar || user?.avatar_url ? (
+              <img
+                src={user.avatar || user.avatar_url}
+                alt="Profile"
+                className="billing-header-avatar-img"
+              />
+            ) : (
+              <div className="billing-avatar-initial">
+                {user?.username ? user.username.charAt(0).toUpperCase() : 'A'}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Mobile Billing Cards List */}
+        <div className="mobile-billing-list">
+          {loading && activeOrders.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '3rem 0', color: '#756B66', fontSize: '14px' }}>
+              Loading billing counter orders...
+            </div>
+          ) : activeOrders.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '3rem 0', color: '#756B66', fontSize: '14px', background: '#FFFFFF', borderRadius: '18px' }}>
+              No active billing orders at the moment.
+            </div>
+          ) : (
+            activeOrders.map((ord) => {
+              const statusKey = (ord.status || '').toLowerCase();
+              const isReady = statusKey === 'ready';
+              const isServed = statusKey === 'served';
+              const itemCount = ord.items ? ord.items.length : 0;
+              const totalAmt = parseFloat(ord.total_amount || ord.total || ord.subtotal || 0);
+
+              return (
+                <div key={ord.id} className="mobile-billing-card">
+                  {/* Card Header Row */}
+                  <div className="mobile-card-top-row">
+                    <span className="mobile-card-table-name">
+                      {ord.table_number || ord.table ? `Table ${ord.table_number || ord.table}` : (ord.order_type || 'Takeaway')}
+                    </span>
+                    <span className="mobile-card-bill-amount">
+                      ₹{totalAmt.toFixed(2)}
                     </span>
                   </div>
 
-                  {ord.customer_name && (
-                    <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>
-                      Customer: <strong>{ord.customer_name}</strong>
-                    </div>
-                  )}
+                  {/* Card Item Count Row */}
+                  <div className="mobile-card-item-count">
+                    {itemCount} {itemCount === 1 ? 'item' : 'items'}
+                  </div>
 
-                  {/* Order items snippet */}
-                  <div style={{ fontSize: '0.82rem', color: '#475569', marginBottom: '0.75rem', background: '#f8fafc', padding: '0.5rem 0.75rem', borderRadius: '10px' }}>
-                    {ord.items && ord.items.length > 0 ? (
-                      ord.items.map((item, i) => (
-                        <div key={i} style={{ display: 'flex', justifyContent: 'space-between' }}>
-                          <span>{item.quantity}x {item.item_name || item.menu_item_name}</span>
-                          <span>₹{(item.unit_price * item.quantity).toFixed(2)}</span>
-                        </div>
-                      ))
+                  {/* Card Badges Row */}
+                  <div className="mobile-card-badges-row">
+                    {isReady ? (
+                      <span className="badge-ready-serve">READY TO SERVE</span>
+                    ) : isServed ? (
+                      <span className="badge-served-order">SERVED</span>
                     ) : (
-                      <span>Items summary in ticket</span>
+                      <span className="badge-kitchen-order">🔥 ORDER SENT TO KITCHEN</span>
+                    )}
+
+                    {ord.is_paid ? (
+                      <span className="badge-payment-paid">PAID</span>
+                    ) : (
+                      <span className="badge-payment-unpaid">⏳ UNPAID</span>
+                    )}
+                  </div>
+
+                  {/* Card Action Button */}
+                  <div className="mobile-card-action-row">
+                    {isReady ? (
+                      <button
+                        className="mobile-billing-btn"
+                        onClick={() => handleMarkServed(ord.id)}
+                      >
+                        Mark as served
+                      </button>
+                    ) : isServed ? (
+                      <button
+                        className="mobile-billing-btn"
+                        onClick={() => handleOpenViewBillSheet(ord)}
+                      >
+                        View Bill
+                      </button>
+                    ) : (
+                      <button
+                        className="mobile-billing-btn"
+                        onClick={() => handleMarkReady(ord.id)}
+                        title="Click when kitchen order is ready"
+                      >
+                        Preparing Your Order
+                      </button>
                     )}
                   </div>
                 </div>
+              );
+            })
+          )}
+        </div>
+      </div>
 
-                <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '0.75rem', marginTop: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      {/* ==================== DESKTOP BILLING VIEW ==================== */}
+      <div className="desktop-billing-view">
+        <div className="page-header">
+          <div className="page-title">
+            <h1>Billing & Invoicing</h1>
+            <p>Generate customer invoices, record payments, and print receipts</p>
+          </div>
+          <div style={{ display: 'flex', gap: '0.75rem' }}>
+            <button className="btn btn-secondary" onClick={loadData}>
+              <RefreshCw size={16} /> Refresh
+            </button>
+            <button className="btn btn-primary" onClick={() => setShowGenerateModal(true)}>
+              <Plus size={16} /> Generate New Bill
+            </button>
+          </div>
+        </div>
+
+        {/* ACTIVE UNBILLED ORDERS SECTION */}
+        <div style={{ marginBottom: '2rem' }}>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '0.85rem', color: '#171717', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <CreditCard size={20} color="#d97706" />
+            <span>Active Orders Pending Payment ({activeOrders.length})</span>
+          </h2>
+
+          {activeOrders.length === 0 ? (
+            <div className="glass-card" style={{ textAlign: 'center', padding: '2rem 1rem', color: 'var(--text-muted)' }}>
+              No pending orders waiting for payment. Incoming orders ready from kitchen will appear here automatically.
+            </div>
+          ) : (
+            <div className="grid-3" style={{ gap: '1rem' }}>
+              {activeOrders.map((ord) => (
+                <div
+                  key={ord.id}
+                  className="glass-card"
+                  style={{
+                    borderLeft: ord.status === 'ready' ? '4px solid var(--status-success)' : '4px solid var(--accent-amber)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    padding: '1.15rem'
+                  }}
+                >
                   <div>
-                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Subtotal</div>
-                    <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#350707' }}>
-                      ₹{parseFloat(ord.subtotal || 0).toFixed(2)}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
+                      <div>
+                        <h3 style={{ fontSize: '1.15rem', margin: 0 }}>Order #{ord.id}</h3>
+                        <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--accent-amber)' }}>
+                          {ord.table ? `Table ${ord.table}` : (ord.order_type || 'Dine-In').toUpperCase()}
+                        </span>
+                      </div>
+                      <span className={`badge ${ord.status === 'ready' ? 'badge-green' : 'badge-amber'}`} style={{ textTransform: 'capitalize' }}>
+                        {ord.status}
+                      </span>
+                    </div>
+
+                    {ord.customer_name && (
+                      <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>
+                        Customer: <strong>{ord.customer_name}</strong>
+                      </div>
+                    )}
+
+                    {/* Order items snippet */}
+                    <div style={{ fontSize: '0.82rem', color: '#475569', marginBottom: '0.75rem', background: '#f8fafc', padding: '0.5rem 0.75rem', borderRadius: '10px' }}>
+                      {ord.items && ord.items.length > 0 ? (
+                        ord.items.map((item, i) => (
+                          <div key={i} style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <span>{item.quantity}x {item.item_name || item.menu_item_name}</span>
+                            <span>₹{(item.unit_price * item.quantity).toFixed(2)}</span>
+                          </div>
+                        ))
+                      ) : (
+                        <span>Items summary in ticket</span>
+                      )}
                     </div>
                   </div>
 
-                  <button
-                    className="btn btn-primary btn-sm"
-                    style={{ backgroundColor: '#350707', border: 'none', borderRadius: '12px', padding: '0.5rem 1rem' }}
-                    onClick={() => handleOpenGenerateForOrder(ord.id)}
-                  >
-                    <Receipt size={14} /> Generate Bill
-                  </button>
+                  <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '0.75rem', marginTop: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div>
+                      <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Subtotal</div>
+                      <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#350707' }}>
+                        ₹{parseFloat(ord.subtotal || 0).toFixed(2)}
+                      </div>
+                    </div>
+
+                    <button
+                      className="btn btn-primary btn-sm"
+                      style={{ backgroundColor: '#350707', border: 'none', borderRadius: '12px', padding: '0.5rem 1rem' }}
+                      onClick={() => handleOpenGenerateForOrder(ord.id)}
+                    >
+                      <Receipt size={14} /> Generate Bill
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* PAID BILLS HISTORY TABLE */}
+        <h2 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '0.85rem', color: '#171717' }}>
+          Invoices & Payment History
+        </h2>
+
+        {loading && bills.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--text-muted)' }}>
+            Loading bills history...
+          </div>
+        ) : bills.length === 0 ? (
+          <div className="glass-card" style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--text-muted)' }}>
+            No generated invoices found yet. Click <strong>Generate Bill</strong> above to bill an order.
+          </div>
+        ) : (
+          <div className="glass-card">
+            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid var(--border-color)', color: 'var(--text-muted)', fontSize: '0.8rem', textTransform: 'uppercase' }}>
+                  <th style={{ padding: '0.75rem 1rem' }}>Bill #</th>
+                  <th style={{ padding: '0.75rem 1rem' }}>Order Ref</th>
+                  <th style={{ padding: '0.75rem 1rem' }}>Date & Time</th>
+                  <th style={{ padding: '0.75rem 1rem' }}>Payment</th>
+                  <th style={{ padding: '0.75rem 1rem' }}>Total Bill</th>
+                  <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {bills.map((bill) => (
+                  <tr key={bill.id} style={{ borderBottom: '1px solid var(--border-color)', fontSize: '0.9rem' }}>
+                    <td style={{ padding: '1rem', fontWeight: 700, color: 'var(--accent-amber)' }}>
+                      #{bill.bill_number || bill.id}
+                    </td>
+                    <td style={{ padding: '1rem' }}>
+                      Order #{bill.order}
+                    </td>
+                    <td style={{ padding: '1rem', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
+                      {new Date(bill.created_at).toLocaleString('en-IN')}
+                    </td>
+                    <td style={{ padding: '1rem' }}>
+                      <span className="badge badge-amber" style={{ textTransform: 'uppercase' }}>
+                        {bill.payment_method || 'CASH'}
+                      </span>
+                    </td>
+                    <td style={{ padding: '1rem', fontWeight: 800, fontSize: '1rem' }}>
+                      ₹{parseFloat(bill.total || bill.total_amount || 0).toFixed(2)}
+                    </td>
+                    <td style={{ padding: '1rem', textAlign: 'right' }}>
+                      <div style={{ display: 'inline-flex', gap: '0.5rem' }}>
+                        <button
+                          className="btn btn-secondary btn-sm"
+                          onClick={() => setShowReceiptModal(bill)}
+                        >
+                          <Printer size={14} /> Receipt
+                        </button>
+                        <button
+                          className="btn btn-outline btn-sm"
+                          onClick={() => handleShareWhatsApp(bill.id)}
+                          title="Share via WhatsApp"
+                        >
+                          <Share2 size={14} /> WhatsApp
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </div>
-
-      {/* ==================== PAID BILLS HISTORY TABLE ==================== */}
-      <h2 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '0.85rem', color: '#171717' }}>
-        Invoices & Payment History
-      </h2>
-
-      {loading && bills.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--text-muted)' }}>
-          Loading bills history...
-        </div>
-      ) : bills.length === 0 ? (
-        <div className="glass-card" style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--text-muted)' }}>
-          No generated invoices found yet. Click <strong>Generate Bill</strong> above to bill an order.
-        </div>
-      ) : (
-        <div className="glass-card">
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-            <thead>
-              <tr style={{ borderBottom: '1px solid var(--border-color)', color: 'var(--text-muted)', fontSize: '0.8rem', textTransform: 'uppercase' }}>
-                <th style={{ padding: '0.75rem 1rem' }}>Bill #</th>
-                <th style={{ padding: '0.75rem 1rem' }}>Order Ref</th>
-                <th style={{ padding: '0.75rem 1rem' }}>Date & Time</th>
-                <th style={{ padding: '0.75rem 1rem' }}>Payment</th>
-                <th style={{ padding: '0.75rem 1rem' }}>Total Bill</th>
-                <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {bills.map((bill) => (
-                <tr key={bill.id} style={{ borderBottom: '1px solid var(--border-color)', fontSize: '0.9rem' }}>
-                  <td style={{ padding: '1rem', fontWeight: 700, color: 'var(--accent-amber)' }}>
-                    #{bill.bill_number || bill.id}
-                  </td>
-                  <td style={{ padding: '1rem' }}>
-                    Order #{bill.order}
-                  </td>
-                  <td style={{ padding: '1rem', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
-                    {new Date(bill.created_at).toLocaleString('en-IN')}
-                  </td>
-                  <td style={{ padding: '1rem' }}>
-                    <span className="badge badge-amber" style={{ textTransform: 'uppercase' }}>
-                      {bill.payment_method || 'CASH'}
-                    </span>
-                  </td>
-                  <td style={{ padding: '1rem', fontWeight: 800, fontSize: '1rem' }}>
-                    ₹{parseFloat(bill.total || bill.total_amount || 0).toFixed(2)}
-                  </td>
-                  <td style={{ padding: '1rem', textAlign: 'right' }}>
-                    <div style={{ display: 'inline-flex', gap: '0.5rem' }}>
-                      <button
-                        className="btn btn-secondary btn-sm"
-                        onClick={() => setShowReceiptModal(bill)}
-                      >
-                        <Printer size={14} /> Receipt
-                      </button>
-                      <button
-                        className="btn btn-outline btn-sm"
-                        onClick={() => handleShareWhatsApp(bill.id)}
-                        title="Share via WhatsApp"
-                      >
-                        <Share2 size={14} /> WhatsApp
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
 
       {/* Modal: Generate Bill */}
       {showGenerateModal && (
@@ -416,6 +589,204 @@ export const BillingPage = () => {
               <Printer size={16} /> Print Receipt
             </button>
           </div>
+        </div>
+      )}
+
+      {/* ==================== VIEW BILL / SETTLEMENT BOTTOM SHEET ==================== */}
+      {selectedBillOrder && (
+        <div className="bill-sheet-overlay" onClick={() => setSelectedBillOrder(null)}>
+          <div className="bill-sheet" onClick={(e) => e.stopPropagation()}>
+            {/* Sheet Header */}
+            <div className="bill-sheet-header">
+              <div className="bill-sheet-title">
+                {selectedBillOrder.table_number || selectedBillOrder.table
+                  ? `Table ${selectedBillOrder.table_number || selectedBillOrder.table}`
+                  : (selectedBillOrder.order_type || 'Takeaway')}
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <img
+                  src="/print.png"
+                  alt="Print"
+                  style={{ width: '22px', height: '22px', cursor: 'pointer', objectFit: 'contain' }}
+                  onClick={() => window.print()}
+                  title="Print Bill"
+                />
+                <button
+                  className="bill-sheet-close-btn"
+                  onClick={() => setSelectedBillOrder(null)}
+                >
+                  ×
+                </button>
+              </div>
+            </div>
+
+            {/* Bill Preview White Card */}
+            <div className="bill-preview">
+              <div className="resto-header">
+                <h3 className="resto-name">T CLOCK RESTO CAFE</h3>
+                <p className="resto-tagline">Time for Tea, Time for Taste</p>
+                <p className="resto-address">
+                  Main Road, Calicut, Kerala<br />
+                  Ph: +91 98765 43210 · GSTIN: 32ABCDE1234F1Z5
+                </p>
+              </div>
+
+              <div className="bill-meta-grid">
+                <div className="bill-meta-row">
+                  <span>Date</span>
+                  <span className="bill-meta-val">
+                    {new Date(selectedBillOrder.created_at || Date.now()).toLocaleDateString('en-GB')}
+                  </span>
+                </div>
+                <div className="bill-meta-row">
+                  <span>Type / Table</span>
+                  <span className="bill-meta-val">
+                    {selectedBillOrder.table_number || selectedBillOrder.table
+                      ? `Table ${selectedBillOrder.table_number || selectedBillOrder.table}`
+                      : (selectedBillOrder.order_type || 'Takeaway')}
+                  </span>
+                </div>
+                <div className="bill-meta-row">
+                  <span>Order #</span>
+                  <span className="bill-meta-val">{selectedBillOrder.id}</span>
+                </div>
+              </div>
+
+              <div className="bill-divider" />
+
+              {/* Items List */}
+              <div className="bill-items-list">
+                {selectedBillOrder.items && selectedBillOrder.items.length > 0 ? (
+                  selectedBillOrder.items.map((it, idx) => (
+                    <div key={idx} className="bill-item-line">
+                      <span>
+                        {it.quantity}× {it.item_name || it.menu_item_name || it.name}
+                      </span>
+                      <span>₹{(parseFloat(it.unit_price || 0) * it.quantity).toFixed(2)}</span>
+                    </div>
+                  ))
+                ) : (
+                  <div className="bill-item-line">
+                    <span>Order Items Summary</span>
+                    <span>₹{parseFloat(selectedBillOrder.subtotal || selectedBillOrder.total_amount || 0).toFixed(2)}</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="bill-divider" />
+
+              {/* Calculations */}
+              <div className="bill-calc-row">
+                <span>Subtotal</span>
+                <span>
+                  ₹{parseFloat(selectedBillOrder.subtotal || selectedBillOrder.total_amount || 0).toFixed(2)}
+                </span>
+              </div>
+
+              {isIncludeGst && (
+                <div className="bill-calc-row">
+                  <span>GST (5%)</span>
+                  <span>
+                    ₹{((parseFloat(selectedBillOrder.subtotal || selectedBillOrder.total_amount || 0) * 5) / 100).toFixed(2)}
+                  </span>
+                </div>
+              )}
+
+              <div className="bill-divider-thick" />
+
+              <div className="bill-total-row">
+                <span>TOTAL</span>
+                <span>
+                  ₹{(
+                    parseFloat(selectedBillOrder.subtotal || selectedBillOrder.total_amount || 0) +
+                    (isIncludeGst
+                      ? (parseFloat(selectedBillOrder.subtotal || selectedBillOrder.total_amount || 0) * 5) / 100
+                      : 0)
+                  ).toFixed(2)}
+                </span>
+              </div>
+
+              <div className="bill-footer-msg">
+                Thank you for visiting T Clock<br />Resto Cafe! 🌿
+              </div>
+            </div>
+
+            {/* GST Toggle Selector Segment */}
+            <div className="gst-selector-container">
+              <button
+                className={`gst-option-btn ${isIncludeGst ? 'active' : ''}`}
+                onClick={() => setIsIncludeGst(true)}
+              >
+                {isIncludeGst ? (
+                  <CheckCircle size={15} color="#18834B" />
+                ) : (
+                  <XCircle size={15} color="#94A3B8" />
+                )}
+                <span>Include GST (5%)</span>
+              </button>
+
+              <button
+                className={`gst-option-btn ${!isIncludeGst ? 'active' : ''}`}
+                onClick={() => setIsIncludeGst(false)}
+              >
+                {!isIncludeGst ? (
+                  <CheckCircle size={15} color="#18834B" />
+                ) : (
+                  <XCircle size={15} color="#94A3B8" />
+                )}
+                <span>Exclude GST</span>
+              </button>
+            </div>
+
+            {/* Payment Method Selector */}
+            <div className="payment-method-container">
+              <div className="payment-section-label">SELECT PAYMENT METHOD</div>
+              <div className="payment-grid-2x2">
+                <button
+                  className={`payment-method-card ${selectedPaymentMethod === 'cash' ? 'active' : ''}`}
+                  onClick={() => setSelectedPaymentMethod('cash')}
+                >
+                  By Cash
+                </button>
+                <button
+                  className={`payment-method-card ${selectedPaymentMethod === 'gpay' ? 'active' : ''}`}
+                  onClick={() => setSelectedPaymentMethod('gpay')}
+                >
+                  Google pay
+                </button>
+                <button
+                  className={`payment-method-card ${selectedPaymentMethod === 'card' ? 'active' : ''}`}
+                  onClick={() => setSelectedPaymentMethod('card')}
+                >
+                  Credit / Debit
+                </button>
+                <button
+                  className={`payment-method-card ${selectedPaymentMethod === 'upi' ? 'active' : ''}`}
+                  onClick={() => setSelectedPaymentMethod('upi')}
+                >
+                  UPI (Pay via any App)
+                </button>
+              </div>
+            </div>
+
+            {/* Settle Bill Button */}
+            <div className="settle-bill-container">
+              <button
+                className="settle-bill-btn"
+                onClick={handleSettleBill}
+                disabled={settlingBill}
+              >
+                {settlingBill ? 'Settling...' : 'Settle Bill 💐'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Success Toast */}
+      {settleSuccessToast && (
+        <div className="settle-success-toast">
+          Bill Settled Successfully ✓
         </div>
       )}
     </div>

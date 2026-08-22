@@ -36,3 +36,30 @@ class DiningTable(models.Model):
     @property
     def qr_url(self):
         return f"/order/{self.qr_token}/"
+
+
+class Reservation(models.Model):
+    STATUS_CHOICES = [
+        ('awaiting_guest', 'Awaiting Guest'),
+        ('confirmed', 'Confirmed'),
+        ('arrived', 'Arrived'),
+        ('cancelled', 'Cancelled'),
+        ('completed', 'Completed'),
+    ]
+
+    table = models.ForeignKey(
+        DiningTable,
+        on_delete=models.CASCADE,
+        related_name="reservations"
+    )
+    guest_name = models.CharField(max_length=150)
+    arrival_time = models.CharField(max_length=50)
+    status = models.CharField(max_length=30, choices=STATUS_CHOICES, default='awaiting_guest')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Reservation for {self.guest_name} at Table {self.table.number} ({self.status})"

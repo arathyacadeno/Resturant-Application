@@ -11,6 +11,7 @@ import { TablesPage } from './pages/TablesPage';
 import { KitchenPage } from './pages/KitchenPage';
 import { MenuPage } from './pages/MenuPage';
 import { BillingPage } from './pages/BillingPage';
+import { QRCodePage } from './pages/QRCodePage';
 import { SettingsPage } from './pages/SettingsPage';
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
               <Route path="/kitchen" element={<KitchenPage />} />
               <Route path="/menu" element={<MenuPage />} />
               <Route path="/billing" element={<BillingPage />} />
+              <Route path="/qr" element={<QRCodePage />} />
               <Route path="/settings" element={<SettingsPage />} />
             </Route>
 

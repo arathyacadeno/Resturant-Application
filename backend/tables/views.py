@@ -67,3 +67,69 @@ class TableStatusUpdateView(APIView):
             return Response(TableSerializer(table).data)
         except DiningTable.DoesNotExist:
             return Response({'error': 'Not found'}, status=404)
+
+
+class ReservationCreateView(APIView):
+    """POST /api/tables/reservations/ — create a table reservation."""
+    permission_classes = [IsStaffOrAdmin]
+
+    def post(self, request):
+        table_id = request.data.get('table_id')
+        guest_name = request.data.get('guest_name')
+        arrival_time = request.data.get('arrival_time')
+
+        if not table_id:
+            return Response({'error': 'table_id is required'}, status=status.HTTP_400_BAD_REQUEST)
+        if not guest_name or not str(guest_name).strip():
+            return Response({'error': 'Guest name is required'}, status=status.HTTP_400_BAD_REQUEST)
+        if not arrival_time or not str(arrival_time).strip():
+            return Response({'error': 'Arrival time is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            table = DiningTable.objects.get(pk=table_id, is_active=True)
+        except DiningTable.DoesNotExist:
+            return Response({'error': 'Table not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Create reservation
+        from .models import Reservation
+        from .serializers import ReservationSerializer
+        reservation = Reservation.objects.create(
+            table=table,
+            guest_name=guest_name.strip(),
+            arrival_time=arrival_time.strip(),
+            status='awaiting_guest'
+        )
+
+        # Update table status to reserved
+        table.status = 'reserved'
+        table.save()
+
+        return Response({
+            'message': 'Reservation confirmed',
+            'reservation': ReservationSerializer(reservation).data,
+            'table': TableSerializer(table).data,
+        }, status=status.HTTP_201_CREATED)
+
+
+class ReservationCancelView(APIView):
+    """POST /api/tables/reservations/<id>/cancel/ — cancel a reservation and set table status back to available."""
+    permission_classes = [IsStaffOrAdmin]
+
+    def post(self, request, pk):
+        from .models import Reservation
+        try:
+            reservation = Reservation.objects.get(pk=pk)
+            reservation.status = 'cancelled'
+            reservation.save()
+
+            table = reservation.table
+            table.status = 'available'
+            table.save()
+
+            return Response({
+                'message': 'Reservation cancelled',
+                'table': TableSerializer(table).data,
+            })
+        except Reservation.DoesNotExist:
+            return Response({'error': 'Reservation not found'}, status=404)
+

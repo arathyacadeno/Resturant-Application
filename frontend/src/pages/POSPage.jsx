@@ -38,6 +38,7 @@ export const POSPage = () => {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [orderSuccess, setOrderSuccess] = useState(null);
+  const [showTablePicker, setShowTablePicker] = useState(false);
 
   const {
     cartItems,
@@ -107,14 +108,15 @@ export const POSPage = () => {
       fetchData();
       setTimeout(() => {
         setOrderSuccess(null);
-      }, 3000);
+        setShowMobileCart(false);
+      }, 2500);
     } catch (err) {
       const errorMsg =
         err.response?.data?.detail ||
         (typeof err.response?.data === 'object' ? JSON.stringify(err.response.data) : null) ||
         err.message ||
         'Failed to place order';
-      alert(errorMsg);
+      console.error('Order error:', errorMsg);
     }
   };
 
@@ -808,7 +810,7 @@ export const POSPage = () => {
                   </div>
                 ) : cartItems.length === 0 ? (
                   <div style={{ textAlign: 'center', padding: '24px 0', color: '#6F625C', fontSize: '14px' }}>
-                    No active order items found for this table.
+                    {selectedTable ? 'No active order items found for this table.' : 'Your cart is empty. Add food items to start an order.'}
                   </div>
                 ) : (
                   cartItems.map((item, idx) => {
