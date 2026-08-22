@@ -4,12 +4,11 @@ T Clock Restaurant POS — Django Settings
 
 from pathlib import Path
 from datetime import timedelta
-import os
-from dotenv import load_dotenv
-
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-load_dotenv(BASE_DIR / '.env')
+try:
+    from dotenv import load_dotenv
+    load_dotenv(BASE_DIR / '.env')
+except ImportError:
+    pass
 
 SECRET_KEY = 'django-insecure-tclock-pos-change-this-in-production-2024'
 
