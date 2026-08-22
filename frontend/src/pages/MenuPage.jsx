@@ -19,6 +19,8 @@ export const MenuPage = () => {
   const [itemName, setItemName] = useState('');
   const [itemDesc, setItemDesc] = useState('');
   const [itemPrice, setItemPrice] = useState('');
+  const [halfPrice, setHalfPrice] = useState('');
+  const [quarterPrice, setQuarterPrice] = useState('');
   const [itemCategory, setItemCategory] = useState('');
   const [isVeg, setIsVeg] = useState(true);
   const [spiceLevel, setSpiceLevel] = useState(1);
@@ -58,7 +60,9 @@ export const MenuPage = () => {
       setEditingItem(item);
       setItemName(item.name);
       setItemDesc(item.description || '');
-      setItemPrice(item.price);
+      setItemPrice(item.price || '');
+      setHalfPrice(item.half_price || '');
+      setQuarterPrice(item.quarter_price || '');
       setItemCategory(item.category);
       setIsVeg(item.is_veg);
       setSpiceLevel(item.spice_level || 1);
@@ -68,6 +72,8 @@ export const MenuPage = () => {
       setItemName('');
       setItemDesc('');
       setItemPrice('');
+      setHalfPrice('');
+      setQuarterPrice('');
       setItemCategory(categories[0]?.id || '');
       setIsVeg(true);
       setSpiceLevel(1);
@@ -83,6 +89,8 @@ export const MenuPage = () => {
     formData.append('name', itemName);
     formData.append('description', itemDesc);
     formData.append('price', itemPrice);
+    if (halfPrice) formData.append('half_price', halfPrice);
+    if (quarterPrice) formData.append('quarter_price', quarterPrice);
     if (itemCategory) formData.append('category', itemCategory);
     formData.append('is_veg', isVeg);
     formData.append('spice_level', spiceLevel);
@@ -202,9 +210,17 @@ export const MenuPage = () => {
               </div>
 
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid var(--border-color)', paddingTop: '0.75rem', marginTop: '0.5rem' }}>
-                <span style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--accent-amber)' }}>
-                  ₹{parseFloat(item.price).toFixed(2)}
-                </span>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                  <span style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--accent-amber)' }}>
+                    ₹{parseFloat(item.price).toFixed(2)} <span style={{ fontSize: '0.75rem', fontWeight: 500, color: 'var(--text-muted)' }}>(Full)</span>
+                  </span>
+                  {(item.half_price || item.quarter_price) && (
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'flex', gap: '8px' }}>
+                      {item.half_price && <span>Half: ₹{parseFloat(item.half_price).toFixed(2)}</span>}
+                      {item.quarter_price && <span>Qtr: ₹{parseFloat(item.quarter_price).toFixed(2)}</span>}
+                    </div>
+                  )}
+                </div>
 
                 <div style={{ display: 'flex', gap: '0.35rem' }}>
                   <button className="btn btn-secondary btn-sm" onClick={() => handleOpenItemModal(item)}>
@@ -255,13 +271,14 @@ export const MenuPage = () => {
                 </select>
               </div>
 
-              <div className="grid-2">
+              <div className="grid-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem' }}>
                 <div className="form-group">
-                  <label>Price (₹)</label>
+                  <label>Full Price (₹)</label>
                   <input
                     type="number"
                     step="0.01"
                     className="form-input"
+                    placeholder="Full"
                     value={itemPrice}
                     onChange={(e) => setItemPrice(e.target.value)}
                     required
@@ -269,16 +286,40 @@ export const MenuPage = () => {
                 </div>
 
                 <div className="form-group">
-                  <label>Spice Level (1 - 5)</label>
+                  <label>Half Rate (₹)</label>
                   <input
                     type="number"
-                    min="1"
-                    max="5"
+                    step="0.01"
                     className="form-input"
-                    value={spiceLevel}
-                    onChange={(e) => setSpiceLevel(e.target.value)}
+                    placeholder="Optional"
+                    value={halfPrice}
+                    onChange={(e) => setHalfPrice(e.target.value)}
                   />
                 </div>
+
+                <div className="form-group">
+                  <label>Quarter Rate (₹)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    className="form-input"
+                    placeholder="Optional"
+                    value={quarterPrice}
+                    onChange={(e) => setQuarterPrice(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label>Spice Level (1 - 5)</label>
+                <input
+                  type="number"
+                  min="1"
+                  max="5"
+                  className="form-input"
+                  value={spiceLevel}
+                  onChange={(e) => setSpiceLevel(e.target.value)}
+                />
               </div>
 
               <div className="form-group">
