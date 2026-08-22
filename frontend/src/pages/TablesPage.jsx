@@ -219,17 +219,16 @@ export const TablesPage = () => {
   };
 
   const handleStartOrderFromReserved = async (table) => {
+    setSelectedTable(table);
+    setSelectedReservedTable(null);
+    navigate('/pos');
     try {
       if (tablesApi.updateStatus) {
         await tablesApi.updateStatus(table.id, 'occupied');
       }
-      await loadTables();
+      loadTables();
     } catch (err) {
       console.error('Failed to update table status to occupied:', err);
-    } finally {
-      setSelectedTable(table);
-      setSelectedReservedTable(null);
-      navigate('/pos');
     }
   };
 
