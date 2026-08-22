@@ -117,6 +117,7 @@ export const POSPage = () => {
         err.message ||
         'Failed to place order';
       console.error('Order error:', errorMsg);
+      alert(errorMsg);
     }
   };
 
