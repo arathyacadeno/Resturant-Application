@@ -51,11 +51,11 @@ class UpdateOrderStatusView(APIView):
     permission_classes = [IsAnyStaff]
 
     VALID_TRANSITIONS = {
-        'pending': ['confirmed', 'cancelled'],
-        'confirmed': ['preparing', 'cancelled'],
-        'preparing': ['ready', 'cancelled'],
-        'ready': ['served'],
-        'served': ['billed'],
+        'pending': ['confirmed', 'preparing', 'ready', 'served', 'cancelled'],
+        'confirmed': ['preparing', 'ready', 'served', 'cancelled'],
+        'preparing': ['ready', 'served', 'cancelled'],
+        'ready': ['served', 'billed', 'cancelled'],
+        'served': ['billed', 'cancelled'],
         'billed': [],
         'cancelled': [],
     }

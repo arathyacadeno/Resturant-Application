@@ -25,4 +25,16 @@ export const tablesApi = {
     const response = await api.get(`tables/qr/${qrToken}/`);
     return response.data;
   },
+  createReservation: async (tableId, guestName, arrivalTime) => {
+    const response = await api.post('tables/reservations/', {
+      table_id: tableId,
+      guest_name: guestName,
+      arrival_time: arrivalTime,
+    });
+    return response.data;
+  },
+  cancelReservation: async (reservationId) => {
+    const response = await api.post(`tables/reservations/${reservationId}/cancel/`);
+    return response.data;
+  },
 };

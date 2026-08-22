@@ -32,7 +32,7 @@ const STATUS_STYLES = {
     badgeBg: '#85A8E1',
     badgeText: '#FFFFFF',
     dotColor: '#FFFFFF',
-    cardBg: '#D5D5D8',
+    cardBg: '#357EC333',
   },
   billing: {
     statusClass: 'billing',
@@ -135,16 +135,56 @@ export const TablesPage = () => {
     }
   };
 
-  // Selected Occupied Table Bottom Sheet State
+  // Selected Table Bottom Sheet State
   const [selectedOccupiedTable, setSelectedOccupiedTable] = useState(null);
+  const [selectedReservedTable, setSelectedReservedTable] = useState(null);
+
+  // Reservation Form State
+  const [guestName, setGuestName] = useState('');
+  const [arrivalTime, setArrivalTime] = useState('');
+  const [resError, setResError] = useState(null);
+  const [resSuccess, setResSuccess] = useState(null);
+  const [isSubmittingRes, setIsSubmittingRes] = useState(false);
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+
+  useEffect(() => {
+    if (selectedReservedTable) {
+      setGuestName(selectedReservedTable.active_reservation?.guest_name || '');
+      setArrivalTime(selectedReservedTable.active_reservation?.arrival_time || '');
+      setResError(null);
+      setShowCancelConfirm(false);
+    }
+  }, [selectedReservedTable]);
+
+  const formatArrivalTime = (timeStr) => {
+    if (!timeStr) return '';
+    const parts = String(timeStr).split(':');
+    if (parts.length >= 2) {
+      let hours = parseInt(parts[0], 10);
+      const minutes = parts[1];
+      if (!isNaN(hours)) {
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12;
+        hours = hours ? hours : 12;
+        return `${hours}:${minutes} ${ampm}`;
+      }
+    }
+    return timeStr;
+  };
 
   const handleSelectTableForOrder = (table) => {
     const isMobile = window.innerWidth <= 768;
-    const isOccupied = ['occupied', 'billing'].includes((table.status || '').toLowerCase());
+    const status = (table.status || '').toLowerCase();
     
-    if (isMobile && isOccupied) {
-      setSelectedOccupiedTable(table);
-      return;
+    if (isMobile) {
+      if (['occupied', 'billing'].includes(status)) {
+        setSelectedOccupiedTable(table);
+        return;
+      }
+      if (['reserved', 'available'].includes(status)) {
+        setSelectedReservedTable(table);
+        return;
+      }
     }
 
     setSelectedTable(table);
@@ -161,6 +201,72 @@ export const TablesPage = () => {
     setSelectedTable(table);
     setSelectedOccupiedTable(null);
     navigate('/pos', { state: { openOrderSheet: true } });
+  };
+
+  const handleStartOrderFromReserved = async (table) => {
+    try {
+      if (tablesApi.updateStatus) {
+        await tablesApi.updateStatus(table.id, 'occupied');
+      }
+      await loadTables();
+    } catch (err) {
+      console.error('Failed to update table status to occupied:', err);
+    } finally {
+      setSelectedTable(table);
+      setSelectedReservedTable(null);
+      navigate('/pos');
+    }
+  };
+
+  const handleConfirmCancelReservation = async () => {
+    if (!selectedReservedTable) return;
+    try {
+      if (selectedReservedTable.active_reservation?.id) {
+        await tablesApi.cancelReservation(selectedReservedTable.active_reservation.id);
+      } else {
+        await tablesApi.updateStatus(selectedReservedTable.id, 'available');
+      }
+      setResSuccess('Reservation Cancelled');
+      await loadTables();
+    } catch (err) {
+      console.error('Cancel error:', err);
+    } finally {
+      setShowCancelConfirm(false);
+      setSelectedReservedTable(null);
+      setTimeout(() => setResSuccess(null), 3000);
+    }
+  };
+
+  const handleConfirmReservation = async () => {
+    if (!guestName.trim()) {
+      setResError('Guest name is required');
+      return;
+    }
+    if (!arrivalTime.trim()) {
+      setResError('Arrival time is required');
+      return;
+    }
+
+    setIsSubmittingRes(true);
+    setResError(null);
+    try {
+      await tablesApi.createReservation(
+        selectedReservedTable.id,
+        guestName.trim(),
+        arrivalTime.trim()
+      );
+      setResSuccess('Reservation Confirmed ✓');
+      await loadTables();
+      setSelectedReservedTable(null);
+      setTimeout(() => {
+        setResSuccess(null);
+      }, 3000);
+    } catch (err) {
+      const msg = err.response?.data?.error || err.message || 'Failed to create reservation';
+      setResError(msg);
+    } finally {
+      setIsSubmittingRes(false);
+    }
   };
 
   // Dynamic Statistics computed strictly from backend database tables
@@ -478,6 +584,209 @@ export const TablesPage = () => {
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Mobile Reserved / Available Table Bottom Sheet Modal */}
+      {selectedReservedTable && (
+        <div className="table-modal-overlay" onClick={() => setSelectedReservedTable(null)}>
+          <div className="reserved-table-sheet" onClick={(e) => e.stopPropagation()}>
+            <div className="reserved-sheet-header">
+              <span className="reserved-sheet-location">
+                {(selectedReservedTable.section || '').toLowerCase().includes('out')
+                  ? 'Outdoor Seating'
+                  : 'Indoor Seating'}
+              </span>
+              <button
+                className="reserved-sheet-close"
+                onClick={() => setSelectedReservedTable(null)}
+                aria-label="Close"
+              >
+                &times;
+              </button>
+            </div>
+
+            {/* Check if table is ALREADY reserved with saved reservation data */}
+            {(selectedReservedTable.status || '').toLowerCase() === 'reserved' ||
+            selectedReservedTable.active_reservation ? (
+              <>
+                {/* Reserved Details Body */}
+                <div className="reserved-sheet-body">
+                  <div className="reserved-sheet-avatar">
+                    <img
+                      src="/tables-icon.png"
+                      alt="Table Icon"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = '/Dining table.png';
+                      }}
+                    />
+                  </div>
+                  <div className="reserved-sheet-info">
+                    <h3 className="reserved-sheet-title">
+                      Table {selectedReservedTable.number}
+                    </h3>
+                    <div className="reserved-sheet-status">
+                      <span className="reserved-dot"></span>
+                      <span className="reserved-by-text">
+                        Reserved by{' '}
+                        {selectedReservedTable.active_reservation?.guest_name || guestName || 'Guest'}{' '}
+                        ·{' '}
+                        {formatArrivalTime(
+                          selectedReservedTable.active_reservation?.arrival_time || arrivalTime
+                        )}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Reserved Details Actions */}
+                <div className="reserved-sheet-actions" style={{ marginTop: '24px' }}>
+                  <button
+                    className="start-order-btn"
+                    onClick={() => handleStartOrderFromReserved(selectedReservedTable)}
+                  >
+                    Start Order
+                  </button>
+                  <button
+                    className="cancel-reservation-btn"
+                    onClick={() => setShowCancelConfirm(true)}
+                  >
+                    Cancel Reservation
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                {/* Initial Reservation Form for Available Tables */}
+                <div className="reserved-sheet-body">
+                  <div className="reserved-sheet-avatar">
+                    <img
+                      src="/tables-icon.png"
+                      alt="Table Icon"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = '/Dining table.png';
+                      }}
+                    />
+                  </div>
+                  <div className="reserved-sheet-info">
+                    <h3 className="reserved-sheet-title">
+                      Table {selectedReservedTable.number}
+                    </h3>
+                    <div className="reserved-sheet-status">
+                      <span className="status-dot-green"></span>
+                      <span>Ready for service</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Reservation Form */}
+                <div className="reservation-form-group">
+                  <label className="reservation-label">Guest Name</label>
+                  <input
+                    type="text"
+                    className="reservation-input"
+                    placeholder="Enter guest name"
+                    value={guestName}
+                    onChange={(e) => setGuestName(e.target.value)}
+                  />
+
+                  <label className="reservation-label" style={{ marginTop: '12px' }}>
+                    Arrival Time
+                  </label>
+                  <input
+                    type="time"
+                    className="reservation-input"
+                    value={arrivalTime}
+                    onChange={(e) => setArrivalTime(e.target.value)}
+                  />
+
+                  {resError && <div className="reservation-error-msg">{resError}</div>}
+                </div>
+
+                <div className="reserved-sheet-actions" style={{ marginTop: '18px' }}>
+                  <button
+                    className="confirm-reservation-btn"
+                    onClick={handleConfirmReservation}
+                    disabled={isSubmittingRes}
+                  >
+                    {isSubmittingRes ? 'Confirming...' : 'Confirm Reservation'}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Cancel Reservation Confirmation Dialog */}
+      {showCancelConfirm && (
+        <div className="table-modal-overlay" style={{ zIndex: 10010 }}>
+          <div
+            style={{
+              position: 'fixed',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              background: '#FFFFFF',
+              borderRadius: '24px',
+              padding: '24px',
+              width: '85vw',
+              maxWidth: '360px',
+              textAlign: 'center',
+              boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
+              zIndex: 10011,
+            }}
+          >
+            <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#350505', marginBottom: '8px' }}>
+              Cancel Reservation?
+            </h3>
+            <p style={{ fontSize: '14px', color: '#6F625C', marginBottom: '20px', lineHeight: 1.4 }}>
+              Are you sure you want to cancel this reservation for Table {selectedReservedTable?.number}?
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <button
+                onClick={() => setShowCancelConfirm(false)}
+                style={{
+                  width: '100%',
+                  height: '42px',
+                  borderRadius: '22px',
+                  border: '1px solid #350505',
+                  background: '#FFFFFF',
+                  color: '#350505',
+                  fontSize: '14px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                Keep Reservation
+              </button>
+              <button
+                onClick={handleConfirmCancelReservation}
+                style={{
+                  width: '100%',
+                  height: '42px',
+                  borderRadius: '22px',
+                  border: 'none',
+                  background: '#DC2626',
+                  color: '#FFFFFF',
+                  fontSize: '14px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                Cancel Reservation
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Reservation Floating Toast */}
+      {resSuccess && (
+        <div className="order-sent-pill">
+          <span>{resSuccess}</span>
         </div>
       )}
     </div>

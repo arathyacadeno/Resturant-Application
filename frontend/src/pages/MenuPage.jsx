@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { menuApi } from '../api/menuApi';
+import { tablesApi } from '../api/tablesApi';
 import { Utensils, Plus, Edit, Trash2, Leaf, Flame, Image, RefreshCw } from 'lucide-react';
 
 export const MenuPage = () => {
   const [categories, setCategories] = useState([]);
   const [menuItems, setMenuItems] = useState([]);
+  const [tables, setTables] = useState([]);
+  const [qrFilter, setQrFilter] = useState('all');
   const [loading, setLoading] = useState(true);
 
   // Modals state
@@ -29,12 +32,16 @@ export const MenuPage = () => {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [catRes, itemRes] = await Promise.all([
+      const [catRes, itemRes, tablesRes] = await Promise.all([
         menuApi.getCategories(),
         menuApi.getMenuItems(),
+        tablesApi.getTables(),
       ]);
       setCategories(catRes.results || catRes);
       setMenuItems(itemRes.results || itemRes);
+
+      const loadedTables = tablesRes.results || tablesRes;
+      setTables(Array.isArray(loadedTables) ? loadedTables : []);
     } catch (err) {
       console.error('Failed to load menu data:', err);
     } finally {

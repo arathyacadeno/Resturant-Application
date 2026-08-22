@@ -1200,6 +1200,7 @@ h1, h2, h3, h4, h5, h6 {
     color: #6F625C !important;
     line-height: 1 !important;
     margin-top: 1px !important;
+    white-space: nowrap !important;
   }
 
   .bottom-nav-item.active .bottom-nav-label {
@@ -1606,6 +1607,30 @@ h1, h2, h3, h4, h5, h6 {
     max-width: 90vw !important;
   }
 
+  /* Table Warning Floating Pill */
+  .order-warning-pill {
+    position: fixed !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    bottom: 120px !important;
+    background: #DC2626 !important;
+    color: #FFFFFF !important;
+    height: 42px !important;
+    padding: 0 20px !important;
+    border-radius: 24px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 13.5px !important;
+    font-weight: 600 !important;
+    z-index: 10005 !important;
+    box-shadow: 0 4px 16px rgba(220, 38, 38, 0.3) !important;
+    animation: fadeInOverlay 0.25s ease-out !important;
+    white-space: nowrap !important;
+    width: auto !important;
+    max-width: 90vw !important;
+  }
+
   /* Your Order Bottom Sheet */
   .order-overlay {
     position: fixed !important;
@@ -1852,6 +1877,1085 @@ h1, h2, h3, h4, h5, h6 {
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+  }
+
+  /* Reserved / Available Table Detail Bottom Sheet */
+  .reserved-table-sheet {
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background: #FFFFFF !important;
+    border-radius: 28px 28px 0 0 !important;
+    padding: 24px 24px 28px 24px !important;
+    z-index: 10001 !important;
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.12) !important;
+    animation: occupiedSheetUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    box-sizing: border-box !important;
+  }
+
+  .reserved-sheet-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 20px !important;
+  }
+
+  .reserved-sheet-location {
+    font-size: 15px !important;
+    font-weight: 400 !important;
+    color: #777777 !important;
+  }
+
+  .reserved-sheet-close {
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50% !important;
+    background: #FFFFFF !important;
+    border: 1px solid #E4E0DD !important;
+    color: #6F625C !important;
+    font-size: 18px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    line-height: 1 !important;
+    padding: 0 !important;
+  }
+
+  .reserved-sheet-body {
+    display: flex !important;
+    align-items: center !important;
+    gap: 16px !important;
+    margin-bottom: 24px !important;
+  }
+
+  .reserved-sheet-avatar {
+    width: 64px !important;
+    height: 64px !important;
+    border-radius: 50% !important;
+    background: #F8F4F1 !important;
+    border: 2px solid #E5D9D2 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0 !important;
+  }
+
+  .reserved-sheet-avatar img {
+    width: 28px !important;
+    height: 28px !important;
+    object-fit: contain !important;
+    filter: none !important;
+  }
+
+  .reserved-sheet-info {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+  }
+
+  .reserved-sheet-title {
+    font-size: 17px !important;
+    font-weight: 600 !important;
+    color: #171717 !important;
+    margin: 0 !important;
+    line-height: 1.2 !important;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  }
+
+  .reserved-sheet-status {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    font-size: 14px !important;
+    color: #8A8582 !important;
+    font-weight: 400 !important;
+  }
+
+  .status-dot-green {
+    width: 8px !important;
+    height: 8px !important;
+    border-radius: 50% !important;
+    background: #2DBE62 !important;
+    display: inline-block !important;
+  }
+
+  .reservation-status-dot {
+    width: 8px !important;
+    height: 8px !important;
+    border-radius: 50% !important;
+    background: #7A9FD3 !important;
+    display: inline-block !important;
+  }
+
+  .reservation-status-text {
+    color: #8A8582 !important;
+    font-size: 14px !important;
+    font-weight: 400 !important;
+  }
+
+  .reservation-form-group {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .reservation-label {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: #350505 !important;
+    display: block !important;
+    margin-bottom: 4px !important;
+  }
+
+  .reservation-input {
+    width: 100% !important;
+    height: 44px !important;
+    background: #FFFFFF !important;
+    border: 1px solid #222222 !important;
+    border-radius: 24px !important;
+    padding: 0 16px !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    color: #171717 !important;
+    box-sizing: border-box !important;
+    outline: none !important;
+  }
+
+  .reservation-input:focus {
+    border-color: #350505 !important;
+  }
+
+  .reservation-error-msg {
+    color: #DC2626 !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    margin-top: 6px !important;
+  }
+
+  .reserved-sheet-actions {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    width: 100% !important;
+  }
+
+  .confirm-reservation-btn {
+    width: 100% !important;
+    height: 44px !important;
+    background: #350505 !important;
+    color: #FFFFFF !important;
+    border: none !important;
+    border-radius: 24px !important;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.15s ease !important;
+  }
+
+  .reserved-dot {
+    width: 8px !important;
+    height: 8px !important;
+    border-radius: 50% !important;
+    background: #7A9FD3 !important;
+    display: inline-block !important;
+    flex-shrink: 0 !important;
+  }
+
+  .reserved-by-text {
+    color: #8A8582 !important;
+    font-size: 14px !important;
+    font-weight: 400 !important;
+  }
+
+  .start-order-btn {
+    width: 100% !important;
+    height: 44px !important;
+    background: #350505 !important;
+    color: #FFFFFF !important;
+    border: none !important;
+    border-radius: 24px !important;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.15s ease !important;
+  }
+
+  .cancel-reservation-btn {
+    width: 100% !important;
+    height: 44px !important;
+    background: #FFFFFF !important;
+    color: #350505 !important;
+    border: 1px solid #350505 !important;
+    border-radius: 24px !important;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.15s ease !important;
+  }
+
+  /* Billing Mobile Restyling */
+  .billing-page-wrapper {
+    width: 100% !important;
+    min-height: 100vh !important;
+    background-color: #FCE4D0 !important;
+    background: #FCE4D0 !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  .mobile-billing-view {
+    display: block !important;
+    width: 100% !important;
+    background-color: #FCE4D0 !important;
+    background: #FCE4D0 !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  .desktop-billing-view {
+    display: none !important;
+  }
+
+  .billing-header {
+    display: flex !important;
+    align-items: flex-start !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    padding: 32px 22px 0 22px !important;
+    background-color: #FCE4D0 !important;
+    background: #FCE4D0 !important;
+    box-sizing: border-box !important;
+    margin-bottom: 20px !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  .billing-header-content {
+    flex: 1 !important;
+  }
+
+  .billing-title {
+    font-size: 20px !important;
+    font-weight: 600 !important;
+    line-height: 1.2 !important;
+    color: #2B2421 !important;
+    margin: 0 !important;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  }
+
+  .billing-subtitle {
+    margin-top: 8px !important;
+    font-size: 12px !important;
+    font-weight: 400 !important;
+    color: #756B66 !important;
+    margin-bottom: 0 !important;
+  }
+
+  .billing-header-avatar-wrapper {
+    flex-shrink: 0 !important;
+    margin-left: 16px !important;
+    cursor: pointer !important;
+  }
+
+  .billing-header-avatar-img {
+    width: 42px !important;
+    height: 42px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    border: 1.5px solid #ffffff !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+    display: block !important;
+  }
+
+  .billing-avatar-initial {
+    width: 42px !important;
+    height: 42px !important;
+    border-radius: 50% !important;
+    background-color: #F5F1EF !important;
+    background: #F5F1EF !important;
+    border: 1.5px solid #ffffff !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-weight: 700 !important;
+    font-size: 1rem !important;
+    color: #350505 !important;
+    box-sizing: border-box !important;
+  }
+
+  .mobile-billing-list {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    padding: 0 22px 100px 22px !important;
+    box-sizing: border-box !important;
+  }
+
+  .mobile-billing-card {
+    background: #FFFFFF !important;
+    border-radius: 18px !important;
+    padding: 14px 16px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+  }
+
+  .mobile-card-top-row {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+  }
+
+  .mobile-card-table-name {
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: #4B3B35 !important;
+  }
+
+  .mobile-card-bill-amount {
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    color: #4B3B35 !important;
+  }
+
+  .mobile-card-item-count {
+    font-size: 9px !important;
+    color: #8A817C !important;
+    font-weight: 400 !important;
+    margin-bottom: 6px !important;
+  }
+
+  .mobile-card-badges-row {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    margin-bottom: 10px !important;
+    flex-wrap: wrap !important;
+  }
+
+  .badge-kitchen-order {
+    background: #FCE2D9 !important;
+    color: #C0392B !important;
+    font-size: 9px !important;
+    font-weight: 700 !important;
+    padding: 3px 8px !important;
+    border-radius: 12px !important;
+    letter-spacing: 0.2px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+  }
+
+  .badge-ready-serve {
+    background: #E2F3E8 !important;
+    color: #18834B !important;
+    font-size: 9px !important;
+    font-weight: 700 !important;
+    padding: 3px 8px !important;
+    border-radius: 12px !important;
+    letter-spacing: 0.2px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+  }
+
+  .badge-served-order {
+    background: #E2F3E8 !important;
+    color: #18834B !important;
+    font-size: 9px !important;
+    font-weight: 700 !important;
+    padding: 3px 8px !important;
+    border-radius: 12px !important;
+    letter-spacing: 0.2px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+  }
+
+  .badge-payment-unpaid {
+    background: #FCE8E6 !important;
+    color: #C0392B !important;
+    font-size: 9px !important;
+    font-weight: 700 !important;
+    padding: 3px 8px !important;
+    border-radius: 12px !important;
+    letter-spacing: 0.2px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+  }
+
+  .badge-payment-paid {
+    background: #E2F3E8 !important;
+    color: #18834B !important;
+    font-size: 9px !important;
+    font-weight: 700 !important;
+    padding: 3px 8px !important;
+    border-radius: 12px !important;
+    letter-spacing: 0.2px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+  }
+
+  .mobile-card-action-row {
+    width: 100% !important;
+  }
+
+  .mobile-billing-btn {
+    width: 100% !important;
+    height: 30px !important;
+    background: #350505 !important;
+    color: #FFFFFF !important;
+    border: none !important;
+    border-radius: 20px !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: opacity 0.15s ease !important;
+  }
+
+  .mobile-billing-btn.disabled,
+  .mobile-billing-btn:disabled {
+    background: #350505 !important;
+    opacity: 0.9 !important;
+    cursor: default !important;
+  }
+
+  /* Bill Sheet Overlay & Modal */
+  .bill-sheet-overlay {
+    position: fixed !important;
+    inset: 0 !important;
+    background: rgba(0, 0, 0, 0.3) !important;
+    backdrop-filter: blur(4px) !important;
+    -webkit-backdrop-filter: blur(4px) !important;
+    z-index: 9999 !important;
+  }
+
+  .bill-sheet {
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background: #F5F5F5 !important;
+    border-radius: 28px 28px 0 0 !important;
+    z-index: 10000 !important;
+    max-height: 92vh !important;
+    overflow-y: auto !important;
+    box-sizing: border-box !important;
+    padding-bottom: 24px !important;
+    animation: slideUpBill 0.25s ease-out !important;
+  }
+
+  @keyframes slideUpBill {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  .bill-sheet-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 20px 20px 0 20px !important;
+  }
+
+  .bill-sheet-title {
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    color: #171717 !important;
+  }
+
+  .bill-sheet-close-btn {
+    width: 28px !important;
+    height: 28px !important;
+    border-radius: 50% !important;
+    background: #E5E5E5 !important;
+    border: none !important;
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    color: #171717 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+  }
+
+  .bill-preview {
+    background: #FFFFFF !important;
+    border-radius: 16px !important;
+    padding: 20px !important;
+    margin: 16px 20px !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04) !important;
+  }
+
+  .resto-header {
+    text-align: center !important;
+    margin-bottom: 16px !important;
+  }
+
+  .resto-name {
+    font-size: 15px !important;
+    font-weight: 800 !important;
+    color: #171717 !important;
+    margin: 0 0 2px 0 !important;
+    letter-spacing: 0.5px !important;
+  }
+
+  .resto-tagline {
+    font-size: 11px !important;
+    color: #64748B !important;
+    margin: 0 0 6px 0 !important;
+    font-style: italic !important;
+  }
+
+  .resto-address {
+    font-size: 10px !important;
+    color: #756B66 !important;
+    margin: 0 !important;
+    line-height: 1.4 !important;
+  }
+
+  .bill-meta-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+    margin-bottom: 12px !important;
+  }
+
+  .bill-meta-row {
+    display: flex !important;
+    justify-content: space-between !important;
+    font-size: 11px !important;
+    color: #756B66 !important;
+  }
+
+  .bill-meta-val {
+    font-weight: 600 !important;
+    color: #171717 !important;
+  }
+
+  .bill-divider {
+    height: 1px !important;
+    background: #E2E8F0 !important;
+    margin: 10px 0 !important;
+  }
+
+  .bill-divider-thick {
+    height: 1.5px !important;
+    background: #171717 !important;
+    margin: 10px 0 !important;
+  }
+
+  .bill-items-list {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 6px !important;
+  }
+
+  .bill-item-line {
+    display: flex !important;
+    justify-content: space-between !important;
+    font-size: 12px !important;
+    color: #2B2421 !important;
+    font-weight: 500 !important;
+  }
+
+  .bill-calc-row {
+    display: flex !important;
+    justify-content: space-between !important;
+    font-size: 12px !important;
+    color: #4B3B35 !important;
+    margin-top: 4px !important;
+  }
+
+  .bill-total-row {
+    display: flex !important;
+    justify-content: space-between !important;
+    font-size: 15px !important;
+    font-weight: 800 !important;
+    color: #171717 !important;
+  }
+
+  .bill-footer-msg {
+    text-align: center !important;
+    color: #8A817C !important;
+    font-size: 11px !important;
+    margin-top: 16px !important;
+    line-height: 1.4 !important;
+    font-family: monospace, sans-serif !important;
+  }
+
+  /* GST Segmented Switch */
+  .gst-selector-container {
+    background: #EAEBED !important;
+    border-radius: 16px !important;
+    padding: 4px !important;
+    margin: 0 20px 16px 20px !important;
+    display: flex !important;
+    gap: 4px !important;
+    box-sizing: border-box !important;
+  }
+
+  .gst-option-btn {
+    flex: 1 !important;
+    height: 38px !important;
+    background: transparent !important;
+    color: #64748B !important;
+    border: none !important;
+    border-radius: 12px !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    cursor: pointer !important;
+    transition: all 0.15s ease !important;
+  }
+
+  .gst-option-btn.active {
+    background: #FFFFFF !important;
+    color: #18834B !important;
+    font-weight: 600 !important;
+    border: none !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+  }
+
+  .gst-radio-dot {
+    display: none !important;
+  }
+
+  /* Payment Methods Grid */
+  .payment-method-container {
+    padding: 0 20px 16px 20px !important;
+    margin-bottom: 20px;
+  }
+
+  .payment-section-label {
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    color: #8A817C !important;
+    letter-spacing: 0.5px !important;
+    margin-bottom: 10px !important;
+  }
+
+  .payment-grid-2x2 {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+  }
+
+  .payment-method-card {
+    height: 46px !important;
+    background: #FFFFFF !important;
+    border: 1px solid #E2E8F0 !important;
+    border-radius: 12px !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    color: #2B2421 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    cursor: pointer !important;
+    transition: all 0.15s ease !important;
+    padding: 0 8px !important;
+  }
+
+  .payment-method-card.active {
+    border: 2px solid #350505 !important;
+    background: #FFF5EE !important;
+    color: #350505 !important;
+    font-weight: 700 !important;
+  }
+
+  /* Settle Button */
+  .settle-bill-container {
+    padding: 0 20px !important;
+  }
+
+  .settle-bill-btn {
+    width: 100% !important;
+    height: 44px !important;
+    background: #350505 !important;
+    color: #FFFFFF !important;
+    border: none !important;
+    border-radius: 24px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 4px 12px rgba(53, 5, 5, 0.2) !important;
+  }
+
+  .settle-success-toast {
+    position: fixed !important;
+    top: 20px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    background: #18834B !important;
+    color: #FFFFFF !important;
+    padding: 10px 20px !important;
+    border-radius: 20px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    z-index: 100000 !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15) !important;
+  }
+
+  /* ==========================================================================
+     MOBILE QR CODE PAGE (EXACT RESTYLING - MOBILE ONLY <= 768px)
+     ========================================================================== */
+  .qr-page {
+    width: 100% !important;
+    min-height: 100vh !important;
+    background: #FCE4D0 !important;
+    background-color: #FCE4D0 !important;
+    overflow-x: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  .qr-content {
+    width: 100% !important;
+    padding-bottom: 85px !important;
+    box-sizing: border-box !important;
+  }
+
+  .qr-header {
+    padding: 28px 14px 0 !important;
+    box-sizing: border-box !important;
+    margin-top: 20px;
+  }
+
+  .qr-title {
+    margin: 0 !important;
+    font-size: 20px !important;
+    line-height: 1.2 !important;
+    font-weight: 600 !important;
+    color: #29221F !important;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  }
+
+  .qr-description {
+    margin-top: 8px !important;
+    margin-bottom: 0 !important;
+    font-size: 15px !important;
+    line-height: 1.35 !important;
+    color: #756B66 !important;
+  }
+
+  .qr-filter-container {
+    display: flex !important;
+    align-items: center !important;
+    gap: 7px !important;
+    margin-top: 14px !important;
+  }
+
+  .qr-filter {
+    height: 26px !important;
+    padding: 0 14px !important;
+    border: none !important;
+    border-radius: 18px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    background: #FFFFFF !important;
+    color: #2E2926 !important;
+    cursor: pointer !important;
+    display: inline-flex !important;
+    line-height: 20px;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+    white-space: nowrap !important;
+  }
+
+  .qr-filter.active {
+    background: #350505 !important;
+    color: #FFFFFF !important;
+  }
+
+  .qr-loading, .qr-empty {
+    padding: 30px 14px !important;
+    font-size: 11px !important;
+    color: #756B66 !important;
+    text-align: center !important;
+  }
+
+  .qr-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 14px 12px !important;
+    padding: 12px 13px 90px !important;
+    box-sizing: border-box !important;
+  }
+
+  .qr-card {
+    position: relative !important;
+    background: #FFFFFF !important;
+    border-radius: 17px !important;
+    padding: 10px !important;
+    overflow: visible !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03) !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  .qr-status {
+    position: absolute !important;
+    top: 5px !important;
+    right: 5px !important;
+    padding: 2px 7px !important;
+    border-radius: 10px !important;
+    font-size: 10px !important;
+    line-height: 1.2 !important;
+    font-weight: 700 !important;
+    z-index: 2 !important;
+    text-transform: uppercase !important;
+  }
+
+  .qr-status.status-occupied {
+    background: #F3B8B1 !important;
+    color: #9E2424 !important;
+  }
+
+  .qr-status.status-available {
+    background: #B9D9B8 !important;
+    color: #167A3A !important;
+  }
+
+  .qr-status.status-reserved {
+    background: #AFC7E5 !important;
+    color: #07558D !important;
+  }
+
+  .qr-status.status-billing {
+    background: #D0A000 !important;
+    color: #FFFFFF !important;
+  }
+
+  .qr-image-container {
+    width: 100% !important;
+    aspect-ratio: 1 / 1 !important;
+    background: #F4DCC7 !important;
+    border-radius: 11px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+  }
+
+  .qr-image {
+    width: 65% !important;
+    height: 65% !important;
+    object-fit: contain !important;
+    display: block !important;
+  }
+
+  .qr-table-number {
+    margin-top: 10px !important;
+    text-align: center !important;
+    font-size: 16px !important;
+    font-weight: 400 !important;
+    color: #3B2C26 !important;
+    line-height: 1.2 !important;
+  }
+
+  .qr-table-details {
+    margin-top: 4px !important;
+    text-align: center !important;
+    font-size: 12px !important;
+    color: #8A756C !important;
+    line-height: 1.2 !important;
+  }
+
+  @media (max-width: 360px) {
+    .qr-grid {
+      gap: 10px !important;
+      padding-left: 12px !important;
+      padding-right: 12px !important;
+    }
+
+    .qr-card {
+      padding: 8px !important;
+    }
+
+    .qr-large-wrapper {
+      width: 210px !important;
+      height: 210px !important;
+    }
+  }
+
+  /* QR Code Detail View Screen */
+  .qr-detail-page {
+    padding-bottom: 100px !important;
+  }
+
+  .qr-detail-header {
+    padding: 32px 22px 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    box-sizing: border-box !important;
+    margin-top: 20px;
+  }
+
+  .qr-detail-back-btn {
+    background: #FFFFFF !important;
+    border: none !important;
+    border-radius: 50% !important;
+    width: 34px !important;
+    height: 34px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    color: #29221F !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06) !important;
+    flex-shrink: 0 !important;
+  }
+
+  .qr-detail-title {
+    font-size: 20px !important;
+    font-weight: 600 !important;
+    color: #29221F !important;
+    margin: 0 !important;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  }
+
+  .qr-detail-subtitle {
+    margin-top: 4px !important;
+    margin-bottom: 0 !important;
+    font-size: 14px !important;
+    color: #756B66 !important;
+  }
+
+  .qr-detail-card {
+    margin: 24px 28px 0 !important;
+    background: #FFFFFF !important;
+    border-radius: 28px !important;
+    padding: 26px 14px 28px !important;
+    text-align: center !important;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04) !important;
+    box-sizing: border-box !important;
+  }
+
+  .qr-detail-table {
+    font-size: 23px !important;
+    font-weight: 400 !important;
+    color: #111111 !important;
+    margin: 0 0 20px 0 !important;
+    text-align: center !important;
+  }
+
+  .qr-large-wrapper {
+    width: 245px !important;
+    height: 245px !important;
+    margin: 0 auto !important;
+    background: #FFFFFF !important;
+    border: 4px solid #4B332E !important;
+    border-radius: 16px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 14px !important;
+    box-sizing: border-box !important;
+  }
+
+  .qr-large-image {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+    display: block !important;
+  }
+
+  .qr-url-container {
+    margin: 30px 0 0 !important;
+    height: 46px !important;
+    background: #F5F3F1 !important;
+    border-radius: 12px !important;
+    padding: 0 14px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+    box-sizing: border-box !important;
+  }
+
+  .qr-url-link-icon {
+    font-size: 14px !important;
+    flex-shrink: 0 !important;
+  }
+
+  .qr-url {
+    font-size: 12px !important;
+    color: #756B66 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    flex: 1 !important;
+    text-align: left !important;
+  }
+
+  .qr-url-copy-btn {
+    background: transparent !important;
+    border: none !important;
+    cursor: pointer !important;
+    padding: 4px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0 !important;
+  }
+
+  .qr-description-detail {
+    margin-top: 20px !important;
+    margin-bottom: 0 !important;
+    font-size: 12px !important;
+    line-height: 1.6 !important;
+    color: #8A817C !important;
+    text-align: center !important;
+  }
+
+  .qr-copy-toast {
+    position: fixed !important;
+    top: 20px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    background: #350505 !important;
+    color: #FFFFFF !important;
+    padding: 8px 18px !important;
+    border-radius: 20px !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    z-index: 100000 !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2) !important;
   }
 }
 

@@ -43,12 +43,10 @@ export const OrderProvider = ({ children }) => {
         setCartItems(formattedItems);
       } else {
         setActiveTableOrder(null);
-        setCartItems([]);
       }
     } catch (err) {
       console.error('Error fetching active table order:', err);
       setActiveTableOrder(null);
-      setCartItems([]);
     } finally {
       setLoadingActiveOrder(false);
     }
@@ -59,7 +57,6 @@ export const OrderProvider = ({ children }) => {
       loadActiveTableOrder(selectedTable.id);
     } else {
       setActiveTableOrder(null);
-      setCartItems([]);
     }
   }, [selectedTable?.id]);
 
