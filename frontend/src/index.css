@@ -53,11 +53,18 @@ input::-webkit-credentials-auto-fill-button {
   pointer-events: none !important;
 }
 
+html,
+body,
+#root {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+}
+
 body {
   font-family: 'Plus Jakarta Sans', sans-serif;
-  background-color: var(--bg-dark);
   color: var(--text-main);
   min-height: 100vh;
+  min-height: 100dvh;
   overflow-x: hidden;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
@@ -108,9 +115,9 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 @media (max-width: 1024px) {
-  body, #root, .app-container {
-    background-color: #FCE4D0 !important;
-    background: #FCE4D0 !important;
+  html, body, #root, .app-container {
+    background-color: #ffffff !important;
+    background: #ffffff !important;
     overflow-x: hidden !important;
   }
 
@@ -125,8 +132,8 @@ h1, h2, h3, h4, h5, h6 {
     padding: 0 !important;
     padding-bottom: 6.5rem !important;
     overflow-x: hidden !important;
-    background-color: #FCE4D0 !important;
-    background: #FCE4D0 !important;
+    background-color: #ffffff !important;
+    background: #ffffff !important;
   }
 }
 
@@ -2239,7 +2246,7 @@ h1, h2, h3, h4, h5, h6 {
   }
 
   .mobile-card-table-name {
-    font-size: 13px !important;
+    font-size: 18px !important;
     font-weight: 600 !important;
     color: #4B3B35 !important;
   }
@@ -2251,7 +2258,7 @@ h1, h2, h3, h4, h5, h6 {
   }
 
   .mobile-card-item-count {
-    font-size: 9px !important;
+    font-size: 12px !important;
     color: #8A817C !important;
     font-weight: 400 !important;
     margin-bottom: 6px !important;

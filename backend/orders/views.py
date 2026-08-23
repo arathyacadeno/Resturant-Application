@@ -76,15 +76,18 @@ class UpdateOrderStatusView(APIView):
         order.status = new_status
         order.save()
 
-        # Free up the table when order is billed or cancelled
-        if new_status in ['billed', 'cancelled'] and order.table:
-            # Check if table has other active orders
-            other_active = order.table.orders.exclude(
-                id=order.id
-            ).exclude(status__in=['billed', 'cancelled']).exists()
-            if not other_active:
-                order.table.status = 'available'
+        # Update table status based on order status
+        if order.table:
+            if new_status in ['served', 'ready']:
+                order.table.status = 'billing'
                 order.table.save()
+            elif new_status in ['billed', 'cancelled']:
+                other_active = order.table.orders.exclude(
+                    id=order.id
+                ).exclude(status__in=['billed', 'cancelled']).exists()
+                if not other_active:
+                    order.table.status = 'available'
+                    order.table.save()
 
         return Response(OrderSerializer(order).data)
 
@@ -145,9 +148,20 @@ class ActiveTableOrderView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request, table_id):
+        from tables.models import DiningTable
+        try:
+            table = DiningTable.objects.get(id=table_id)
+            # If the table is available, it has NO active order session for new customers
+            if table.status == 'available':
+                return Response({'order': None})
+        except DiningTable.DoesNotExist:
+            return Response({'error': 'Table not found'}, status=404)
+
+        # Retrieve active (non-billed, non-cancelled) order for occupied/billing table
         order = Order.objects.filter(
             table_id=table_id
         ).exclude(status__in=['billed', 'cancelled']).last()
+        
         if not order:
             return Response({'order': None})
         return Response(OrderSerializer(order).data)

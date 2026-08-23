@@ -233,6 +233,7 @@ export const LoginPage = () => {
             width: 100%;
             overflow-x: hidden;
             background-color: #ffffff;
+            background: #ffffff;
           }
 
           .brand-section {
@@ -279,9 +280,10 @@ export const LoginPage = () => {
             width: 100%;
             height: auto;
             flex: 1;
-            padding: 1.25rem 1.75rem 2.5rem 1.75rem;
+            padding: 1.25rem 1.75rem calc(2.5rem + env(safe-area-inset-bottom, 0px)) 1.75rem;
             align-items: flex-start;
             background-color: #ffffff;
+            background: #ffffff;
             z-index: 2;
           }
 

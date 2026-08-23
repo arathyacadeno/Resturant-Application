@@ -37,20 +37,20 @@ const STATUS_STYLES = {
   billing: {
     statusClass: 'billing',
     label: 'Billing',
-    numColor: '#C49100',
-    badgeBg: '#D97706',
+    numColor: '#B8860B',
+    badgeBg: '#C58C00',
     badgeText: '#FFFFFF',
     dotColor: '#FFFFFF',
-    cardBg: '#F4D7AA',
+    cardBg: '#F9E8D0',
   },
   cleaning: {
     statusClass: 'billing',
     label: 'Cleaning',
-    numColor: '#C49100',
-    badgeBg: '#D97706',
+    numColor: '#B8860B',
+    badgeBg: '#C58C00',
     badgeText: '#FFFFFF',
     dotColor: '#FFFFFF',
-    cardBg: '#F4D7AA',
+    cardBg: '#F9E8D0',
   },
 };
 
@@ -376,7 +376,7 @@ export const TablesPage = () => {
       <div className="unified-stats-row">
         <div className="mobile-stat-card">
           <span className="stat-num-free">{freeCount}</span>
-          <span className="stat-label-text">AVAILABLE</span>
+          <span className="stat-label-text">FREE</span>
         </div>
 
         <div className="mobile-stat-card">
@@ -439,6 +439,8 @@ export const TablesPage = () => {
               sectionText = 'Out door';
             }
 
+            const isReserved = (table.status || '').toLowerCase() === 'reserved' || !!table.active_reservation;
+
             return (
               <div
                 key={table.id}
@@ -465,12 +467,19 @@ export const TablesPage = () => {
                     <span>{table.capacity || 4} seats</span>
                   </div>
 
-                  {sectionText && (
+                  {(isReserved && table.active_reservation) ? (
+                    <div style={{ fontSize: '12px', fontWeight: 500, color: '#171717', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                      <span style={{ fontSize: '7px', color: '#000000' }}>●</span>
+                      <span>
+                        {table.active_reservation.guest_name} · {formatArrivalTime(table.active_reservation.arrival_time)}
+                      </span>
+                    </div>
+                  ) : sectionText ? (
                     <div style={{ fontSize: '11px', fontWeight: 600, color: '#111111', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
                       <span style={{ fontSize: '8px' }}>●</span>
                       <span>{sectionText}</span>
                     </div>
-                  )}
+                  ) : null}
                 </div>
 
                 <div className="status-badge" style={{ backgroundColor: statusConfig.badgeBg, color: statusConfig.badgeText }}>
@@ -684,7 +693,7 @@ export const TablesPage = () => {
                   fontWeight: 600,
                   cursor: 'pointer'
                 }}
-                onClick={() => setShowCancelConfirm(true)}
+                onClick={handleConfirmCancelReservation}
               >
                 Cancel Reservation
               </button>
@@ -822,69 +831,6 @@ export const TablesPage = () => {
                 </div>
               </>
             )}
-          </div>
-        </div>
-      )}
-
-      {/* Cancel Reservation Confirmation Dialog */}
-      {showCancelConfirm && (
-        <div className="table-modal-overlay" style={{ zIndex: 10010 }}>
-          <div
-            style={{
-              position: 'fixed',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              background: '#FFFFFF',
-              borderRadius: '24px',
-              padding: '24px',
-              width: '85vw',
-              maxWidth: '360px',
-              textAlign: 'center',
-              boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
-              zIndex: 10011,
-            }}
-          >
-            <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#350505', marginBottom: '8px' }}>
-              Cancel Reservation?
-            </h3>
-            <p style={{ fontSize: '14px', color: '#6F625C', marginBottom: '20px', lineHeight: 1.4 }}>
-              Are you sure you want to cancel this reservation for Table {selectedReservedTable?.number}?
-            </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <button
-                onClick={() => setShowCancelConfirm(false)}
-                style={{
-                  width: '100%',
-                  height: '42px',
-                  borderRadius: '22px',
-                  border: '1px solid #350505',
-                  background: '#FFFFFF',
-                  color: '#350505',
-                  fontSize: '14px',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                }}
-              >
-                Keep Reservation
-              </button>
-              <button
-                onClick={handleConfirmCancelReservation}
-                style={{
-                  width: '100%',
-                  height: '42px',
-                  borderRadius: '22px',
-                  border: 'none',
-                  background: '#DC2626',
-                  color: '#FFFFFF',
-                  fontSize: '14px',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                }}
-              >
-                Cancel Reservation
-              </button>
-            </div>
           </div>
         </div>
       )}

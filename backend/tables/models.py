@@ -9,6 +9,7 @@ class DiningTable(models.Model):
         ('available', 'Available'),
         ('occupied', 'Occupied'),
         ('reserved', 'Reserved'),
+        ('billing', 'Billing'),
         ('cleaning', 'Cleaning'),
     ]
     SECTION_CHOICES = [
