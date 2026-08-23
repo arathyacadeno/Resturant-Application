@@ -560,7 +560,11 @@ export const POSPage = () => {
                         {item.name}
                       </h4>
                       <div style={{ fontSize: '0.95rem', fontWeight: 800, color: '#B77D55' }}>
-                        ₹{parseFloat(item.price).toFixed(2)}
+                        ₹{(() => {
+                          if (currentPortion === 'Half' && item.half_price) return parseFloat(item.half_price).toFixed(2);
+                          if (currentPortion === 'Quarter' && item.quarter_price) return parseFloat(item.quarter_price).toFixed(2);
+                          return parseFloat(item.price).toFixed(2);
+                        })()}
                       </div>
 
                       {/* Portion Pills - Only show if item has Half or Quarter portion pricing */}
