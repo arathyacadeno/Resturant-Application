@@ -37,20 +37,20 @@ const STATUS_STYLES = {
   billing: {
     statusClass: 'billing',
     label: 'Billing',
-    numColor: '#C49100',
-    badgeBg: '#D97706',
+    numColor: '#B8860B',
+    badgeBg: '#C58C00',
     badgeText: '#FFFFFF',
     dotColor: '#FFFFFF',
-    cardBg: '#F4D7AA',
+    cardBg: '#F9E8D0',
   },
   cleaning: {
     statusClass: 'billing',
     label: 'Cleaning',
-    numColor: '#C49100',
-    badgeBg: '#D97706',
+    numColor: '#B8860B',
+    badgeBg: '#C58C00',
     badgeText: '#FFFFFF',
     dotColor: '#FFFFFF',
-    cardBg: '#F4D7AA',
+    cardBg: '#F9E8D0',
   },
 };
 

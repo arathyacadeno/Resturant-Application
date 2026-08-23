@@ -76,15 +76,18 @@ class UpdateOrderStatusView(APIView):
         order.status = new_status
         order.save()
 
-        # Free up the table when order is billed or cancelled
-        if new_status in ['billed', 'cancelled'] and order.table:
-            # Check if table has other active orders
-            other_active = order.table.orders.exclude(
-                id=order.id
-            ).exclude(status__in=['billed', 'cancelled']).exists()
-            if not other_active:
-                order.table.status = 'available'
+        # Update table status based on order status
+        if order.table:
+            if new_status in ['served', 'ready']:
+                order.table.status = 'billing'
                 order.table.save()
+            elif new_status in ['billed', 'cancelled']:
+                other_active = order.table.orders.exclude(
+                    id=order.id
+                ).exclude(status__in=['billed', 'cancelled']).exists()
+                if not other_active:
+                    order.table.status = 'available'
+                    order.table.save()
 
         return Response(OrderSerializer(order).data)
 

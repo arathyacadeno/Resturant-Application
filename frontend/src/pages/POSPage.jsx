@@ -563,18 +563,24 @@ export const POSPage = () => {
                         ₹{parseFloat(item.price).toFixed(2)}
                       </div>
 
-                      {/* Portion Pills */}
-                      <div className="portion-pill-group">
-                        {['Full', 'Half', 'Quarter'].map((pOption) => (
-                          <button
-                            key={pOption}
-                            className={`portion-pill ${currentPortion === pOption ? 'active' : ''}`}
-                            onClick={() => handlePortionSelect(item.id, pOption)}
-                          >
-                            {pOption}
-                          </button>
-                        ))}
-                      </div>
+                      {/* Portion Pills - Only show if item has Half or Quarter portion pricing */}
+                      {(item.half_price || item.quarter_price) && (
+                        <div className="portion-pill-group">
+                          {['Full', 'Half', 'Quarter'].map((pOption) => {
+                            if (pOption === 'Half' && !item.half_price) return null;
+                            if (pOption === 'Quarter' && !item.quarter_price) return null;
+                            return (
+                              <button
+                                key={pOption}
+                                className={`portion-pill ${currentPortion === pOption ? 'active' : ''}`}
+                                onClick={() => handlePortionSelect(item.id, pOption)}
+                              >
+                                {pOption}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
                     </div>
 
                     {/* Add / Quantity Control */}
