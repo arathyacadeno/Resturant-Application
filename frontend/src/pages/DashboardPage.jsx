@@ -42,8 +42,10 @@ export const DashboardPage = () => {
   };
 
   useEffect(() => {
-    loadData();
-  }, []);
+    if (user?.role !== 'staff') {
+      loadData();
+    }
+  }, [user?.role]);
 
   return (
     <div>
