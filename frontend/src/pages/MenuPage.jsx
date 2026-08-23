@@ -109,7 +109,11 @@ export const MenuPage = () => {
       setShowItemModal(false);
       loadData();
     } catch (err) {
-      alert('Failed to save menu item');
+      console.error('Failed to save menu item:', err);
+      const serverMsg = err.response?.data 
+        ? (typeof err.response.data === 'object' ? JSON.stringify(err.response.data) : err.response.data) 
+        : err.message;
+      alert(`Failed to save menu item: ${serverMsg}`);
     }
   };
 
