@@ -34,27 +34,23 @@ class MenuItemSerializer(serializers.ModelSerializer):
         return super().to_internal_value(data)
 
     def create(self, validated_data):
+        has_image = 'image' in validated_data and validated_data['image']
         try:
             return super().create(validated_data)
         except Exception as e:
-            if 'image' in validated_data and validated_data['image']:
+            if has_image:
                 validated_data.pop('image', None)
-                try:
-                    return super().create(validated_data)
-                except Exception:
-                    pass
+                return super().create(validated_data)
             raise serializers.ValidationError({'detail': f'Error creating menu item: {str(e)}'})
 
     def update(self, instance, validated_data):
+        has_image = 'image' in validated_data and validated_data['image']
         try:
             return super().update(instance, validated_data)
         except Exception as e:
-            if 'image' in validated_data and validated_data['image']:
+            if has_image:
                 validated_data.pop('image', None)
-                try:
-                    return super().update(instance, validated_data)
-                except Exception:
-                    pass
+                return super().update(instance, validated_data)
             raise serializers.ValidationError({'detail': f'Error updating menu item: {str(e)}'})
 
 
