@@ -14,6 +14,49 @@ class MenuItemSerializer(serializers.ModelSerializer):
             'price', 'half_price', 'quarter_price', 'image', 'is_veg',
             'is_available', 'is_featured', 'prep_time', 'calories', 'sort_order',
         ]
+        extra_kwargs = {
+            'half_price': {'required': False, 'allow_null': True},
+            'quarter_price': {'required': False, 'allow_null': True},
+            'description': {'required': False, 'allow_blank': True},
+            'image': {'required': False, 'allow_null': True},
+        }
+
+    def to_internal_value(self, data):
+        if hasattr(data, '_mutable'):
+            data = data.copy()
+        elif isinstance(data, dict):
+            data = data.copy()
+
+        for field in ['half_price', 'quarter_price', 'calories', 'image', 'description']:
+            if field in data and (data[field] == '' or data[field] == 'null' or data[field] == 'undefined'):
+                data[field] = None
+
+        return super().to_internal_value(data)
+
+    def create(self, validated_data):
+        try:
+            return super().create(validated_data)
+        except Exception as e:
+            if 'image' in validated_data and validated_data['image']:
+                validated_data.pop('image', None)
+                try:
+                    return super().create(validated_data)
+                except Exception:
+                    pass
+            raise serializers.ValidationError({'detail': f'Error creating menu item: {str(e)}'})
+
+    def update(self, instance, validated_data):
+        try:
+            return super().update(instance, validated_data)
+        except Exception as e:
+            if 'image' in validated_data and validated_data['image']:
+                validated_data.pop('image', None)
+                try:
+                    return super().update(instance, validated_data)
+                except Exception:
+                    pass
+            raise serializers.ValidationError({'detail': f'Error updating menu item: {str(e)}'})
+
 
 
 class CategorySerializer(serializers.ModelSerializer):
