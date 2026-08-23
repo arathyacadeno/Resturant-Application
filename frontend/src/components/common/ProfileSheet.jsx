@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { X, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
@@ -9,7 +9,17 @@ export const ProfileSheet = () => {
   
   const [showPassword, setShowPassword] = useState(false);
   const [username, setUsername] = useState(user?.username || '');
-  const [password, setPassword] = useState('••••••••');
+  const [password, setPassword] = useState(() => {
+    return user?.savedPassword || localStorage.getItem('saved_pwd') || '••••••••';
+  });
+
+  useEffect(() => {
+    if (user?.username) setUsername(user.username);
+    const saved = user?.savedPassword || localStorage.getItem('saved_pwd');
+    if (saved) {
+      setPassword(saved);
+    }
+  }, [user, isProfileOpen]);
 
   if (!isProfileOpen) return null;
 

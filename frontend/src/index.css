@@ -1960,6 +1960,13 @@ h1, h2, h3, h4, h5, h6 {
     justify-content: center !important;
   }
 
+  .btn-place-order:disabled {
+    background: #a39595 !important;
+    border-color: #a39595 !important;
+    opacity: 0.65 !important;
+    cursor: not-allowed !important;
+  }
+
   /* Reserved / Available Table Detail Bottom Sheet */
   .reserved-table-sheet {
     position: fixed !important;
@@ -2094,7 +2101,10 @@ h1, h2, h3, h4, h5, h6 {
 
   .reservation-input {
     width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
     height: 44px !important;
+    min-height: 44px !important;
     background: #FFFFFF !important;
     border: 1px solid #222222 !important;
     border-radius: 24px !important;
@@ -2104,6 +2114,22 @@ h1, h2, h3, h4, h5, h6 {
     color: #171717 !important;
     box-sizing: border-box !important;
     outline: none !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+  }
+
+  .reservation-input[type="time"] {
+    display: flex !important;
+    align-items: center !important;
+    min-height: 44px !important;
+    line-height: 44px !important;
+  }
+
+  .reservation-input[type="time"]::-webkit-date-and-time-value {
+    text-align: left !important;
+    min-height: 44px !important;
+    line-height: 44px !important;
+    font-size: 14px !important;
   }
 
   .reservation-input:focus {

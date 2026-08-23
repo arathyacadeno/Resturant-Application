@@ -23,9 +23,11 @@ export const OrderProvider = ({ children }) => {
     setLoadingActiveOrder(true);
     try {
       const orderData = await ordersApi.getActiveTableOrder(tableId);
+      const guestFromTable = selectedTable?.active_reservation?.guest_name || selectedTable?.guest_name || '';
+
       if (orderData && orderData.id && Array.isArray(orderData.items)) {
         setActiveTableOrder(orderData);
-        setCustomerName(orderData.customer_name || '');
+        setCustomerName(orderData.customer_name || guestFromTable || '');
         setCustomerPhone(orderData.customer_phone || '');
         const formattedItems = orderData.items.map((item) => ({
           order_item_id: item.id,
@@ -44,15 +46,16 @@ export const OrderProvider = ({ children }) => {
       } else {
         setActiveTableOrder(null);
         setCartItems([]);
-        setCustomerName('');
+        setCustomerName((prev) => prev || guestFromTable || '');
         setCustomerPhone('');
         setOrderNotes('');
       }
     } catch (err) {
       console.error('Error fetching active table order:', err);
+      const guestFromTable = selectedTable?.active_reservation?.guest_name || selectedTable?.guest_name || '';
       setActiveTableOrder(null);
       setCartItems([]);
-      setCustomerName('');
+      setCustomerName((prev) => prev || guestFromTable || '');
       setCustomerPhone('');
       setOrderNotes('');
     } finally {

@@ -71,7 +71,7 @@ const getStatusConfig = (rawStatus) => {
 
 export const TablesPage = () => {
   const navigate = useNavigate();
-  const { setSelectedTable } = useOrder();
+  const { setSelectedTable, setCustomerName } = useOrder();
   const { user, openProfile } = useAuth();
 
   const [tables, setTables] = useState([]);
@@ -207,7 +207,7 @@ export const TablesPage = () => {
         setSelectedOccupiedTable(table);
         return;
       }
-      if (status === 'reserved' || table.active_reservation) {
+      if (status === 'reserved') {
         setSelectedReservedTable(table);
         return;
       }
@@ -234,7 +234,19 @@ export const TablesPage = () => {
   };
 
   const handleStartOrderFromReserved = async (table) => {
-    setSelectedTable(table);
+    const guest = table.active_reservation?.guest_name || guestName || '';
+    if (guest && setCustomerName) {
+      setCustomerName(guest);
+    }
+    const tableWithGuest = {
+      ...table,
+      guest_name: guest,
+      active_reservation: {
+        ...(table.active_reservation || {}),
+        guest_name: guest,
+      },
+    };
+    setSelectedTable(tableWithGuest);
     setSelectedReservedTable(null);
     navigate('/pos');
     try {
@@ -338,7 +350,14 @@ export const TablesPage = () => {
 
   const getTableDisplayNum = (num) => {
     if (!num) return '1';
-    return String(num).trim().replace(/^T\s*-?\s*/i, '').trim() || '1';
+    return (
+      String(num)
+        .trim()
+        .replace(/^Table\s*/i, '')
+        .replace(/^T\s*-?\s*/i, '')
+        .replace(/^[#-]\s*/, '')
+        .trim() || '1'
+    );
   };
 
   // Seated person icon matching attached reference image
@@ -452,7 +471,7 @@ export const TablesPage = () => {
               ? table.section.charAt(0).toUpperCase() + table.section.slice(1)
               : 'Indoor';
 
-            const isReserved = (table.status || '').toLowerCase() === 'reserved' || !!table.active_reservation;
+            const isReserved = (table.status || '').toLowerCase() === 'reserved';
 
             return (
               <div
@@ -622,6 +641,9 @@ export const TablesPage = () => {
                     {(selectedOccupiedTable.status || '').toLowerCase() === 'billing'
                       ? 'Billing in Progress'
                       : 'Dining in Progress'}
+                    {selectedOccupiedTable.active_order?.customer_name
+                      ? ` · ${selectedOccupiedTable.active_order.customer_name}`
+                      : ''}
                   </span>
                 </div>
               </div>
