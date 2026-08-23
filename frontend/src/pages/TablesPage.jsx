@@ -336,6 +336,11 @@ export const TablesPage = () => {
     return `T${cleanStr || '1'}`;
   };
 
+  const getTableDisplayNum = (num) => {
+    if (!num) return '1';
+    return String(num).trim().replace(/^T\s*-?\s*/i, '').trim() || '1';
+  };
+
   // Seated person icon matching attached reference image
   const SeatedPersonIcon = () => (
     <svg
@@ -585,9 +590,7 @@ export const TablesPage = () => {
           <div className="occupied-table-sheet" onClick={(e) => e.stopPropagation()}>
             <div className="occupied-sheet-header">
               <span className="occupied-sheet-location">
-                {(selectedOccupiedTable.section || '').toLowerCase().includes('out')
-                  ? 'Outdoor Seating'
-                  : 'Indoor Seating'}
+                {`Table ${getTableDisplayNum(selectedOccupiedTable.number)}`}
               </span>
               <button
                 className="occupied-sheet-close"
@@ -601,17 +604,17 @@ export const TablesPage = () => {
             <div className="occupied-sheet-body">
               <div className="occupied-sheet-avatar">
                 <img
-                  src="/tables-icon.png"
+                  src="/order-logo.png"
                   alt="Table Icon"
                   onError={(e) => {
                     e.target.onerror = null;
-                    e.target.src = '/Dining table.png';
+                    e.target.src = '/tables-icon.png';
                   }}
                 />
               </div>
               <div className="occupied-sheet-info">
                 <h3 className="occupied-sheet-title">
-                  {formatTableNumber(selectedOccupiedTable.number)}
+                  {`Table ${getTableDisplayNum(selectedOccupiedTable.number)}`}
                 </h3>
                 <div className="occupied-sheet-status">
                   <span className="status-dot"></span>
@@ -648,9 +651,7 @@ export const TablesPage = () => {
           <div className="reserved-details-sheet" onClick={(e) => e.stopPropagation()}>
             <div className="reserved-sheet-header" style={{ marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span className="reserved-title" style={{ fontSize: '11px', color: '#85807D', fontWeight: 400 }}>
-                {(selectedReservedTable.section || '').toLowerCase().includes('out')
-                  ? 'Outdoor Seating'
-                  : 'Indoor Seating'}
+                {`Table ${getTableDisplayNum(selectedReservedTable.number)}`}
               </span>
               <button
                 className="reserved-close"
@@ -666,18 +667,18 @@ export const TablesPage = () => {
             <div className="reserved-sheet-body" style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '20px' }}>
               <div className="table-icon-wrapper" style={{ width: '46px', height: '46px', borderRadius: '50%', background: '#F8F4F1', border: '1px solid #E5D9D2', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                 <img
-                  src="/tables-icon.png"
+                  src="/order-logo.png"
                   alt="Table Icon"
                   style={{ width: '24px', height: '24px', objectFit: 'contain' }}
                   onError={(e) => {
                     e.target.onerror = null;
-                    e.target.src = '/Dining table.png';
+                    e.target.src = '/tables-icon.png';
                   }}
                 />
               </div>
               <div className="reserved-sheet-info" style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                 <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#171717', margin: 0, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                  Table {String(selectedReservedTable.number).replace(/^T/i, '')}
+                  Table {getTableDisplayNum(selectedReservedTable.number)}
                 </h3>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <span className="reserved-dot" style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#7A9FD3', display: 'inline-block' }}></span>
@@ -740,9 +741,7 @@ export const TablesPage = () => {
           <div className="reserved-table-sheet" onClick={(e) => e.stopPropagation()}>
             <div className="reserved-sheet-header">
               <span className="reserved-sheet-location">
-                {(selectedAvailableTable.section || '').toLowerCase().includes('out')
-                  ? 'Outdoor Seating'
-                  : 'Indoor Seating'}
+                {`Table ${getTableDisplayNum(selectedAvailableTable.number)}`}
               </span>
               <button
                 className="reserved-sheet-close"
@@ -756,17 +755,17 @@ export const TablesPage = () => {
             <div className="reserved-sheet-body">
               <div className="reserved-sheet-avatar">
                 <img
-                  src="/tables-icon.png"
+                  src="/order-logo.png"
                   alt="Table Icon"
                   onError={(e) => {
                     e.target.onerror = null;
-                    e.target.src = '/Dining table.png';
+                    e.target.src = '/tables-icon.png';
                   }}
                 />
               </div>
               <div className="reserved-sheet-info">
                 <h3 className="reserved-sheet-title">
-                  Table {selectedAvailableTable.number}
+                  Table {getTableDisplayNum(selectedAvailableTable.number)}
                 </h3>
                 <div className="reserved-sheet-status">
                   <span className="status-dot-green"></span>
