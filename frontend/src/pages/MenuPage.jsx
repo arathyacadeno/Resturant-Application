@@ -110,10 +110,27 @@ export const MenuPage = () => {
       loadData();
     } catch (err) {
       console.error('Failed to save menu item:', err);
-      const serverMsg = err.response?.data 
-        ? (typeof err.response.data === 'object' ? JSON.stringify(err.response.data) : err.response.data) 
-        : err.message;
-      alert(`Failed to save menu item: ${serverMsg}`);
+      let errorMsg = 'Failed to save menu item.';
+      const resData = err.response?.data;
+      if (resData) {
+        if (typeof resData === 'string') {
+          if (resData.includes('<!DOCTYPE') || resData.includes('<html')) {
+            errorMsg = `Server Error (${err.response.status}): Please verify backend logs or deployment environment.`;
+          } else {
+            errorMsg = resData;
+          }
+        } else if (typeof resData === 'object') {
+          const messages = [];
+          for (const [key, val] of Object.entries(resData)) {
+            const valStr = Array.isArray(val) ? val.join(', ') : String(val);
+            messages.push(`${key}: ${valStr}`);
+          }
+          errorMsg = messages.join('\n');
+        }
+      } else if (err.message) {
+        errorMsg = err.message;
+      }
+      alert(`Error saving menu item:\n${errorMsg}`);
     }
   };
 
