@@ -376,7 +376,7 @@ export const TablesPage = () => {
       <div className="unified-stats-row">
         <div className="mobile-stat-card">
           <span className="stat-num-free">{freeCount}</span>
-          <span className="stat-label-text">AVAILABLE</span>
+          <span className="stat-label-text">FREE</span>
         </div>
 
         <div className="mobile-stat-card">
