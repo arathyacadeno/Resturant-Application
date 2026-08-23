@@ -126,6 +126,9 @@ else:
     # Fallback to local storage for local development if Cloudinary is not configured
     MEDIA_URL = '/media/'
     MEDIA_ROOT = BASE_DIR / 'media'
+    os.makedirs(MEDIA_ROOT, exist_ok=True)
+    os.makedirs(MEDIA_ROOT / 'menu', exist_ok=True)
+    os.makedirs(MEDIA_ROOT / 'avatars', exist_ok=True)
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
