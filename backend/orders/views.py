@@ -148,9 +148,20 @@ class ActiveTableOrderView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request, table_id):
+        from tables.models import DiningTable
+        try:
+            table = DiningTable.objects.get(id=table_id)
+            # If the table is available, it has NO active order session for new customers
+            if table.status == 'available':
+                return Response({'order': None})
+        except DiningTable.DoesNotExist:
+            return Response({'error': 'Table not found'}, status=404)
+
+        # Retrieve active (non-billed, non-cancelled) order for occupied/billing table
         order = Order.objects.filter(
             table_id=table_id
         ).exclude(status__in=['billed', 'cancelled']).last()
+        
         if not order:
             return Response({'order': None})
         return Response(OrderSerializer(order).data)
