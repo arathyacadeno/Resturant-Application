@@ -116,8 +116,9 @@ h1, h2, h3, h4, h5, h6 {
 
 @media (max-width: 1024px) {
   html, body, #root, .app-container {
-    background-color: #ffffff !important;
-    background: #ffffff !important;
+    background-color: #FCE4D0 !important;
+    background: #FCE4D0 !important;
+    min-height: 100dvh !important;
     overflow-x: hidden !important;
   }
 
@@ -132,8 +133,9 @@ h1, h2, h3, h4, h5, h6 {
     padding: 0 !important;
     padding-bottom: 6.5rem !important;
     overflow-x: hidden !important;
-    background-color: #ffffff !important;
-    background: #ffffff !important;
+    background-color: #FCE4D0 !important;
+    background: #FCE4D0 !important;
+    min-height: 100dvh !important;
   }
 }
 
