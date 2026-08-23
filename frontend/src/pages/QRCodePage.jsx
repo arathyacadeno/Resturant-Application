@@ -5,7 +5,7 @@ import { Copy, Check, ArrowLeft } from 'lucide-react';
 export const QRCodePage = () => {
   const [tables, setTables] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeFilter, setActiveFilter] = useState('All tables');
+  const [activeFilter, setActiveFilter] = useState('All');
   const [selectedTable, setSelectedTable] = useState(null);
   const [copied, setCopied] = useState(false);
 
@@ -41,7 +41,7 @@ export const QRCodePage = () => {
 
   // Dynamic filter logic
   const filteredTables = tables.filter((t) => {
-    if (activeFilter === 'All tables') return true;
+    if (activeFilter === 'All' || activeFilter === 'All tables') return true;
     const sec = (t.section || t.seating_type || '').toLowerCase();
     if (activeFilter === 'Indoor') {
       return sec === 'indoor' || sec === 'main' || sec === '' || !t.section;
@@ -202,7 +202,7 @@ export const QRCodePage = () => {
 
           {/* Filter Buttons */}
           <div className="qr-filter-container">
-            {['All tables', 'Indoor', 'Out door'].map((filter) => (
+            {['All', 'Indoor', 'Out door'].map((filter) => (
               <button
                 key={filter}
                 className={`qr-filter ${activeFilter === filter ? 'active' : ''}`}

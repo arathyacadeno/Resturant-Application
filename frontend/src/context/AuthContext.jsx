@@ -39,9 +39,13 @@ export const AuthProvider = ({ children }) => {
     const data = await authApi.login(username, password);
     localStorage.setItem('access_token', data.access);
     localStorage.setItem('refresh_token', data.refresh);
+    if (password) {
+      localStorage.setItem('saved_pwd', password);
+    }
     if (data.user) {
-      setUser(data.user);
-      localStorage.setItem('user_info', JSON.stringify(data.user));
+      const userObj = { ...data.user, savedPassword: password };
+      setUser(userObj);
+      localStorage.setItem('user_info', JSON.stringify(userObj));
     } else {
       await fetchProfile();
     }
@@ -52,6 +56,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('user_info');
+    localStorage.removeItem('saved_pwd');
     setUser(null);
     setIsProfileOpen(false);
   };

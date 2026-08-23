@@ -310,23 +310,25 @@ export const POSPage = () => {
         }
 
         .food-card {
+          width: 100%;
+          max-width: 160px;
+          height: 295px;
+          margin: 0 auto;
           background: #ffffff;
-          border-radius: 16px;
-          padding: 0.75rem;
+          border-radius: 20px;
+          padding: 10px;
           box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
           border: 1px solid rgba(0, 0, 0, 0.05);
           display: flex;
           flex-direction: column;
           justify-content: space-between;
           position: relative;
-          min-width: 0;
-          width: 100%;
           box-sizing: border-box;
         }
 
         .food-card-img {
           width: 100%;
-          height: 135px;
+          height: 145px;
           object-fit: cover;
           border-radius: 12px;
           background: #f8fafc;
@@ -360,21 +362,28 @@ export const POSPage = () => {
         }
 
         .add-cart-btn {
-          width: 100%;
-          padding: 0.55rem;
+          width: 137px;
+          min-width: 137px;
+          max-width: 137px;
+          height: 26px;
+          min-height: 26px;
+          max-height: 26px;
+          margin: 0 auto;
+          padding: 0;
           border-radius: 10px;
           background: #B77D55;
           color: #ffffff;
           border: none;
-          font-size: 0.85rem;
-          font-weight: 700;
+          font-size: 12px;
+          font-weight: 600;
           cursor: pointer;
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 0.35rem;
+          gap: 5px;
           box-shadow: 0 4px 10px rgba(183, 125, 85, 0.25);
           transition: all 0.2s ease;
+          box-sizing: border-box;
         }
 
         .add-cart-btn:disabled {
@@ -384,26 +393,40 @@ export const POSPage = () => {
         }
 
         .quantity-control-bar {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          border: 1px solid #B77D55;
-          border-radius: 10px;
-          padding: 0.25rem 0.5rem;
-          background: #fff8f3;
-        }
-
-        .qty-btn {
-          width: 26px;
-          height: 26px;
-          border-radius: 6px;
-          background: #B77D55;
-          color: #ffffff;
-          border: none;
+          width: 133px;
+          min-width: 133px;
+          max-width: 133px;
+          height: 22px;
+          min-height: 22px;
+          max-height: 22px;
+          margin: 0 auto;
+          padding: 0;
+          background: #FCE4D0;
+          border: 1px solid #E5D5C8;
+          border-radius: 999px;
           display: flex;
           align-items: center;
           justify-content: center;
+          overflow: hidden;
+          box-sizing: border-box;
+        }
+
+        .qty-btn {
+          width: 32px;
+          height: 22px;
+          padding: 0;
+          margin: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+          border-radius: 0;
+          background: transparent;
+          color: #171717;
+          border: none;
           cursor: pointer;
+          font-weight: 800;
+          font-size: 14px;
         }
 
         /* Desktop Current Order Panel */
@@ -651,7 +674,7 @@ export const POSPage = () => {
               <option value="">Table --</option>
               {tables.map((tbl) => (
                 <option key={tbl.id} value={tbl.id}>
-                  Table #{tbl.number}
+                  Table {String(tbl.number).replace(/^T/i, '')}
                 </option>
               ))}
             </select>
@@ -792,16 +815,16 @@ export const POSPage = () => {
               <div className="order-table-card">
                 <div className="order-table-card-left">
                   <img
-                    src="/tables-icon.png"
+                    src="/order-logo.png"
                     alt="Table Icon"
                     className="order-table-icon"
                     onError={(e) => {
                       e.target.onerror = null;
-                      e.target.src = '/Dining table.png';
+                      e.target.src = '/tables-icon.png';
                     }}
                   />
                   <span className="order-table-name">
-                    {selectedTable ? `Table ${selectedTable.number}` : 'Table 1'}
+                    {selectedTable ? `Table ${String(selectedTable.number).replace(/^T/i, '')}` : 'Table 1'}
                   </span>
                 </div>
                 <div className="order-table-card-right">
