@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { tablesApi } from '../api/tablesApi';
 import { useOrder } from '../context/OrderContext';
 import { useAuth } from '../context/AuthContext';
-import { Plus, RefreshCw, QrCode } from 'lucide-react';
+import { Plus, RefreshCw, QrCode, Trash2 } from 'lucide-react';
 
 // Reusable status styling configuration matching reference image specs
 const STATUS_STYLES = {
@@ -132,6 +132,21 @@ export const TablesPage = () => {
       loadTables();
     } catch (err) {
       alert(err.response?.data?.number?.[0] || err.response?.data?.detail || 'Failed to create table');
+    }
+  };
+
+  const handleDeleteTable = async (tableId, tableNumber) => {
+    const formattedNum = formatTableNumber(tableNumber);
+    if (window.confirm(`Are you sure you want to delete ${formattedNum}?`)) {
+      try {
+        await tablesApi.deleteTable(tableId);
+        setSelectedAvailableTable(null);
+        setSelectedOccupiedTable(null);
+        setSelectedReservedTable(null);
+        loadTables();
+      } catch (err) {
+        alert(err.response?.data?.detail || err.response?.data?.error || 'Failed to delete table');
+      }
     }
   };
 
@@ -446,6 +461,30 @@ export const TablesPage = () => {
                     <div className="table-card-num" style={{ color: statusConfig.numColor }}>
                       {formatTableNumber(table.number)}
                     </div>
+                    {user?.role === 'admin' && (
+                      <button
+                        title="Delete Table"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteTable(table.id, table.number);
+                        }}
+                        style={{
+                          background: 'rgba(220, 38, 38, 0.12)',
+                          border: 'none',
+                          color: '#b91c1c',
+                          cursor: 'pointer',
+                          padding: '4px 6px',
+                          borderRadius: '8px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '3px',
+                          fontSize: '11px',
+                          fontWeight: 700,
+                        }}
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    )}
                   </div>
 
                   <div className="table-card-seats">
@@ -776,6 +815,29 @@ export const TablesPage = () => {
                 >
                   Reserve this Table
                 </button>
+                {user?.role === 'admin' && (
+                  <button
+                    className="delete-table-btn"
+                    style={{
+                      width: '100%',
+                      height: '42px',
+                      borderRadius: '24px',
+                      background: 'rgba(220, 38, 38, 0.08)',
+                      color: '#dc2626',
+                      border: '1.5px solid rgba(220, 38, 38, 0.3)',
+                      fontSize: '14px',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px',
+                    }}
+                    onClick={() => handleDeleteTable(selectedAvailableTable.id, selectedAvailableTable.number)}
+                  >
+                    <Trash2 size={16} /> Delete Table
+                  </button>
+                )}
               </div>
             ) : (
               <>
