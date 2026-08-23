@@ -78,6 +78,17 @@ export const OrderProvider = ({ children }) => {
         (item) => item.menu_item.id === menuItem.id && item.portion === portion
       );
 
+      let price = parseFloat(menuItem.price);
+      if (portion === 'Half' && menuItem.half_price) {
+        price = parseFloat(menuItem.half_price);
+      } else if (portion === 'Half') {
+        price = Math.round(parseFloat(menuItem.price) * 0.6);
+      } else if (portion === 'Quarter' && menuItem.quarter_price) {
+        price = parseFloat(menuItem.quarter_price);
+      } else if (portion === 'Quarter') {
+        price = Math.round(parseFloat(menuItem.price) * 0.35);
+      }
+
       if (existingIndex > -1) {
         const updated = [...prev];
         updated[existingIndex].quantity += 1;
@@ -88,7 +99,7 @@ export const OrderProvider = ({ children }) => {
           {
             menu_item: menuItem,
             quantity: 1,
-            unit_price: parseFloat(menuItem.price),
+            unit_price: price,
             portion,
             notes: '',
           },
