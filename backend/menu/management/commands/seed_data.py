@@ -68,84 +68,78 @@ class Command(BaseCommand):
             ('Snack', '🥪', 4),
         ]
         for name, icon, order in cats:
-            Category.objects.get_or_create(
-                name=name,
-                defaults={'icon': icon, 'sort_order': order}
-            )
+            cat = Category.objects.filter(name=name).first()
+            if not cat:
+                Category.objects.create(name=name, icon=icon, sort_order=order)
 
         coffee_cat = Category.objects.filter(name='Coffee').first()
         food_cat = Category.objects.filter(name='Food').first()
         snack_cat = Category.objects.filter(name='Snack').first()
 
         if coffee_cat:
-            MenuItem.objects.get_or_create(
-                name='Cappuccino',
-                defaults={
-                    'category': coffee_cat,
-                    'price': 150.00,
-                    'half_price': 100.00,
-                    'quarter_price': 60.00,
-                    'is_veg': True,
-                    'description': 'Rich espresso with steamed milk foam.',
-                    'image': 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=400&auto=format&fit=crop&q=80',
-                    'is_available': True,
-                }
-            )
-            MenuItem.objects.get_or_create(
-                name='Cappuccino Special',
-                defaults={
-                    'category': coffee_cat,
-                    'price': 150.00,
-                    'half_price': 100.00,
-                    'quarter_price': 60.00,
-                    'is_veg': True,
-                    'description': 'Double shot creamy cappuccino with caramel drizzle.',
-                    'image': 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=400&auto=format&fit=crop&q=80',
-                    'is_available': True,
-                }
-            )
+            if not MenuItem.objects.filter(name='Cappuccino').exists():
+                MenuItem.objects.create(
+                    name='Cappuccino',
+                    category=coffee_cat,
+                    price=150.00,
+                    half_price=100.00,
+                    quarter_price=60.00,
+                    is_veg=True,
+                    description='Rich espresso with steamed milk foam.',
+                    image='https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=400&auto=format&fit=crop&q=80',
+                    is_available=True,
+                )
+            if not MenuItem.objects.filter(name='Cappuccino Special').exists():
+                MenuItem.objects.create(
+                    name='Cappuccino Special',
+                    category=coffee_cat,
+                    price=150.00,
+                    half_price=100.00,
+                    quarter_price=60.00,
+                    is_veg=True,
+                    description='Double shot creamy cappuccino with caramel drizzle.',
+                    image='https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=400&auto=format&fit=crop&q=80',
+                    is_available=True,
+                )
 
         if food_cat:
-            MenuItem.objects.get_or_create(
-                name='Biriyani',
-                defaults={
-                    'category': food_cat,
-                    'price': 350.00,
-                    'half_price': 220.00,
-                    'quarter_price': 120.00,
-                    'is_veg': False,
-                    'description': 'Fragrant basmati rice cooked with authentic spices.',
-                    'image': 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=400&auto=format&fit=crop&q=80',
-                    'is_available': True,
-                }
-            )
-            MenuItem.objects.get_or_create(
-                name='Arabic Salad',
-                defaults={
-                    'category': food_cat,
-                    'price': 150.00,
-                    'half_price': 90.00,
-                    'quarter_price': 50.00,
-                    'is_veg': True,
-                    'description': 'Fresh garden vegetables with feta, olive oil, and herbs.',
-                    'image': 'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=400&auto=format&fit=crop&q=80',
-                    'is_available': True,
-                }
-            )
+            if not MenuItem.objects.filter(name='Biriyani').exists():
+                MenuItem.objects.create(
+                    name='Biriyani',
+                    category=food_cat,
+                    price=350.00,
+                    half_price=220.00,
+                    quarter_price=120.00,
+                    is_veg=False,
+                    description='Fragrant basmati rice cooked with authentic spices.',
+                    image='https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=400&auto=format&fit=crop&q=80',
+                    is_available=True,
+                )
+            if not MenuItem.objects.filter(name='Arabic Salad').exists():
+                MenuItem.objects.create(
+                    name='Arabic Salad',
+                    category=food_cat,
+                    price=150.00,
+                    half_price=90.00,
+                    quarter_price=50.00,
+                    is_veg=True,
+                    description='Fresh garden vegetables with feta, olive oil, and herbs.',
+                    image='https://images.unsplash.com/photo-1540420773420-3366772f4999?w=400&auto=format&fit=crop&q=80',
+                    is_available=True,
+                )
 
         if snack_cat:
-            MenuItem.objects.get_or_create(
-                name='Club Sandwich',
-                defaults={
-                    'category': snack_cat,
-                    'price': 180.00,
-                    'half_price': 110.00,
-                    'quarter_price': 70.00,
-                    'is_veg': True,
-                    'description': 'Triple-decker toasted sandwich with cheese & veggies.',
-                    'image': 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=400&auto=format&fit=crop&q=80',
-                    'is_available': True,
-                }
-            )
+            if not MenuItem.objects.filter(name='Club Sandwich').exists():
+                MenuItem.objects.create(
+                    name='Club Sandwich',
+                    category=snack_cat,
+                    price=180.00,
+                    half_price=110.00,
+                    quarter_price=70.00,
+                    is_veg=True,
+                    description='Triple-decker toasted sandwich with cheese & veggies.',
+                    image='https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=400&auto=format&fit=crop&q=80',
+                    is_available=True,
+                )
 
         self.stdout.write(self.style.SUCCESS('PostgreSQL Database seeded with reference categories & items!'))
