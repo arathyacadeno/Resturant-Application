@@ -439,6 +439,8 @@ export const TablesPage = () => {
               sectionText = 'Out door';
             }
 
+            const isReserved = (table.status || '').toLowerCase() === 'reserved' || !!table.active_reservation;
+
             return (
               <div
                 key={table.id}
@@ -465,12 +467,19 @@ export const TablesPage = () => {
                     <span>{table.capacity || 4} seats</span>
                   </div>
 
-                  {sectionText && (
+                  {(isReserved && table.active_reservation) ? (
+                    <div style={{ fontSize: '12px', fontWeight: 500, color: '#171717', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                      <span style={{ fontSize: '7px', color: '#000000' }}>●</span>
+                      <span>
+                        {table.active_reservation.guest_name} · {formatArrivalTime(table.active_reservation.arrival_time)}
+                      </span>
+                    </div>
+                  ) : sectionText ? (
                     <div style={{ fontSize: '11px', fontWeight: 600, color: '#111111', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
                       <span style={{ fontSize: '8px' }}>●</span>
                       <span>{sectionText}</span>
                     </div>
-                  )}
+                  ) : null}
                 </div>
 
                 <div className="status-badge" style={{ backgroundColor: statusConfig.badgeBg, color: statusConfig.badgeText }}>
