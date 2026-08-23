@@ -5,6 +5,11 @@ import { authApi } from '../api/authApi';
 import { useAuth } from '../context/AuthContext';
 import { Receipt, Printer, Share2, Plus, RefreshCw, CheckCircle, CreditCard, XCircle } from 'lucide-react';
 
+const getTableDisplayNum = (val) => {
+  if (!val) return '';
+  return String(val).trim().replace(/^T\s*-?\s*/i, '');
+};
+
 export const BillingPage = () => {
   const { user, openProfile } = useAuth();
   const [bills, setBills] = useState([]);
@@ -218,7 +223,7 @@ export const BillingPage = () => {
                   {/* Card Header Row */}
                   <div className="mobile-card-top-row">
                     <span className="mobile-card-table-name">
-                      {ord.table_number || ord.table ? `Table ${ord.table_number || ord.table}` : (ord.order_type || 'Takeaway')}
+                      {ord.table_number || ord.table ? `Table ${getTableDisplayNum(ord.table_number || ord.table)}` : (ord.order_type || 'Takeaway')}
                     </span>
                     <span className="mobile-card-bill-amount">
                       ₹{totalAmt.toFixed(2)}
@@ -327,7 +332,7 @@ export const BillingPage = () => {
                       <div>
                         <h3 style={{ fontSize: '1.15rem', margin: 0 }}>Order #{ord.id}</h3>
                         <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--accent-amber)' }}>
-                          {ord.table ? `Table ${ord.table}` : (ord.order_type || 'Dine-In').toUpperCase()}
+                          {ord.table ? `Table ${getTableDisplayNum(ord.table)}` : (ord.order_type || 'Dine-In').toUpperCase()}
                         </span>
                       </div>
                       <span className={`badge ${ord.status === 'ready' ? 'badge-green' : 'badge-amber'}`} style={{ textTransform: 'capitalize' }}>
@@ -470,7 +475,7 @@ export const BillingPage = () => {
                   <option value="">-- Choose Active Order --</option>
                   {activeOrders.map((ord) => (
                     <option key={ord.id} value={ord.id}>
-                      Order #{ord.id} - {ord.table ? `Table ${ord.table}` : ord.order_type} (₹{ord.subtotal}) - {ord.status}
+                      Order #{ord.id} - {ord.table ? `Table ${getTableDisplayNum(ord.table)}` : ord.order_type} (₹{ord.subtotal}) - {ord.status}
                     </option>
                   ))}
                 </select>
@@ -600,10 +605,10 @@ export const BillingPage = () => {
             <div className="bill-sheet-header">
               <div className="bill-sheet-title">
                 {selectedBillOrder.table_number || selectedBillOrder.table
-                  ? `Table ${selectedBillOrder.table_number || selectedBillOrder.table}`
+                  ? `Table ${getTableDisplayNum(selectedBillOrder.table_number || selectedBillOrder.table)}`
                   : (selectedBillOrder.order_type || 'Takeaway')}
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '30px' }}>
                 <img
                   src="/print.png"
                   alt="Print"
@@ -642,7 +647,7 @@ export const BillingPage = () => {
                   <span>Type / Table</span>
                   <span className="bill-meta-val">
                     {selectedBillOrder.table_number || selectedBillOrder.table
-                      ? `Table ${selectedBillOrder.table_number || selectedBillOrder.table}`
+                      ? `Table ${getTableDisplayNum(selectedBillOrder.table_number || selectedBillOrder.table)}`
                       : (selectedBillOrder.order_type || 'Takeaway')}
                   </span>
                 </div>
@@ -776,7 +781,7 @@ export const BillingPage = () => {
                 onClick={handleSettleBill}
                 disabled={settlingBill}
               >
-                {settlingBill ? 'Settling...' : 'Settle Bill 💐'}
+                {settlingBill ? 'Settling...' : 'Settle Bill 💸'}
               </button>
             </div>
           </div>

@@ -845,7 +845,6 @@ export const TablesPage = () => {
                   <input
                     type="text"
                     className="reservation-input"
-                    placeholder="Enter guest name"
                     value={guestName}
                     onChange={(e) => setGuestName(e.target.value)}
                   />

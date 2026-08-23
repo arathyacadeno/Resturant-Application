@@ -674,7 +674,7 @@ export const POSPage = () => {
               <option value="">Table --</option>
               {tables.map((tbl) => (
                 <option key={tbl.id} value={tbl.id}>
-                  Table #{tbl.number}
+                  Table {String(tbl.number).replace(/^T/i, '')}
                 </option>
               ))}
             </select>
@@ -815,16 +815,16 @@ export const POSPage = () => {
               <div className="order-table-card">
                 <div className="order-table-card-left">
                   <img
-                    src="/tables-icon.png"
+                    src="/order-logo.png"
                     alt="Table Icon"
                     className="order-table-icon"
                     onError={(e) => {
                       e.target.onerror = null;
-                      e.target.src = '/Dining table.png';
+                      e.target.src = '/tables-icon.png';
                     }}
                   />
                   <span className="order-table-name">
-                    {selectedTable ? `Table ${selectedTable.number}` : 'Table 1'}
+                    {selectedTable ? `Table ${String(selectedTable.number).replace(/^T/i, '')}` : 'Table 1'}
                   </span>
                 </div>
                 <div className="order-table-card-right">
