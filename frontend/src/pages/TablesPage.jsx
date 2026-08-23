@@ -314,11 +314,11 @@ export const TablesPage = () => {
     return numA - numB;
   });
 
-  // Format table number with space (e.g. "1" -> "T 1", "T2" -> "T 2")
+  // Format table number consistently (e.g. "1" -> "T1", "T-1" -> "T1", "T1" -> "T1")
   const formatTableNumber = (num) => {
-    if (!num) return 'T 1';
-    const str = String(num).trim().replace(/^T/i, '').trim();
-    return `T ${str || '1'}`;
+    if (!num) return 'T1';
+    const cleanStr = String(num).trim().replace(/^T\s*-?\s*/i, '').trim();
+    return `T${cleanStr || '1'}`;
   };
 
   // Seated person icon matching attached reference image
