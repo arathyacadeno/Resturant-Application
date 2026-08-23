@@ -570,20 +570,25 @@ h1, h2, h3, h4, h5, h6 {
     flex-direction: column !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 2px !important;
+    gap: 3px !important;
     text-decoration: none !important;
-    color: #475569 !important;
+    color: #6F625C !important;
     font-size: 0.75rem !important;
-    font-weight: 700 !important;
-    padding: 6px 18px !important;
-    border-radius: 18px !important;
+    font-weight: 600 !important;
+    padding: 2px 4px !important;
+    border-radius: 20px !important;
     transition: all 0.2s ease !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
   }
 
   .bottom-nav-item.active {
-    background-color: #350707 !important;
-    color: #ffffff !important;
-    box-shadow: 0 4px 12px rgba(53, 7, 7, 0.3) !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    color: #350505 !important;
+    font-weight: 700 !important;
+    box-shadow: none !important;
   }
 
   .bottom-nav-item.active svg {
@@ -657,7 +662,7 @@ h1, h2, h3, h4, h5, h6 {
     border-radius: 18px !important;
     padding: 0.8rem 0.4rem !important;
     text-align: center !important;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.03) !important;
+    box-shadow: 0 6px 18px rgba(70, 40, 25, 0.12) !important;
     border: 1px solid rgba(0, 0, 0, 0.03) !important;
     display: flex !important;
     flex-direction: column !important;
@@ -752,7 +757,7 @@ h1, h2, h3, h4, h5, h6 {
     display: flex !important;
     flex-direction: column !important;
     justify-content: space-between !important;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.03) !important;
+    box-shadow: 0 6px 18px rgba(70, 40, 25, 0.12) !important;
     border: 1px solid rgba(0, 0, 0, 0.04) !important;
     cursor: pointer !important;
     transition: transform 0.15s ease, box-shadow 0.15s ease !important;
@@ -765,6 +770,13 @@ h1, h2, h3, h4, h5, h6 {
   }
 
   /* Card Status Variations */
+  .table-card-mobile.occupied,
+  .table-card-mobile.available,
+  .table-card-mobile.reserved,
+  .table-card-mobile.billing {
+    box-shadow: 0 6px 18px rgba(70, 40, 25, 0.12) !important;
+  }
+
   .table-card-mobile.occupied {
     background-color: #FADCD5 !important;
   }
@@ -888,7 +900,7 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: 20px !important;
   padding: 0.85rem 0.5rem !important;
   text-align: center !important;
-  box-shadow: 0 6px 18px rgba(70, 40, 25, 0.08) !important;
+  box-shadow: 0 6px 18px rgba(70, 40, 25, 0.12) !important;
   border: 1px solid rgba(255, 255, 255, 0.85) !important;
   display: flex !important;
   flex-direction: column !important;
@@ -980,7 +992,7 @@ h1, h2, h3, h4, h5, h6 {
   display: flex !important;
   flex-direction: column !important;
   justify-content: space-between !important;
-  box-shadow: 0 6px 18px rgba(80, 50, 30, 0.08) !important;
+  box-shadow: 0 6px 18px rgba(70, 40, 25, 0.12) !important;
   border: 1px solid rgba(255, 255, 255, 0.85) !important;
   cursor: pointer !important;
   transition: transform 0.15s ease, box-shadow 0.15s ease !important;
@@ -1173,14 +1185,18 @@ h1, h2, h3, h4, h5, h6 {
   }
 
   .bottom-nav-icon-wrapper {
-    width: 38px !important;
+    width: 72px !important;
+    max-width: 76px !important;
     height: 38px !important;
-    border-radius: 50% !important;
+    padding: 0 16px !important;
+    border-radius: 9999px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    transition: background 0.2s ease !important;
+    transition: background 0.2s ease, width 0.2s ease !important;
     position: relative !important;
+    background: transparent !important;
+    box-sizing: border-box !important;
   }
 
   .bottom-nav-item.active {
@@ -1194,7 +1210,7 @@ h1, h2, h3, h4, h5, h6 {
   .bottom-nav-item.active .bottom-nav-icon-wrapper {
     background: #350505 !important;
     color: #ffffff !important;
-    box-shadow: 0 4px 12px rgba(53, 5, 5, 0.25) !important;
+    box-shadow: 0 3px 10px rgba(53, 5, 5, 0.25) !important;
   }
 
   .bottom-nav-icon-wrapper svg {
@@ -1214,7 +1230,7 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: 600 !important;
     color: #6F625C !important;
     line-height: 1 !important;
-    margin-top: 1px !important;
+    margin-top: 3px !important;
     white-space: nowrap !important;
   }
 
