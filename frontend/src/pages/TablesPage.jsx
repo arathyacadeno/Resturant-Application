@@ -314,11 +314,11 @@ export const TablesPage = () => {
     return numA - numB;
   });
 
-  // Format table number with space (e.g. "1" -> "T 1", "T2" -> "T 2")
+  // Format table number consistently (e.g. "1" -> "T1", "T-1" -> "T1", "T1" -> "T1")
   const formatTableNumber = (num) => {
-    if (!num) return 'T 1';
-    const str = String(num).trim().replace(/^T/i, '').trim();
-    return `T ${str || '1'}`;
+    if (!num) return 'T1';
+    const cleanStr = String(num).trim().replace(/^T\s*-?\s*/i, '').trim();
+    return `T${cleanStr || '1'}`;
   };
 
   // Seated person icon matching attached reference image
@@ -426,18 +426,11 @@ export const TablesPage = () => {
           {sortedTables.map((table, index) => {
             const statusConfig = getStatusConfig(table.status);
             
-            // Location info matching reference image: T1 -> Indoor, T2 -> Out door (or from DB)
+            // Section name from backend database
             const rawSec = (table.section || '').toLowerCase();
-            let sectionText = null;
-            if (rawSec.includes('out')) {
-              sectionText = 'Out door';
-            } else if (rawSec.includes('in')) {
-              sectionText = 'Indoor';
-            } else if (table.number === '1' || table.number === 'T1' || index === 0) {
-              sectionText = 'Indoor';
-            } else if (table.number === '2' || table.number === 'T2' || index === 1) {
-              sectionText = 'Out door';
-            }
+            let sectionText = table.section
+              ? table.section.charAt(0).toUpperCase() + table.section.slice(1)
+              : 'Indoor';
 
             const isReserved = (table.status || '').toLowerCase() === 'reserved' || !!table.active_reservation;
 
