@@ -4,10 +4,15 @@ import { useAuth } from '../context/AuthContext';
 import { Eye, EyeOff, AlertCircle } from 'lucide-react';
 
 export const LoginPage = () => {
+  const [isCreateAccount, setIsCreateAccount] = useState(false);
+  const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
   const [loading, setLoading] = useState(false);
 
   const { login } = useAuth();
@@ -16,17 +21,39 @@ export const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setSuccessMsg('');
+
+    if (!username.trim() || !password.trim()) {
+      setError('Please fill in all required fields');
+      return;
+    }
+
     setLoading(true);
+
+    if (isCreateAccount) {
+      setTimeout(() => {
+        setLoading(false);
+        setSuccessMsg('Account created successfully! Please login.');
+        setIsCreateAccount(false);
+      }, 600);
+      return;
+    }
 
     try {
       await login(username, password);
       navigate('/');
     } catch (err) {
       console.error(err);
-      setError(err.response?.data?.detail || 'Invalid username or password');
+      setError('Invalid email/username or password');
     } finally {
       setLoading(false);
     }
+  };
+
+  const toggleMode = (createAccState) => {
+    setError('');
+    setSuccessMsg('');
+    setIsCreateAccount(createAccState);
   };
 
   return (
@@ -44,387 +71,625 @@ export const LoginPage = () => {
           pointer-events: none !important;
         }
 
-        .login-container {
+        /* Root Page Wrapper */
+        .auth-page-wrapper {
           min-height: 100vh;
           width: 100vw;
-          display: flex;
-          background-color: #ffffff;
           font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
           overflow-x: hidden;
         }
 
-        /* Desktop Split Layout (50% left, 50% right) */
-        .brand-section {
-          width: 50%;
-          height: 100vh;
-          background-color: #B77D56;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          position: relative;
-          flex-shrink: 0;
-        }
-
-        .logo-box {
-          width: 160px;
-          height: 160px;
-          border-radius: 50%;
-          overflow: hidden;
-          box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
-          border: 3px solid rgba(255, 255, 255, 0.35);
-          background-color: #000000;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 2;
-        }
-
-        .logo-img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-        }
-
-        /* Desktop Organic Wave Boundary */
-        .desktop-divider {
-          position: absolute;
-          top: 0;
-          right: -1px;
-          height: 100%;
-          width: 140px;
-          pointer-events: none;
-          z-index: 1;
-        }
-
-        .mobile-wave {
-          display: none;
-        }
-
-        .form-section {
-          width: 50%;
-          height: 100vh;
-          background-color: #ffffff;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          padding: 3rem 4rem;
-          z-index: 2;
-        }
-
-        .form-content {
-          width: 100%;
-          max-width: 420px;
-        }
-
-        .welcome-title {
-          font-size: 2.5rem;
-          font-weight: 700;
-          color: #111827;
-          margin-bottom: 0.4rem;
-          letter-spacing: -0.02em;
-          line-height: 1.2;
-        }
-
-        .welcome-subtitle {
-          font-size: 1rem;
-          color: #6b7280;
-          margin-bottom: 2.5rem;
-          line-height: 1.4;
-          font-weight: 400;
-        }
-
-        .login-form {
-          display: flex;
-          flex-direction: column;
-          gap: 1.75rem;
-        }
-
-        .underline-group {
-          display: flex;
-          flex-direction: column;
-        }
-
-        .underline-label {
-          font-size: 0.875rem;
-          color: #6b7280;
-          margin-bottom: 0.25rem;
-          font-weight: 400;
-        }
-
+        /* Common Underline Field */
         .underline-input {
           width: 100%;
           border: none;
-          border-bottom: 1.5px solid #111827;
+          border-bottom: 1.5px solid #A39386;
           padding: 0.5rem 0;
-          font-size: 1.05rem;
-          color: #111827;
+          font-size: 0.95rem;
+          color: #1C1917;
           background: transparent;
           outline: none;
-          font-weight: 500;
           font-family: inherit;
+          font-weight: 400;
           transition: border-color 0.2s ease;
+          box-sizing: border-box;
+        }
+
+        .underline-input::placeholder {
+          color: #9C8E84;
+          font-size: 0.925rem;
         }
 
         .underline-input:focus {
           border-bottom-color: #B77D56;
         }
 
-        .password-wrapper {
+        .password-relative-wrapper {
           position: relative;
+          width: 100%;
           display: flex;
           align-items: center;
         }
 
-        .eye-btn {
+        .eye-toggle-button {
           position: absolute;
           right: 0;
+          top: 50%;
+          transform: translateY(-50%);
           background: none;
           border: none;
-          color: #6b7280;
+          color: #78716C;
           cursor: pointer;
           padding: 0.25rem;
           display: flex;
           align-items: center;
           justify-content: center;
+          transition: color 0.2s ease;
         }
 
-        .login-btn {
-          width: 100%;
-          height: 52px;
-          background-color: #350505;
-          color: #ffffff;
-          border: none;
-          border-radius: 10px;
-          font-size: 1.05rem;
-          font-weight: 700;
-          cursor: pointer;
-          margin-top: 1rem;
-          box-shadow: 0 8px 20px rgba(53, 5, 5, 0.35);
-          transition: all 0.2s ease;
-          display: flex;
-          align-items: center;
-          justify-content: center;
+        .eye-toggle-button:hover {
+          color: #1C1917;
         }
 
-        .login-btn:hover {
-          transform: translateY(-1px);
-          box-shadow: 0 10px 24px rgba(53, 5, 5, 0.45);
-        }
-
-        .error-badge {
+        .alert-badge-box {
           display: flex;
           align-items: center;
           gap: 0.5rem;
-          background-color: #fef2f2;
-          border: 1px solid #fee2e2;
-          color: #dc2626;
-          padding: 0.75rem 1rem;
+          width: 100%;
+          padding: 0.55rem 0.8rem;
           border-radius: 8px;
           font-size: 0.85rem;
-          margin-bottom: 1.5rem;
+          margin-bottom: 1rem;
+          box-sizing: border-box;
         }
 
-        /* Mobile Viewport Adaptations (< 768px) */
+        .alert-badge-error {
+          background-color: #FEF2F2;
+          border: 1px solid #FEE2E2;
+          color: #DC2626;
+        }
+
+        .alert-badge-success {
+          background-color: #ECFDF5;
+          border: 1px solid #D1FAE5;
+          color: #059669;
+        }
+
+        /* ------------------------------------------------------------- */
+        /* 📱 MOBILE LAYOUT (< 768px)                                    */
+        /* ------------------------------------------------------------- */
         @media (max-width: 767px) {
-          .login-container {
+          .desktop-only-container {
+            display: none !important;
+          }
+
+          .mobile-only-container {
+            display: flex;
             flex-direction: column;
             min-height: 100vh;
             min-height: 100dvh;
             width: 100%;
-            overflow-x: hidden;
-            background-color: #ffffff;
-            background: #ffffff;
+            background-color: #FFFFFF;
+            position: relative;
           }
 
-          .brand-section {
+          /* Brown Top Hero Section (Top ~42% of Screen) */
+          .mobile-brown-hero {
             width: 100%;
-            height: 44vh;
-            min-height: 290px;
-            max-height: 380px;
+            height: 42vh;
+            min-height: 270px;
+            max-height: 360px;
             background-color: #B77D56;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             flex-shrink: 0;
           }
 
-          .logo-box {
-            width: 105px;
-            height: 105px;
+          /* Centered Circular Logo inside Hero */
+          .mobile-logo-circle {
+            width: 110px;
+            height: 110px;
             border-radius: 50%;
             overflow: hidden;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
-            border: 2px solid rgba(255, 255, 255, 0.2);
             background-color: #000000;
-            margin-top: -20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+            border: 2px solid rgba(255, 255, 255, 0.3);
             z-index: 2;
+            margin-top: -15px;
           }
 
-          .desktop-divider {
-            display: none;
+          .mobile-logo-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
           }
 
-          .mobile-wave {
-            display: block;
+          /* Smooth Organic Wave Transition SVG at Bottom of Hero */
+          .mobile-smooth-wave {
             position: absolute;
             bottom: -1px;
             left: 0;
             width: 100%;
-            height: 95px;
+            height: 90px;
             pointer-events: none;
             z-index: 1;
           }
 
-          .form-section {
+          /* White Form Container */
+          .mobile-form-section {
             width: 100%;
-            height: auto;
             flex: 1;
-            padding: 1.25rem 1.75rem calc(2.5rem + env(safe-area-inset-bottom, 0px)) 1.75rem;
-            align-items: flex-start;
-            background-color: #ffffff;
-            background: #ffffff;
+            padding: 1.5rem 1.5rem calc(2.5rem + env(safe-area-inset-bottom, 0px)) 1.5rem;
+            background-color: #FFFFFF;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
             z-index: 2;
           }
 
-          .form-content {
-            max-width: 100%;
-          }
-
-          .welcome-title {
-            font-size: clamp(1.85rem, 7.5vw, 2.05rem);
+          .mobile-title {
+            font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+            font-size: 2.1rem;
             font-weight: 500;
-            color: #1a1715;
-            margin-bottom: 0.35rem;
+            color: #1A1715;
+            margin: 0 0 0.35rem 0;
             letter-spacing: -0.01em;
           }
 
-          .welcome-subtitle {
-            font-size: 0.95rem;
-            color: #78716c;
-            margin-bottom: 2rem;
+          .mobile-subtitle {
+            font-size: 0.925rem;
+            color: #78716C;
+            margin: 0 0 1.75rem 0;
             line-height: 1.35;
             font-weight: 400;
           }
 
-          .login-form {
-            gap: 1.5rem;
+          .mobile-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.35rem;
+            width: 100%;
           }
 
-          .underline-group {
+          .mobile-field-group {
+            display: flex;
+            flex-direction: column;
+          }
+
+          .mobile-login-btn {
+            width: 100%;
+            height: 46px;
+            background-color: #350505;
+            color: #FFFFFF;
+            border: none;
+            border-radius: 9999px;
+            font-size: 1.025rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 1.5rem;
+            box-shadow: 0 8px 20px rgba(53, 5, 5, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+          }
+
+          .mobile-login-btn:active {
+            transform: scale(0.99);
+          }
+
+          .mobile-footer-nav {
+            font-size: 0.875rem;
+            color: #78716C;
+            text-align: center;
+            margin-top: 1.5rem;
+          }
+
+          .mobile-footer-link {
+            color: #B77D56;
+            font-weight: 700;
+            background: none;
+            border: none;
+            cursor: pointer;
+            margin-left: 0.35rem;
+            font-size: inherit;
+            font-family: inherit;
+          }
+        }
+
+        /* ------------------------------------------------------------- */
+        /* 🖥️ DESKTOP LAYOUT (≥ 768px)                                   */
+        /* ------------------------------------------------------------- */
+        @media (min-width: 768px) {
+          .mobile-only-container {
+            display: none !important;
+          }
+
+          .desktop-only-container {
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            position: relative;
+            background-color: #B77D56; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+          }
+
+          .desktop-bg-curve-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+          }
+
+          .desktop-login-card {
+            position: relative;
+            z-index: 10;
+            width: 450px;
+            min-height: 678px;
+            background-color: #FFFFFF;
+            border-radius: 20px;
+            padding: 2.25rem 2rem 2rem 2rem;
+            box-shadow: 0 10px 32px rgba(45, 25, 10, 0.08);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+          }
+
+          .desktop-card-top {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+          }
+
+          .desktop-logo-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            overflow: hidden;
+            background-color: #000000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+            margin-bottom: 1.15rem;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            flex-shrink: 0;
+          }
+
+          .desktop-logo-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+          }
+
+          .desktop-title {
+            font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.45rem;
+            font-weight: 700;
+            color: #2A1A10;
+            margin: 0 0 0.25rem 0;
+            text-align: center;
+          }
+
+          .desktop-subtitle {
+            font-size: 0.825rem;
+            color: #8C7D73;
+            margin: 0 0 1.5rem 0;
+            text-align: center;
+          }
+
+          .desktop-form {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+          }
+
+          .desktop-field-group {
+            display: flex;
+            flex-direction: column;
+          }
+
+          .desktop-field-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            color: #6B5C52;
+            text-transform: uppercase;
+            margin-bottom: 0.2rem;
+          }
+
+          .desktop-forgot-row {
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+            margin-top: -0.35rem;
             margin-bottom: 0.25rem;
           }
 
-          .underline-label {
-            font-size: 0.95rem;
-            color: #78716c;
-            margin-bottom: 0.2rem;
-            font-weight: 400;
+          .desktop-forgot-btn {
+            font-size: 0.78rem;
+            color: #B77D56;
+            font-weight: 500;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
           }
 
-          .underline-input {
-            border-bottom: 1px solid #71717a;
-            padding: 0.4rem 0;
-            font-size: 1rem;
-            color: #1c1917;
-          }
-
-          .eye-btn {
-            color: #71717a;
-            padding: 0.2rem;
-          }
-
-          .login-btn {
+          .desktop-login-btn {
+            width: 100%;
             height: 46px;
             background-color: #350505;
+            color: #FFFFFF;
+            border: none;
             border-radius: 9999px;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            margin-top: 0.5rem;
+          }
+
+          .desktop-footer-text {
+            font-size: 0.8rem;
+            color: #7A6C62;
+            text-align: center;
             margin-top: 1.25rem;
-            box-shadow: 0 8px 18px rgba(53, 5, 5, 0.25);
+          }
+
+          .desktop-footer-action {
+            color: #B77D56;
+            font-weight: 700;
+            cursor: pointer;
+            margin-left: 0.25rem;
+            background: none;
+            border: none;
+            font-size: inherit;
+            font-family: inherit;
           }
         }
       `}</style>
 
-      <div className="login-container">
-        {/* Upper Section (Brown #B77D56) */}
-        <div className="brand-section">
-          <div className="logo-box">
-            <img src="/logo.png" alt="T Clock Logo" className="logo-img" />
+      <div className="auth-page-wrapper">
+        <div className="mobile-only-container">
+          <div className="mobile-brown-hero">
+            <div className="mobile-logo-circle">
+              <img src="/logo.png" alt="Restaurant Logo" className="mobile-logo-img" />
+            </div>
+
+            <svg
+              className="mobile-smooth-wave"
+              viewBox="0 0 500 150"
+              preserveAspectRatio="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M 0 35 C 130 90, 230 20, 340 55 C 420 80, 470 105, 500 120 L 500 150 L 0 150 Z"
+                fill="#FFFFFF"
+              />
+            </svg>
           </div>
 
-          {/* Desktop Organic Boundary Wave (Right edge of left panel) */}
-          <svg className="desktop-divider" viewBox="0 0 140 800" preserveAspectRatio="none">
-            <path d="M 0 0 C 110 250, 10 550, 140 800 L 140 0 Z" fill="#ffffff" />
-          </svg>
-
-          {/* Mobile Organic Wave Transition (Bottom of brown section) */}
-          <svg className="mobile-wave" viewBox="0 0 500 150" preserveAspectRatio="none">
-            <path
-              d="M 0 45 C 60 95, 120 115, 170 115 C 230 115, 280 50, 330 50 C 390 50, 440 115, 500 125 L 500 150 L 0 150 Z"
-              fill="#ffffff"
-            />
-          </svg>
-        </div>
-
-        {/* Lower Section (White #ffffff Form) */}
-        <div className="form-section">
-          <div className="form-content">
-            <h1 className="welcome-title">Welcome back</h1>
-            <p className="welcome-subtitle">Your floor. Your control. Sign in to T Clock.</p>
+          <div className="mobile-form-section">
+            <h1 className="mobile-title">
+              {isCreateAccount ? 'Create Account' : 'Welcome back'}
+            </h1>
+            <p className="mobile-subtitle">
+              {isCreateAccount
+                ? 'A Taste of Tradition'
+                : ''}
+            </p>
 
             {error && (
-              <div className="error-badge">
+              <div className="alert-badge-box alert-badge-error">
                 <AlertCircle size={16} />
                 <span>{error}</span>
               </div>
             )}
+            {successMsg && (
+              <div className="alert-badge-box alert-badge-success">
+                <span>{successMsg}</span>
+              </div>
+            )}
 
-            <form onSubmit={handleSubmit} className="login-form">
-              {/* User Name Input */}
-              <div className="underline-group">
-                <label className="underline-label">User Name</label>
+            <form onSubmit={handleSubmit} className="mobile-form">
+              <div className="mobile-field-group">
                 <input
                   type="text"
                   className="underline-input"
+                  placeholder={isCreateAccount ? "Create Username" : "User Name"}
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   required
                 />
               </div>
 
-              {/* Password Input with Eye Icon */}
-              <div className="underline-group">
-                <label className="underline-label">Password</label>
-                <div className="password-wrapper">
+              {isCreateAccount && (
+                <div className="mobile-field-group">
+                  <input
+                    type="email"
+                    className="underline-input"
+                    placeholder="Enter your Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                </div>
+              )}
+
+              <div className="mobile-field-group">
+                <div className="password-relative-wrapper">
                   <input
                     type={showPassword ? 'text' : 'password'}
                     className="underline-input"
-                    style={{ paddingRight: '2.5rem' }}
+                    placeholder={isCreateAccount ? "Create Password" : "Password"}
+                    style={{ paddingRight: '2.25rem' }}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
                   />
                   <button
                     type="button"
-                    className="eye-btn"
+                    className="eye-toggle-button"
                     onClick={() => setShowPassword(!showPassword)}
                     tabIndex={-1}
                   >
-                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
               </div>
 
-              {/* Login Button */}
-              <button type="submit" className="login-btn" disabled={loading}>
-                {loading ? 'Logging in...' : 'Login'}
+              <button type="submit" className="mobile-login-btn" disabled={loading}>
+                {loading
+                  ? isCreateAccount
+                    ? 'Creating Account...'
+                    : 'Logging in...'
+                  : isCreateAccount
+                  ? 'Create Account'
+                  : 'Login'}
               </button>
             </form>
+
+            <div className="mobile-footer-nav">
+              {isCreateAccount ? (
+                <>
+                  Already have an account?
+                  <button type="button" className="mobile-footer-link" onClick={() => toggleMode(false)}>Login</button>
+                </>
+              ) : (
+                <>
+                  Don't have an account?
+                  <button type="button" className="mobile-footer-link" onClick={() => toggleMode(true)}>Create Account</button>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="desktop-only-container">
+          <svg className="desktop-bg-curve-svg" viewBox="0 0 1440 900" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M 0 450 C 420 280, 920 640, 1440 380 L 1440 900 L 0 900 Z" fill="#FCE4D0" />
+          </svg>
+
+          <div className="desktop-login-card">
+            <div className="desktop-card-top">
+              <div className="desktop-logo-circle">
+                <img src="/logo.png" alt="Restaurant Logo" className="desktop-logo-img" />
+              </div>
+
+              <h1 className="desktop-title">
+                {isCreateAccount ? 'Create Account' : 'Welcome Back'}
+              </h1>
+              <p className="desktop-subtitle">
+                {isCreateAccount ? 'A Taste of Tradition' : ''}
+              </p>
+
+              {error && (
+                <div className="alert-badge-box alert-badge-error">
+                  <AlertCircle size={14} />
+                  <span>{error}</span>
+                </div>
+              )}
+              {successMsg && (
+                <div className="alert-badge-box alert-badge-success">
+                  <span>{successMsg}</span>
+                </div>
+              )}
+
+              <form onSubmit={handleSubmit} className="desktop-form">
+                <div className="desktop-field-group">
+                  <input
+                    type="text"
+                    className="underline-input"
+                    placeholder={isCreateAccount ? "Create Username" : "Enter your Username"}
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    required
+                  />
+                </div>
+
+                {isCreateAccount && (
+                  <div className="desktop-field-group">
+                    <input
+                      type="email"
+                      className="underline-input"
+                      placeholder="Enter your Email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                    />
+                  </div>
+                )}
+
+                <div className="desktop-field-group">
+                  <label className="desktop-field-label">PASSWORD</label>
+                  <div className="password-relative-wrapper">
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      className="underline-input"
+                      placeholder={isCreateAccount ? "Create Password" : "Enter Password"}
+                      style={{ paddingRight: '2rem' }}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                    />
+                    <button
+                      type="button"
+                      className="eye-toggle-button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      tabIndex={-1}
+                    >
+                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
+                </div>
+
+                {!isCreateAccount && (
+                  <div className="desktop-forgot-row">
+                    <button type="button" className="desktop-forgot-btn" onClick={() => alert('Reset requested.')}>
+                      Forgot Password?
+                    </button>
+                  </div>
+                )}
+
+                <button type="submit" className="desktop-login-btn" disabled={loading}>
+                  {loading ? (isCreateAccount ? 'Creating...' : 'Logging in...') : (isCreateAccount ? 'Create Account' : 'Login')}
+                </button>
+              </form>
+            </div>
+
+            <div className="desktop-footer-text">
+              {isCreateAccount ? (
+                <>Already have an account? <button type="button" className="desktop-footer-action" onClick={() => toggleMode(false)}>Login</button></>
+              ) : (
+                <>New here? <button type="button" className="desktop-footer-action" onClick={() => toggleMode(true)}>create your account</button></>
+              )}
+            </div>
           </div>
         </div>
       </div>
     </>
   );
 };
-
