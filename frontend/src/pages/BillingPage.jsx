@@ -7,7 +7,10 @@ import { Receipt, Printer, Share2, Plus, RefreshCw, CheckCircle, CreditCard, XCi
 
 const getTableDisplayNum = (val) => {
   if (!val) return '';
-  return String(val).trim().replace(/^T\s*-?\s*/i, '');
+  return String(val)
+    .replace(/^Table\s*/i, '')
+    .replace(/^T/i, '')
+    .replace(/[-_\s]/g, '');
 };
 
 export const BillingPage = () => {

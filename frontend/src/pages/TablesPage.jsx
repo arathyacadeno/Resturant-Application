@@ -120,10 +120,12 @@ export const TablesPage = () => {
 
   const handleCreateTable = async (e) => {
     e.preventDefault();
+    const cleanNum = String(tableNumber || '').trim().replace(/^Table\s*/i, '').replace(/^T\s*-?\s*/i, '').trim();
+    const formattedNum = `T${cleanNum || '1'}`;
     try {
       await tablesApi.createTable({
-        number: tableNumber.startsWith('T') ? tableNumber : `T${tableNumber}`,
-        name: `Table ${tableNumber}`,
+        number: formattedNum,
+        name: `Table ${cleanNum || '1'}`,
         capacity: parseInt(capacity),
         section: floorSection.toLowerCase(),
       });
@@ -341,22 +343,23 @@ export const TablesPage = () => {
     return numA - numB;
   });
 
-  // Format table number consistently (e.g. "1" -> "T1", "T-1" -> "T1", "T1" -> "T1")
+  // Format table number consistently (e.g. "T1" -> "T 1", "T-2" -> "T 2", "T 3" -> "T 3", "T_4" -> "T 4")
   const formatTableNumber = (num) => {
-    if (!num) return 'T1';
-    const cleanStr = String(num).trim().replace(/^T\s*-?\s*/i, '').trim();
-    return `T${cleanStr || '1'}`;
+    if (!num) return 'T 1';
+    const cleanNumber = String(num)
+      .replace(/^Table\s*/i, '')
+      .replace(/^T/i, '')
+      .replace(/[-_\s]/g, '');
+    return `T ${cleanNumber || '1'}`;
   };
 
   const getTableDisplayNum = (num) => {
     if (!num) return '1';
     return (
       String(num)
-        .trim()
         .replace(/^Table\s*/i, '')
-        .replace(/^T\s*-?\s*/i, '')
-        .replace(/^[#-]\s*/, '')
-        .trim() || '1'
+        .replace(/^T/i, '')
+        .replace(/[-_\s]/g, '') || '1'
     );
   };
 

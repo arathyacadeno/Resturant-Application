@@ -61,14 +61,20 @@ export const QRCodePage = () => {
 
   const formatTableNumber = (num) => {
     if (!num) return 'T 1';
-    const str = String(num).trim().replace(/^T/i, '').trim();
-    return `T ${str || '1'}`;
+    const cleanNumber = String(num)
+      .replace(/^Table\s*/i, '')
+      .replace(/^T/i, '')
+      .replace(/[-_\s]/g, '');
+    return `T ${cleanNumber || '1'}`;
   };
 
   const getFullTableName = (num) => {
     if (!num) return 'Table 1';
-    const str = String(num).trim().replace(/^T/i, '').trim();
-    return `Table ${str || '1'}`;
+    const cleanNumber = String(num)
+      .replace(/^Table\s*/i, '')
+      .replace(/^T/i, '')
+      .replace(/[-_\s]/g, '');
+    return `Table ${cleanNumber || '1'}`;
   };
 
   const getSectionLabel = (table, index) => {
