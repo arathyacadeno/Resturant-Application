@@ -824,7 +824,7 @@ export const POSPage = () => {
                     }}
                   />
                   <span className="order-table-name">
-                    {selectedTable ? `Table ${String(selectedTable.number).replace(/^T/i, '')}` : 'Table 1'}
+                    {selectedTable ? `Table ${String(selectedTable.number || '').replace(/^Table\s*/i, '').replace(/^T/i, '').replace(/[-_\s]/g, '') || '1'}` : 'Table 1'}
                   </span>
                 </div>
                 <div className="order-table-card-right">

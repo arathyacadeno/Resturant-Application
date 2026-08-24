@@ -117,7 +117,7 @@ export const KitchenPage = () => {
                   <div>
                     <h3 style={{ fontSize: '1.2rem' }}>Order #{order.id}</h3>
                     <span style={{ fontSize: '0.8rem', color: 'var(--accent-amber)', fontWeight: 700 }}>
-                      {order.table ? `Table ${String(order.table).replace(/^T/i, '')}` : order.order_type.toUpperCase()}
+                      {order.table ? `Table ${String(order.table).replace(/^Table\s*/i, '').replace(/^T/i, '').replace(/[-_\s]/g, '') || '1'}` : (order.order_type || '').toUpperCase()}
                     </span>
                   </div>
 
