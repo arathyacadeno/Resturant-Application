@@ -39,11 +39,15 @@ export const POSPage = () => {
   const [loading, setLoading] = useState(true);
   const [orderSuccess, setOrderSuccess] = useState(null);
   const [showTablePicker, setShowTablePicker] = useState(false);
+  const [showViewOrderButton, setShowViewOrderButton] = useState(true);
+  const [placedOrderSnapshot, setPlacedOrderSnapshot] = useState(null);
 
   const {
     cartItems,
+    hasDraftItems,
     selectedTable,
     setSelectedTable,
+    activeTableOrder,
     loadingActiveOrder,
     orderType,
     setOrderType,
@@ -103,14 +107,21 @@ export const POSPage = () => {
   const handlePlaceOrder = async () => {
     try {
       setOrderSuccess(null);
+      setPlacedOrderSnapshot({
+        items: [...cartItems],
+        subtotal: subtotal,
+      });
       await placeOrder();
+      setShowViewOrderButton(false);
       setOrderSuccess('Order Sent to Kitchen 🔥');
       fetchData();
       setTimeout(() => {
         setOrderSuccess(null);
+        setPlacedOrderSnapshot(null);
         setShowMobileCart(false);
       }, 2500);
     } catch (err) {
+      setPlacedOrderSnapshot(null);
       const errorMsg =
         err.response?.data?.detail ||
         (typeof err.response?.data === 'object' ? JSON.stringify(err.response.data) : null) ||
@@ -129,7 +140,7 @@ export const POSPage = () => {
 
   const getCartItem = (menuItemId, portion) => {
     return cartItems.find(
-      (ci) => ci.menu_item.id === menuItemId && ci.portion === portion
+      (ci) => String(ci.menu_item?.id) === String(menuItemId) && ci.portion === portion
     );
   };
 
@@ -453,30 +464,32 @@ export const POSPage = () => {
           }
 
           .pos-page-wrapper {
-            padding-bottom: 165px !important;
+            padding-bottom: 90px !important;
           }
 
-          .mobile-cart-float-bar {
-            display: flex !important;
-            position: fixed !important;
-            left: 16px !important;
-            right: 16px !important;
-            bottom: 102px !important;
-            background: #350707 !important;
-            color: #ffffff !important;
-            border-radius: 20px !important;
-            padding: 0.75rem 1.15rem !important;
-            align-items: center !important;
-            justify-content: space-between !important;
-            box-shadow: 0 8px 25px rgba(53, 7, 7, 0.35) !important;
-            z-index: 9990 !important;
-            cursor: pointer !important;
-            border: 1px solid rgba(255, 255, 255, 0.12) !important;
-            transition: all 0.2s ease !important;
+          .view-order-pill {
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 90px;
+            background: #350707;
+            color: #ffffff;
+            border-radius: 9999px;
+            padding: 0.75rem 1.4rem;
+            font-size: 0.925rem;
+            font-weight: 700;
+            box-shadow: 0 8px 24px rgba(53, 7, 7, 0.35);
+            z-index: 9990;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            white-space: nowrap;
+            transition: all 0.2s ease;
           }
 
-          .mobile-cart-float-bar:active {
-            transform: scale(0.98) !important;
+          .view-order-pill:active {
+            transform: translateX(-50%) scale(0.98);
           }
         }
       `}</style>
@@ -782,16 +795,36 @@ export const POSPage = () => {
         </div>
 
         {/* Mobile Floating View Order Pill */}
-        {cartItems.length > 0 && (
+        {showViewOrderButton && hasDraftItems && (
           <div className="view-order-pill" onClick={() => setShowMobileCart(true)}>
             <span>View your Order 👀</span>
           </div>
         )}
 
-        {/* Order Sent to Kitchen Floating Pill */}
+        {/* Order Sent to Kitchen Success Toast */}
         {orderSuccess && (
-          <div className="order-sent-pill">
-            <span>Order Sent to Kitchen 🔥</span>
+          <div
+            style={{
+              position: 'fixed',
+              bottom: '90px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              backgroundColor: '#047857',
+              color: '#ffffff',
+              padding: '0.75rem 1.35rem',
+              borderRadius: '30px',
+              fontWeight: 700,
+              fontSize: '0.9rem',
+              boxShadow: '0 8px 24px rgba(4, 120, 87, 0.35)',
+              zIndex: 99999,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              whiteSpace: 'nowrap',
+              animation: 'fadeIn 0.2s ease-out'
+            }}
+          >
+            <span>{orderSuccess}</span>
           </div>
         )}
 
@@ -838,22 +871,49 @@ export const POSPage = () => {
 
               {/* Cart Items List */}
               <div className="order-cart-list">
-                {loadingActiveOrder ? (
-                  <div style={{ textAlign: 'center', padding: '24px 0', color: '#6F625C', fontSize: '14px', fontWeight: 600 }}>
-                    Loading order...
-                  </div>
-                ) : cartItems.length === 0 ? (
-                  <div style={{ textAlign: 'center', padding: '24px 0', color: '#6F625C', fontSize: '14px' }}>
-                    {selectedTable ? 'No active order items found for this table.' : 'Your cart is empty. Add food items to start an order.'}
-                  </div>
-                ) : (
-                  cartItems.map((item, idx) => {
+                {(() => {
+                  let displayItems = [];
+                  if (orderSuccess && placedOrderSnapshot?.items) {
+                    displayItems = placedOrderSnapshot.items;
+                  } else if (cartItems.length > 0) {
+                    displayItems = cartItems;
+                  } else if (activeTableOrder && Array.isArray(activeTableOrder.items)) {
+                    displayItems = activeTableOrder.items.map((item) => ({
+                      order_item_id: item.id,
+                      menu_item: {
+                        id: item.menu_item,
+                        name: item.menu_item_name || 'Item',
+                        price: parseFloat(item.unit_price || 0),
+                        image: item.menu_item_image || '',
+                      },
+                      quantity: item.quantity,
+                      unit_price: parseFloat(item.unit_price || 0),
+                      portion: item.portion || 'Full',
+                      notes: item.notes || '',
+                    }));
+                  }
+
+                  if (loadingActiveOrder) {
+                    return (
+                      <div style={{ textAlign: 'center', padding: '24px 0', color: '#6F625C', fontSize: '14px', fontWeight: 600 }}>
+                        Loading order...
+                      </div>
+                    );
+                  }
+                  if (displayItems.length === 0) {
+                    return (
+                      <div style={{ textAlign: 'center', padding: '24px 0', color: '#6F625C', fontSize: '14px' }}>
+                        {selectedTable ? 'No active order items found for this table.' : 'Your cart is empty. Add food items to start an order.'}
+                      </div>
+                    );
+                  }
+                  return displayItems.map((item, idx) => {
                     const itemPrice = (item.unit_price || item.menu_item?.price || 0) * item.quantity;
                     return (
-                      <div key={`${item.menu_item.id}-${item.portion}-${idx}`} className="order-cart-item">
+                      <div key={`${item.menu_item?.id || idx}-${item.portion}-${idx}`} className="order-cart-item">
                         <div className="order-item-left">
                           <span className="order-item-name">
-                            {item.menu_item.name}
+                            {item.menu_item?.name || 'Item'}
                             {item.portion && item.portion !== 'Full' ? ` (${item.portion})` : ''}
                           </span>
                         </div>
@@ -861,14 +921,14 @@ export const POSPage = () => {
                         <div className="order-item-qty">
                           <button
                             className="order-qty-btn"
-                            onClick={() => updateQuantity(item.menu_item.id, item.portion, -1)}
+                            onClick={() => updateQuantity(item.menu_item?.id || item.menu_item, item.portion, -1)}
                           >
                             −
                           </button>
                           <span className="order-qty-num">{item.quantity}</span>
                           <button
                             className="order-qty-btn"
-                            onClick={() => updateQuantity(item.menu_item.id, item.portion, 1)}
+                            onClick={() => updateQuantity(item.menu_item?.id || item.menu_item, item.portion, 1)}
                           >
                             +
                           </button>
@@ -880,7 +940,7 @@ export const POSPage = () => {
                           </span>
                           <button
                             className="order-item-remove"
-                            onClick={() => removeFromCart(item.menu_item.id, item.portion)}
+                            onClick={() => removeFromCart(item.menu_item?.id || item.menu_item, item.portion)}
                             title="Remove item"
                           >
                             &times;
@@ -888,26 +948,74 @@ export const POSPage = () => {
                         </div>
                       </div>
                     );
-                  })
-                )}
+                  });
+                })()}
               </div>
 
               {/* Order Summary Card */}
-              <div className="order-summary-card">
-                <div className="summary-row">
-                  <span>Subtotal</span>
-                  <span>₹{subtotal.toFixed(2)}</span>
-                </div>
-                <div className="summary-row">
-                  <span>GST (5%)</span>
-                  <span>₹{(subtotal * 0.05).toFixed(2)}</span>
-                </div>
-                <div className="summary-divider"></div>
-                <div className="summary-row summary-total">
-                  <span>Total</span>
-                  <span>₹{(subtotal * 1.05).toFixed(2)}</span>
-                </div>
-              </div>
+              {(() => {
+                let displayItems = [];
+                if (orderSuccess && placedOrderSnapshot?.items) {
+                  displayItems = placedOrderSnapshot.items;
+                } else if (cartItems.length > 0) {
+                  displayItems = cartItems;
+                } else if (activeTableOrder && Array.isArray(activeTableOrder.items)) {
+                  displayItems = activeTableOrder.items.map((item) => ({
+                    unit_price: parseFloat(item.unit_price || 0),
+                    quantity: item.quantity,
+                  }));
+                }
+
+                const currentSubtotal = displayItems.reduce(
+                  (sum, item) => sum + (item.unit_price || item.menu_item?.price || 0) * item.quantity,
+                  0
+                );
+
+                return (
+                  <div className="order-summary-card" style={{ position: 'relative' }}>
+                    <div className="summary-row">
+                      <span>Subtotal</span>
+                      <span>₹{currentSubtotal.toFixed(2)}</span>
+                    </div>
+                    <div className="summary-row">
+                      <span>GST (5%)</span>
+                      <span>₹{(currentSubtotal * 0.05).toFixed(2)}</span>
+                    </div>
+                    <div className="summary-divider"></div>
+                    <div className="summary-row summary-total">
+                      <span>Total</span>
+                      <span>₹{(currentSubtotal * 1.05).toFixed(2)}</span>
+                    </div>
+
+                    {/* Dark-Brown Overlay Pill matching reference image */}
+                    {orderSuccess && (
+                      <div
+                        style={{
+                          position: 'absolute',
+                          bottom: '6px',
+                          left: '50%',
+                          transform: 'translateX(-50%)',
+                          backgroundColor: '#2D0806',
+                          color: '#ffffff',
+                          padding: '0.45rem 1.15rem',
+                          borderRadius: '9999px',
+                          fontSize: '0.78rem',
+                          fontWeight: 700,
+                          boxShadow: '0 4px 14px rgba(0, 0, 0, 0.45)',
+                          zIndex: 20,
+                          whiteSpace: 'nowrap',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.35rem',
+                          animation: 'fadeIn 0.2s ease-out'
+                        }}
+                      >
+                        <span>{orderSuccess}</span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
 
               {/* Bottom Action Buttons */}
               <div className="order-sheet-actions">

@@ -124,8 +124,10 @@ class AddItemsToOrderView(APIView):
                     else:
                         unit_price = menu_item.price
 
-                existing = order.items.filter(menu_item=menu_item, portion=portion).first()
-                if existing:
+                existing_qs = order.items.filter(menu_item=menu_item, portion=portion)
+                if existing_qs.exists():
+                    existing = existing_qs.first()
+                    existing_qs.exclude(id=existing.id).delete()
                     existing.quantity += item_data.get('quantity', 1)
                     existing.save()
                 else:

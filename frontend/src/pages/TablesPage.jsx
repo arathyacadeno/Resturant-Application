@@ -71,7 +71,7 @@ const getStatusConfig = (rawStatus) => {
 
 export const TablesPage = () => {
   const navigate = useNavigate();
-  const { setSelectedTable, setCustomerName } = useOrder();
+  const { setSelectedTable, setCustomerName, startNewOrderSession } = useOrder();
   const { user, openProfile } = useAuth();
 
   const [tables, setTables] = useState([]);
@@ -815,7 +815,7 @@ export const TablesPage = () => {
                     cursor: 'pointer'
                   }}
                   onClick={() => {
-                    setSelectedTable(selectedAvailableTable);
+                    startNewOrderSession(selectedAvailableTable);
                     setSelectedAvailableTable(null);
                     navigate('/pos');
                   }}
