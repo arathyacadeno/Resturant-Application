@@ -4,7 +4,7 @@ import { ordersApi } from '../api/ordersApi';
 const OrderContext = createContext();
 
 export const OrderProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState([]);
+  const [draftItems, setDraftItems] = useState([]);
   const [selectedTable, setSelectedTable] = useState(null);
   const [activeTableOrder, setActiveTableOrder] = useState(null);
   const [loadingActiveOrder, setLoadingActiveOrder] = useState(false);
@@ -44,15 +44,60 @@ export const OrderProvider = ({ children }) => {
       loadActiveTableOrder(selectedTable.id);
     } else {
       setActiveTableOrder(null);
-      setCartItems([]);
+      setDraftItems([]);
       setCustomerName('');
       setCustomerPhone('');
       setOrderNotes('');
     }
   }, [selectedTable?.id]);
 
+  // Compute unified display cart items = previously submitted items + newly added draft items
+  const cartItems = (() => {
+    const map = new Map();
+
+    // 1. Include submitted items from active table order
+    if (activeTableOrder && Array.isArray(activeTableOrder.items)) {
+      activeTableOrder.items.forEach((item) => {
+        const key = `${item.menu_item}-${item.portion || 'Full'}`;
+        map.set(key, {
+          order_item_id: item.id,
+          menu_item: {
+            id: item.menu_item,
+            name: item.menu_item_name || 'Item',
+            price: parseFloat(item.unit_price || item.price || 0),
+            image: item.menu_item_image || '',
+          },
+          quantity: item.quantity,
+          unit_price: parseFloat(item.unit_price || item.price || 0),
+          portion: item.portion || 'Full',
+          notes: item.notes || '',
+          isSubmitted: true,
+          submittedQuantity: item.quantity,
+        });
+      });
+    }
+
+    // 2. Merge newly added draft items
+    draftItems.forEach((draft) => {
+      const key = `${draft.menu_item?.id}-${draft.portion || 'Full'}`;
+      if (map.has(key)) {
+        const existing = map.get(key);
+        existing.quantity = existing.submittedQuantity + draft.quantity;
+        if (draft.unit_price) existing.unit_price = draft.unit_price;
+      } else {
+        map.set(key, {
+          ...draft,
+          isSubmitted: false,
+          submittedQuantity: 0,
+        });
+      }
+    });
+
+    return Array.from(map.values());
+  })();
+
   const addToCart = (menuItem, portion = 'Full') => {
-    setCartItems((prev) => {
+    setDraftItems((prev) => {
       const existingIndex = prev.findIndex(
         (item) => String(item.menu_item?.id) === String(menuItem.id) && item.portion === portion
       );
@@ -88,27 +133,58 @@ export const OrderProvider = ({ children }) => {
   };
 
   const removeFromCart = async (menuItemId, portion) => {
-    setCartItems((prev) =>
+    setDraftItems((prev) =>
       prev.filter((item) => !(String(item.menu_item?.id) === String(menuItemId) && item.portion === portion))
     );
   };
 
   const updateQuantity = (menuItemId, portion, delta) => {
-    setCartItems((prev) => {
-      return prev
-        .map((item) => {
-          if (String(item.menu_item?.id) === String(menuItemId) && item.portion === portion) {
-            const newQty = item.quantity + delta;
-            return newQty > 0 ? { ...item, quantity: newQty } : null;
-          }
-          return item;
-        })
-        .filter(Boolean);
+    let submittedQty = 0;
+    if (activeTableOrder && Array.isArray(activeTableOrder.items)) {
+      const submittedItem = activeTableOrder.items.find(
+        (item) => String(item.menu_item) === String(menuItemId) && (item.portion || 'Full') === portion
+      );
+      if (submittedItem) {
+        submittedQty = submittedItem.quantity;
+      }
+    }
+
+    setDraftItems((prev) => {
+      const existingIndex = prev.findIndex(
+        (item) => String(item.menu_item?.id) === String(menuItemId) && item.portion === portion
+      );
+
+      const currentDraftQty = existingIndex > -1 ? prev[existingIndex].quantity : 0;
+      const currentDisplayQty = submittedQty + currentDraftQty;
+      const newDisplayQty = currentDisplayQty + delta;
+      const newDraftQty = Math.max(0, newDisplayQty - submittedQty);
+
+      if (existingIndex > -1) {
+        if (newDraftQty > 0) {
+          const updated = [...prev];
+          updated[existingIndex].quantity = newDraftQty;
+          return updated;
+        } else {
+          return prev.filter((_, idx) => idx !== existingIndex);
+        }
+      } else if (newDraftQty > 0) {
+        return [
+          ...prev,
+          {
+            menu_item: { id: menuItemId },
+            quantity: newDraftQty,
+            unit_price: 0,
+            portion,
+            notes: '',
+          },
+        ];
+      }
+      return prev;
     });
   };
 
   const updateItemNotes = (menuItemId, portion, notes) => {
-    setCartItems((prev) =>
+    setDraftItems((prev) =>
       prev.map((item) =>
         String(item.menu_item?.id) === String(menuItemId) && item.portion === portion
           ? { ...item, notes }
@@ -118,7 +194,7 @@ export const OrderProvider = ({ children }) => {
   };
 
   const clearCart = () => {
-    setCartItems([]);
+    setDraftItems([]);
     setSelectedTable(null);
     setActiveTableOrder(null);
     setCustomerName('');
@@ -133,7 +209,7 @@ export const OrderProvider = ({ children }) => {
 
   const startNewOrderSession = (table) => {
     setSelectedTable(table);
-    setCartItems([]);
+    setDraftItems([]);
     setActiveTableOrder(null);
     setCustomerName(table?.active_reservation?.guest_name || table?.guest_name || '');
     setCustomerPhone('');
@@ -141,8 +217,8 @@ export const OrderProvider = ({ children }) => {
   };
 
   const placeOrder = async () => {
-    if (cartItems.length === 0) {
-      throw new Error('Cart is empty');
+    if (draftItems.length === 0) {
+      throw new Error('No new items to place. Add items to submit to kitchen.');
     }
 
     if (orderType === 'dine_in' && !selectedTable) {
@@ -152,7 +228,7 @@ export const OrderProvider = ({ children }) => {
     setIsSubmitting(true);
     try {
       let createdOrder;
-      const itemsPayload = cartItems.map((item) => ({
+      const itemsPayload = draftItems.map((item) => ({
         menu_item: item.menu_item.id,
         quantity: item.quantity,
         unit_price: item.unit_price,
@@ -174,7 +250,7 @@ export const OrderProvider = ({ children }) => {
         createdOrder = await ordersApi.createOrder(payload);
       }
 
-      setCartItems([]);
+      setDraftItems([]);
       if (selectedTable?.id) {
         await loadActiveTableOrder(selectedTable.id);
       }
@@ -188,7 +264,8 @@ export const OrderProvider = ({ children }) => {
     <OrderContext.Provider
       value={{
         cartItems,
-        hasDraftItems: cartItems.length > 0,
+        draftItems,
+        hasDraftItems: draftItems.length > 0,
         selectedTable,
         setSelectedTable,
         startNewOrderSession,
