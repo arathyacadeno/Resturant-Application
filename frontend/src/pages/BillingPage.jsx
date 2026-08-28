@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import { billingApi } from '../api/billingApi';
 import { ordersApi } from '../api/ordersApi';
 import { authApi } from '../api/authApi';
 import { useAuth } from '../context/AuthContext';
+import { useOrder } from '../context/OrderContext';
 import { Receipt, Printer, Share2, Plus, RefreshCw, CheckCircle, CreditCard, XCircle } from 'lucide-react';
 
 const getTableDisplayNum = (val) => {
@@ -14,11 +16,14 @@ const getTableDisplayNum = (val) => {
 };
 
 export const BillingPage = () => {
+  const location = useLocation();
   const { user, openProfile } = useAuth();
+  const { selectedTable } = useOrder();
   const [bills, setBills] = useState([]);
   const [activeOrders, setActiveOrders] = useState([]);
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
+  const hasAutoOpenedRef = useRef(false);
 
   // Modals state
   const [showGenerateModal, setShowGenerateModal] = useState(false);
@@ -104,6 +109,38 @@ export const BillingPage = () => {
     const interval = setInterval(loadData, 6000);
     return () => clearInterval(interval);
   }, []);
+
+  // Auto-open target table bill on navigation if specified
+  useEffect(() => {
+    if (hasAutoOpenedRef.current) return;
+
+    const targetTableId = location.state?.targetTableId || selectedTable?.id;
+    const targetTableNum = location.state?.targetTableNumber || selectedTable?.number;
+
+    if ((targetTableId || targetTableNum) && activeOrders.length > 0) {
+      const match = activeOrders.find((ord) => {
+        const ordTableId = typeof ord.table === 'object' ? ord.table?.id : ord.table;
+        const ordTableNum = ord.table_number || (typeof ord.table === 'object' ? ord.table?.number : null);
+
+        const cleanOrdNum = getTableDisplayNum(ordTableNum || ordTableId);
+        const cleanTargetNum = getTableDisplayNum(targetTableNum || targetTableId);
+
+        return (
+          (targetTableId && String(ordTableId) === String(targetTableId)) ||
+          (cleanTargetNum && cleanOrdNum && cleanTargetNum === cleanOrdNum)
+        );
+      });
+
+      if (match) {
+        if (window.innerWidth <= 768) {
+          handleOpenViewBillSheet(match);
+        } else {
+          handleOpenGenerateForOrder(match.id);
+        }
+        hasAutoOpenedRef.current = true;
+      }
+    }
+  }, [activeOrders, location.state, selectedTable]);
 
   const handleMarkReady = async (orderId) => {
     try {
