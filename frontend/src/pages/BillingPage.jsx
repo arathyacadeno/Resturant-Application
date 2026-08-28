@@ -541,10 +541,10 @@ export const BillingPage = () => {
             </div>
 
             <div id="printable-receipt" style={{ textAlign: 'center', margin: '1rem 0', fontFamily: 'monospace', fontSize: '0.85rem' }}>
-              <img 
-                src="/logo.png" 
-                alt="T-Clock Logo" 
-                style={{ width: '70px', height: '70px', objectFit: 'contain', margin: '0 auto 0.5rem auto' }} 
+              <img
+                src="/logo.png"
+                alt="T-Clock Logo"
+                style={{ width: '70px', height: '70px', objectFit: 'contain', margin: '0 auto 0.5rem auto' }}
               />
               <h2 style={{ fontSize: '1.4rem', fontWeight: 900, color: '#0f172a', margin: 0 }}>
                 {settings?.name || 'T-CLOCK RESTO CAFE'}
@@ -611,14 +611,19 @@ export const BillingPage = () => {
                   ? `Table ${getTableDisplayNum(selectedBillOrder.table_number || selectedBillOrder.table)}`
                   : (selectedBillOrder.order_type || 'Takeaway')}
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '30px' }}>
-                <img
-                  src="/print.png"
-                  alt="Print"
-                  style={{ width: '22px', height: '22px', cursor: 'pointer', objectFit: 'contain' }}
+              <div className="bill-sheet-header-actions">
+                <div
+                  className="bill-sheet-print-btn"
                   onClick={() => window.print()}
                   title="Print Bill"
-                />
+                >
+                  <img
+                    src="/print.png"
+                    alt="Print"
+                    className="bill-sheet-print-icon"
+                  />
+                </div>
+
                 <button
                   className="bill-sheet-close-btn"
                   onClick={() => setSelectedBillOrder(null)}
@@ -638,7 +643,7 @@ export const BillingPage = () => {
                   Ph: +91 98765 43210 · GSTIN: 32ABCDE1234F1Z5
                 </p>
               </div>
-
+              <div className="bill-divider" />
               <div className="bill-meta-grid">
                 <div className="bill-meta-row">
                   <span>Date</span>

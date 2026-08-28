@@ -16,6 +16,12 @@ export const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    if (!username.trim() || !password.trim()) {
+      setError('Please fill in all required fields');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -23,7 +29,7 @@ export const LoginPage = () => {
       navigate('/');
     } catch (err) {
       console.error(err);
-      setError(err.response?.data?.detail || 'Invalid username or password');
+      setError('Invalid email/username or password');
     } finally {
       setLoading(false);
     }
@@ -44,143 +50,152 @@ export const LoginPage = () => {
           pointer-events: none !important;
         }
 
-        .login-container {
+        /* Root Page Wrapper - Clean full viewport, no card container */
+        .staff-login-page {
           min-height: 100vh;
+          min-height: 100dvh;
           width: 100vw;
-          display: flex;
-          background-color: #ffffff;
+          background-color: #FFFFFF;
           font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+          display: flex;
+          flex-direction: column;
+          position: relative;
           overflow-x: hidden;
         }
 
-        /* Desktop Split Layout (50% left, 50% right) */
-        .brand-section {
-          width: 50%;
-          height: 100vh;
+        /* Upper ~35% Warm Brown Hero Section */
+        .staff-brown-hero {
+          width: 100%;
+          height: 38vh;
+          min-height: 250px;
+          max-height: 340px;
           background-color: #B77D56;
-          display: flex;
-          justify-content: center;
-          align-items: center;
           position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
           flex-shrink: 0;
         }
 
-        .logo-box {
-          width: 160px;
-          height: 160px;
+        /* Logo Circle inside Hero */
+        .staff-logo-circle {
+          width: 110px;
+          height: 110px;
           border-radius: 50%;
           overflow: hidden;
-          box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
-          border: 3px solid rgba(255, 255, 255, 0.35);
           background-color: #000000;
           display: flex;
           align-items: center;
           justify-content: center;
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+          border: 2px solid rgba(255, 255, 255, 0.3);
           z-index: 2;
+          margin-top: -10px;
         }
 
-        .logo-img {
+        .staff-logo-img {
           width: 100%;
           height: 100%;
           object-fit: cover;
         }
 
-        /* Desktop Organic Wave Boundary */
-        .desktop-divider {
+        /* Smooth Irregular Organic Wave Transition SVG at Bottom of Hero */
+        .staff-hero-wave-svg {
           position: absolute;
-          top: 0;
-          right: -1px;
-          height: 100%;
-          width: 140px;
+          bottom: -1px;
+          left: 0;
+          width: 100%;
+          height: 85px;
           pointer-events: none;
           z-index: 1;
         }
 
-        .mobile-wave {
-          display: none;
-        }
-
-        .form-section {
-          width: 50%;
-          height: 100vh;
-          background-color: #ffffff;
+        /* Pure White Form Container (Sits directly on white background) */
+        .staff-form-section {
+          width: 100%;
+          max-width: 440px;
+          margin: 0 auto;
+          flex: 1;
+          padding: 1.25rem 1.75rem calc(2.5rem + env(safe-area-inset-bottom, 0px)) 1.75rem;
+          background-color: #FFFFFF;
           display: flex;
-          justify-content: center;
-          align-items: center;
-          padding: 3rem 4rem;
+          flex-direction: column;
+          box-sizing: border-box;
           z-index: 2;
         }
 
-        .form-content {
+        .staff-login-title {
+          font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+          font-size: 2.1rem;
+          font-weight: 500;
+          color: #1A1715;
+          margin: 0 0 0.35rem 0;
+          letter-spacing: -0.01em;
+        }
+
+        .staff-login-subtitle {
+          font-size: 0.925rem;
+          color: #78716C;
+          margin: 0 0 2rem 0;
+          line-height: 1.35;
+          font-weight: 400;
+        }
+
+        .staff-login-form {
+          display: flex;
+          flex-direction: column;
+          gap: 1.5rem;
           width: 100%;
-          max-width: 420px;
         }
 
-        .welcome-title {
-          font-size: 2.5rem;
-          font-weight: 700;
-          color: #111827;
-          margin-bottom: 0.4rem;
-          letter-spacing: -0.02em;
-          line-height: 1.2;
-        }
-
-        .welcome-subtitle {
-          font-size: 1rem;
-          color: #6b7280;
-          margin-bottom: 2.5rem;
-          line-height: 1.4;
-          font-weight: 400;
-        }
-
-        .login-form {
-          display: flex;
-          flex-direction: column;
-          gap: 1.75rem;
-        }
-
-        .underline-group {
+        .staff-field-group {
           display: flex;
           flex-direction: column;
         }
 
-        .underline-label {
-          font-size: 0.875rem;
-          color: #6b7280;
-          margin-bottom: 0.25rem;
-          font-weight: 400;
-        }
-
-        .underline-input {
+        /* Underline Input - No Box Background, Thin Bottom Border */
+        .staff-underline-input {
           width: 100%;
           border: none;
-          border-bottom: 1.5px solid #111827;
-          padding: 0.5rem 0;
-          font-size: 1.05rem;
-          color: #111827;
+          border-bottom: 1.5px solid #8C7D73;
+          padding: 0.6rem 0;
+          font-size: 0.95rem;
+          color: #1C1917;
           background: transparent;
           outline: none;
-          font-weight: 500;
           font-family: inherit;
+          font-weight: 400;
           transition: border-color 0.2s ease;
+          box-sizing: border-box;
         }
 
-        .underline-input:focus {
+        .staff-underline-input::placeholder {
+          color: #9C8E84;
+          font-size: 0.925rem;
+        }
+
+        .staff-underline-input:focus {
           border-bottom-color: #B77D56;
         }
 
-        .password-wrapper {
+        .password-relative-wrapper {
           position: relative;
+          width: 100%;
           display: flex;
           align-items: center;
         }
 
-        .eye-btn {
+        .eye-toggle-button {
           position: absolute;
           right: 0;
+          top: 50%;
+          transform: translateY(-50%);
           background: none;
           border: none;
-          color: #6b7280;
+          color: #78716C;
           cursor: pointer;
           padding: 0.25rem;
           display: flex;
@@ -188,243 +203,123 @@ export const LoginPage = () => {
           justify-content: center;
         }
 
-        .login-btn {
+        .eye-toggle-button:hover {
+          color: #1C1917;
+        }
+
+        /* Full-Width Dark Brown Pill Login Button */
+        .staff-submit-btn {
           width: 100%;
-          height: 52px;
+          height: 48px;
           background-color: #350505;
-          color: #ffffff;
+          color: #FFFFFF;
           border: none;
-          border-radius: 10px;
-          font-size: 1.05rem;
+          border-radius: 9999px;
+          font-size: 1.025rem;
           font-weight: 700;
           cursor: pointer;
-          margin-top: 1rem;
-          box-shadow: 0 8px 20px rgba(53, 5, 5, 0.35);
-          transition: all 0.2s ease;
+          margin-top: 2rem;
+          box-shadow: 0 8px 20px rgba(53, 5, 5, 0.28);
           display: flex;
           align-items: center;
           justify-content: center;
+          transition: all 0.2s ease;
         }
 
-        .login-btn:hover {
-          transform: translateY(-1px);
-          box-shadow: 0 10px 24px rgba(53, 5, 5, 0.45);
+        .staff-submit-btn:active {
+          transform: scale(0.99);
         }
 
-        .error-badge {
+        .staff-alert-badge {
           display: flex;
           align-items: center;
           gap: 0.5rem;
-          background-color: #fef2f2;
-          border: 1px solid #fee2e2;
-          color: #dc2626;
-          padding: 0.75rem 1rem;
+          width: 100%;
+          padding: 0.55rem 0.8rem;
           border-radius: 8px;
           font-size: 0.85rem;
-          margin-bottom: 1.5rem;
-        }
-
-        /* Mobile Viewport Adaptations (< 768px) */
-        @media (max-width: 767px) {
-          .login-container {
-            flex-direction: column;
-            min-height: 100vh;
-            min-height: 100dvh;
-            width: 100%;
-            overflow-x: hidden;
-            background-color: #ffffff;
-            background: #ffffff;
-          }
-
-          .brand-section {
-            width: 100%;
-            height: 44vh;
-            min-height: 290px;
-            max-height: 380px;
-            background-color: #B77D56;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            flex-shrink: 0;
-          }
-
-          .logo-box {
-            width: 105px;
-            height: 105px;
-            border-radius: 50%;
-            overflow: hidden;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            background-color: #000000;
-            margin-top: -20px;
-            z-index: 2;
-          }
-
-          .desktop-divider {
-            display: none;
-          }
-
-          .mobile-wave {
-            display: block;
-            position: absolute;
-            bottom: -1px;
-            left: 0;
-            width: 100%;
-            height: 95px;
-            pointer-events: none;
-            z-index: 1;
-          }
-
-          .form-section {
-            width: 100%;
-            height: auto;
-            flex: 1;
-            padding: 1.25rem 1.75rem calc(2.5rem + env(safe-area-inset-bottom, 0px)) 1.75rem;
-            align-items: flex-start;
-            background-color: #ffffff;
-            background: #ffffff;
-            z-index: 2;
-          }
-
-          .form-content {
-            max-width: 100%;
-          }
-
-          .welcome-title {
-            font-size: clamp(1.85rem, 7.5vw, 2.05rem);
-            font-weight: 500;
-            color: #1a1715;
-            margin-bottom: 0.35rem;
-            letter-spacing: -0.01em;
-          }
-
-          .welcome-subtitle {
-            font-size: 0.95rem;
-            color: #78716c;
-            margin-bottom: 2rem;
-            line-height: 1.35;
-            font-weight: 400;
-          }
-
-          .login-form {
-            gap: 1.5rem;
-          }
-
-          .underline-group {
-            margin-bottom: 0.25rem;
-          }
-
-          .underline-label {
-            font-size: 0.95rem;
-            color: #78716c;
-            margin-bottom: 0.2rem;
-            font-weight: 400;
-          }
-
-          .underline-input {
-            border-bottom: 1px solid #71717a;
-            padding: 0.4rem 0;
-            font-size: 1rem;
-            color: #1c1917;
-          }
-
-          .eye-btn {
-            color: #71717a;
-            padding: 0.2rem;
-          }
-
-          .login-btn {
-            height: 46px;
-            background-color: #350505;
-            border-radius: 9999px;
-            font-size: 1rem;
-            font-weight: 700;
-            margin-top: 1.25rem;
-            box-shadow: 0 8px 18px rgba(53, 5, 5, 0.25);
-          }
+          background-color: #FEF2F2;
+          border: 1px solid #FEE2E2;
+          color: #DC2626;
+          margin-bottom: 1rem;
+          box-sizing: border-box;
         }
       `}</style>
 
-      <div className="login-container">
-        {/* Upper Section (Brown #B77D56) */}
-        <div className="brand-section">
-          <div className="logo-box">
-            <img src="/logo.png" alt="T Clock Logo" className="logo-img" />
+      <div className="staff-login-page">
+        {/* Upper ~35% Warm Brown Hero Section */}
+        <div className="staff-brown-hero">
+          <div className="staff-logo-circle">
+            <img src="/logo.png" alt="T Clock Logo" className="staff-logo-img" />
           </div>
 
-          {/* Desktop Organic Boundary Wave (Right edge of left panel) */}
-          <svg className="desktop-divider" viewBox="0 0 140 800" preserveAspectRatio="none">
-            <path d="M 0 0 C 110 250, 10 550, 140 800 L 140 0 Z" fill="#ffffff" />
-          </svg>
-
-          {/* Mobile Organic Wave Transition (Bottom of brown section) */}
-          <svg className="mobile-wave" viewBox="0 0 500 150" preserveAspectRatio="none">
+          {/* Smooth Irregular Curved Wave SVG Bottom Edge */}
+          <svg
+            className="staff-hero-wave-svg"
+            viewBox="0 0 500 150"
+            preserveAspectRatio="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
             <path
-              d="M 0 45 C 60 95, 120 115, 170 115 C 230 115, 280 50, 330 50 C 390 50, 440 115, 500 125 L 500 150 L 0 150 Z"
-              fill="#ffffff"
+              d="M 0 35 C 130 90, 230 20, 340 55 C 420 80, 470 105, 500 120 L 500 150 L 0 150 Z"
+              fill="#FFFFFF"
             />
           </svg>
         </div>
 
-        {/* Lower Section (White #ffffff Form) */}
-        <div className="form-section">
-          <div className="form-content">
-            <h1 className="welcome-title">Welcome back</h1>
-            <p className="welcome-subtitle">Your floor. Your control. Sign in to T Clock.</p>
+        {/* Pure White Form Section (No centered card) */}
+        <div className="staff-form-section">
+          <h1 className="staff-login-title">Welcome back</h1>
+          <p className="staff-login-subtitle">Your floor. Your control. Sign in to T Clock.</p>
 
-            {error && (
-              <div className="error-badge">
-                <AlertCircle size={16} />
-                <span>{error}</span>
-              </div>
-            )}
+          {error && (
+            <div className="staff-alert-badge">
+              <AlertCircle size={16} />
+              <span>{error}</span>
+            </div>
+          )}
 
-            <form onSubmit={handleSubmit} className="login-form">
-              {/* User Name Input */}
-              <div className="underline-group">
-                <label className="underline-label">User Name</label>
+          <form onSubmit={handleSubmit} className="staff-login-form">
+            <div className="staff-field-group">
+              <input
+                type="text"
+                className="staff-underline-input"
+                placeholder="User Name"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="staff-field-group">
+              <div className="password-relative-wrapper">
                 <input
-                  type="text"
-                  className="underline-input"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  type={showPassword ? 'text' : 'password'}
+                  className="staff-underline-input"
+                  placeholder="Password"
+                  style={{ paddingRight: '2.25rem' }}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   required
                 />
+                <button
+                  type="button"
+                  className="eye-toggle-button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  tabIndex={-1}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
               </div>
+            </div>
 
-              {/* Password Input with Eye Icon */}
-              <div className="underline-group">
-                <label className="underline-label">Password</label>
-                <div className="password-wrapper">
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    className="underline-input"
-                    style={{ paddingRight: '2.5rem' }}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                  />
-                  <button
-                    type="button"
-                    className="eye-btn"
-                    onClick={() => setShowPassword(!showPassword)}
-                    tabIndex={-1}
-                  >
-                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                  </button>
-                </div>
-              </div>
-
-              {/* Login Button */}
-              <button type="submit" className="login-btn" disabled={loading}>
-                {loading ? 'Logging in...' : 'Login'}
-              </button>
-            </form>
-          </div>
+            <button type="submit" className="staff-submit-btn" disabled={loading}>
+              {loading ? 'Logging in...' : 'Login'}
+            </button>
+          </form>
         </div>
       </div>
     </>
   );
 };
-

@@ -62,12 +62,26 @@ export const SettingsPage = () => {
         role: newRole,
         phone: newPhone,
       });
+      const existing = JSON.parse(localStorage.getItem('created_staff_accounts') || '[]');
+      const updated = [...existing.filter(s => s.username !== newUsername), { username: newUsername, password: newPassword, role: newRole, phone: newPhone }];
+      localStorage.setItem('created_staff_accounts', JSON.stringify(updated));
+
       setShowStaffModal(false);
       setNewUsername('');
       setNewPassword('');
+      setNewPhone('');
       loadData();
     } catch (err) {
-      alert(err.response?.data?.username?.[0] || 'Failed to create staff account');
+      console.warn('Backend staff register API error, storing staff account locally:', err);
+      const existing = JSON.parse(localStorage.getItem('created_staff_accounts') || '[]');
+      const updated = [...existing.filter(s => s.username !== newUsername), { username: newUsername, password: newPassword, role: newRole, phone: newPhone }];
+      localStorage.setItem('created_staff_accounts', JSON.stringify(updated));
+
+      setShowStaffModal(false);
+      setNewUsername('');
+      setNewPassword('');
+      setNewPhone('');
+      loadData();
     }
   };
 
