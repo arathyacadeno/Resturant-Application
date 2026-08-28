@@ -152,6 +152,23 @@ export const TablesPage = () => {
     }
   };
 
+  const getTableSeatingCategory = (table) => {
+    if (!table) return 'Indoor Seating';
+    const sec = String(
+      table.section ||
+      table.category ||
+      table.type ||
+      table.area ||
+      table.seating_type ||
+      table.floor_section ||
+      ''
+    ).toLowerCase();
+    if (sec === 'outdoor' || sec === 'terrace' || sec === 'out door' || sec.includes('outdoor')) {
+      return 'Outdoor Seating';
+    }
+    return 'Indoor Seating';
+  };
+
   // Selected Table Bottom Sheet State
   const [selectedOccupiedTable, setSelectedOccupiedTable] = useState(null);
   const [selectedReservedTable, setSelectedReservedTable] = useState(null);
@@ -201,11 +218,19 @@ export const TablesPage = () => {
   };
 
   const handleSelectTableForOrder = (table) => {
-    const isMobile = window.innerWidth <= 768;
     const status = (table.status || '').toLowerCase();
-    
+
+    // If status is "billing", directly open the corresponding table's bill
+    if (status === 'billing') {
+      setSelectedTable(table);
+      setSelectedOccupiedTable(null);
+      navigate('/billing', { state: { targetTableId: table.id, targetTableNumber: table.number } });
+      return;
+    }
+
+    const isMobile = window.innerWidth <= 768;
     if (isMobile) {
-      if (['occupied', 'billing'].includes(status)) {
+      if (status === 'occupied') {
         setSelectedOccupiedTable(table);
         return;
       }
@@ -612,7 +637,7 @@ export const TablesPage = () => {
           <div className="occupied-table-sheet" onClick={(e) => e.stopPropagation()}>
             <div className="occupied-sheet-header">
               <span className="occupied-sheet-location">
-                {`Table ${getTableDisplayNum(selectedOccupiedTable.number)}`}
+                {getTableSeatingCategory(selectedOccupiedTable)}
               </span>
               <button
                 className="occupied-sheet-close"
@@ -675,8 +700,8 @@ export const TablesPage = () => {
         <div className="reserved-overlay" onClick={() => setSelectedReservedTable(null)}>
           <div className="reserved-details-sheet" onClick={(e) => e.stopPropagation()}>
             <div className="reserved-sheet-header" style={{ marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span className="reserved-title" style={{ fontSize: '11px', color: '#85807D', fontWeight: 400 }}>
-                {`Table ${getTableDisplayNum(selectedReservedTable.number)}`}
+              <span className="reserved-title" style={{ fontSize: '12px', color: '#85807D', fontWeight: 500 }}>
+                {getTableSeatingCategory(selectedReservedTable)}
               </span>
               <button
                 className="reserved-close"
@@ -766,7 +791,7 @@ export const TablesPage = () => {
           <div className="reserved-table-sheet" onClick={(e) => e.stopPropagation()}>
             <div className="reserved-sheet-header">
               <span className="reserved-sheet-location">
-                {`Table ${getTableDisplayNum(selectedAvailableTable.number)}`}
+                {getTableSeatingCategory(selectedAvailableTable)}
               </span>
               <button
                 className="reserved-sheet-close"
