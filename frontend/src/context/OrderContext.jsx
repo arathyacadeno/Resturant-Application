@@ -114,9 +114,9 @@ export const OrderProvider = ({ children }) => {
       }
 
       if (existingIndex > -1) {
-        const updated = [...prev];
-        updated[existingIndex].quantity += 1;
-        return updated;
+        return prev.map((item, idx) =>
+          idx === existingIndex ? { ...item, quantity: item.quantity + 1 } : item
+        );
       } else {
         return [
           ...prev,
@@ -161,9 +161,9 @@ export const OrderProvider = ({ children }) => {
 
       if (existingIndex > -1) {
         if (newDraftQty > 0) {
-          const updated = [...prev];
-          updated[existingIndex].quantity = newDraftQty;
-          return updated;
+          return prev.map((item, idx) =>
+            idx === existingIndex ? { ...item, quantity: newDraftQty } : item
+          );
         } else {
           return prev.filter((_, idx) => idx !== existingIndex);
         }

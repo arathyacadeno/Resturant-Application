@@ -627,11 +627,11 @@ export const POSPage = () => {
                     <div>
                       {cartItem ? (
                         <div className="quantity-control-bar">
-                          <button className="qty-btn" onClick={() => updateQuantity(item.id, currentPortion, -1)}>
+                          <button className="qty-btn" onClick={(e) => { e.stopPropagation(); updateQuantity(item.id, currentPortion, -1); }}>
                             <Minus size={14} />
                           </button>
                           <span style={{ fontWeight: 800, fontSize: '0.85rem', color: '#171717' }}>{cartItem.quantity}</span>
-                          <button className="qty-btn" onClick={() => updateQuantity(item.id, currentPortion, 1)}>
+                          <button className="qty-btn" onClick={(e) => { e.stopPropagation(); updateQuantity(item.id, currentPortion, 1); }}>
                             <Plus size={14} />
                           </button>
                         </div>
@@ -639,7 +639,7 @@ export const POSPage = () => {
                         <button
                           className="add-cart-btn"
                           disabled={!item.is_available}
-                          onClick={() => addToCart(item, currentPortion)}
+                          onClick={(e) => { e.stopPropagation(); addToCart(item, currentPortion); }}
                         >
                           {item.is_available ? (
                             <>
