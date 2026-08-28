@@ -2565,30 +2565,66 @@ h6 {
     display: flex !important;
     justify-content: space-between !important;
     align-items: center !important;
-    padding: 24px 22px 18px !important;
+    padding: 28px 24px 20px 32px !important;
+    box-sizing: border-box !important;
+    min-height: 90px !important;
   }
 
   .bill-sheet-title {
     font-size: 18px !important;
-    font-weight: 700 !important;
+    font-weight: 800 !important;
     color: #171717 !important;
+    line-height: 1.1 !important;
+    letter-spacing: -0.5px !important;
+  }
+
+  .bill-sheet-header-actions {
+    display: flex !important;
+    align-items: center !important;
+    gap: 24px !important;
+  }
+
+  .bill-sheet-print-btn {
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
+    border: 2px solid #171717 !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    box-sizing: border-box !important;
+    background: transparent !important;
+    flex-shrink: 0 !important;
+  }
+
+  .bill-sheet-print-icon {
+    width: 20px !important;
+    height: 20px !important;
+    object-fit: contain !important;
+    display: block !important;
   }
 
   .bill-sheet-close-btn {
-    width: 32px !important;
-    height: 32px !important;
-    border-radius: 50% !important;
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 0 !important;
     background: transparent !important;
     background-color: transparent !important;
     border: none !important;
-    font-size: 16px !important;
-    font-weight: 400 !important;
-    color: #475569 !important;
+    font-size: 30px !important;
+    font-weight: 300 !important;
+    line-height: 1 !important;
+    color: #9CA3AF !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     cursor: pointer !important;
     box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
   }
 
   .bill-preview {

@@ -611,30 +611,16 @@ export const BillingPage = () => {
                   ? `Table ${getTableDisplayNum(selectedBillOrder.table_number || selectedBillOrder.table)}`
                   : (selectedBillOrder.order_type || 'Takeaway')}
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '30px' }}>
+              <div className="bill-sheet-header-actions">
                 <div
-                  style={{
-                    width: '35px',
-                    height: '35px',
-                    border: '1px solid #171717',
-                    borderRadius: '50%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
-                    boxSizing: 'border-box',
-                  }}
+                  className="bill-sheet-print-btn"
                   onClick={() => window.print()}
                   title="Print Bill"
                 >
                   <img
                     src="/print.png"
                     alt="Print"
-                    style={{
-                      width: '20px',
-                      height: '20px',
-                      objectFit: 'contain',
-                    }}
+                    className="bill-sheet-print-icon"
                   />
                 </div>
 
