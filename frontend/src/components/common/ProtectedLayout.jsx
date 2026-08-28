@@ -9,22 +9,7 @@ export const ProtectedLayout = () => {
   const { user, loading } = useAuth();
 
   if (loading) {
-    return (
-      <div style={{
-        height: '100vh', 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'center', 
-        backgroundColor: '#FCE4D0',
-        color: '#350707'
-      }}>
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ padding: '0.75rem 1.5rem', fontSize: '1rem', fontWeight: 700, backgroundColor: '#ffffff', borderRadius: '20px', boxShadow: '0 4px 15px rgba(0,0,0,0.08)' }}>
-            Loading T-Clock Resto System...
-          </div>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   if (!user) {
