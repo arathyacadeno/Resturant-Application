@@ -826,7 +826,7 @@ export const BillingPage = () => {
                 onClick={handleSettleBill}
                 disabled={settlingBill}
               >
-                {settlingBill ? 'Settling...' : 'Settle Bill 💸'}
+                {settlingBill ? 'Settling...' : 'Settle Bill'}
               </button>
             </div>
           </div>
