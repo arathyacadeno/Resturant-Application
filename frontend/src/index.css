@@ -1637,28 +1637,29 @@ h6 {
   }
 
   .quantity-control-bar {
-    width: 133px !important;
-    min-width: 133px !important;
-    max-width: 133px !important;
-    height: 22px !important;
-    min-height: 22px !important;
-    max-height: 22px !important;
+    width: 137px !important;
+    min-width: 137px !important;
+    max-width: 137px !important;
+    height: 26px !important;
+    min-height: 26px !important;
+    max-height: 26px !important;
     margin: 0 auto !important;
     padding: 0 !important;
-    background: #FCE4D0 !important;
-    border: 1px solid #E5D5C8 !important;
+    background: transparent !important;
+    border: 1.5px solid #C8956D !important;
     border-radius: 999px !important;
     display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
+    align-items: stretch !important;
+    justify-content: stretch !important;
     overflow: hidden !important;
     box-sizing: border-box !important;
   }
 
   .quantity-control-bar .qty-btn,
   .qty-btn {
-    width: 32px !important;
-    height: 22px !important;
+    flex: 1 1 0% !important;
+    width: 33.333% !important;
+    height: 100% !important;
     padding: 0 !important;
     margin: 0 !important;
     display: flex !important;
@@ -1666,19 +1667,25 @@ h6 {
     justify-content: center !important;
     flex-shrink: 0 !important;
     border-radius: 0 !important;
-    background: transparent !important;
+    background: #FCEBDC !important;
     color: #171717 !important;
     border: none !important;
     cursor: pointer !important;
     font-weight: 800 !important;
     font-size: 14px !important;
+    transition: background 0.15s ease !important;
+  }
+
+  .quantity-control-bar .qty-btn:hover {
+    background: #F8DABF !important;
   }
 
   .quantity-control-bar span,
   .quantity-control-bar .quantity-value,
   .quantity-control-bar .qty-num {
-    width: 35px !important;
-    height: 22px !important;
+    flex: 1 1 0% !important;
+    width: 33.333% !important;
+    height: 100% !important;
     padding: 0 !important;
     margin: 0 !important;
     display: flex !important;
@@ -1687,9 +1694,10 @@ h6 {
     background: #FFFFFF !important;
     color: #171717 !important;
     font-weight: 800 !important;
-    font-size: 13px !important;
+    font-size: 14px !important;
     text-align: center !important;
     border: none !important;
+    box-sizing: border-box !important;
   }
 
   .view-order-pill {
