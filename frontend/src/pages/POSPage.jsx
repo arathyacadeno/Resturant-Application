@@ -42,6 +42,23 @@ export const POSPage = () => {
   const [showViewOrderButton, setShowViewOrderButton] = useState(true);
   const [placedOrderSnapshot, setPlacedOrderSnapshot] = useState(null);
 
+  // Lock body scroll when any modal/sheet is active
+  useEffect(() => {
+    const isModalOpen = Boolean(showMobileCart || showLogoutModal || showTablePicker);
+    if (isModalOpen) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.touchAction = 'none';
+    } else {
+      document.body.style.overflow = '';
+      document.body.style.touchAction = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.touchAction = '';
+    };
+  }, [showMobileCart, showLogoutModal, showTablePicker]);
+
   const {
     cartItems,
     hasDraftItems,

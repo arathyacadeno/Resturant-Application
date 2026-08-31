@@ -42,6 +42,23 @@ export const BillingPage = () => {
   const [settlingBill, setSettlingBill] = useState(false);
   const [settleSuccessToast, setSettleSuccessToast] = useState(false);
 
+  // Lock body scroll when any modal or sheet is open
+  useEffect(() => {
+    const isModalOpen = Boolean(selectedBillOrder || showGenerateModal || showReceiptModal);
+    if (isModalOpen) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.touchAction = 'none';
+    } else {
+      document.body.style.overflow = '';
+      document.body.style.touchAction = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.touchAction = '';
+    };
+  }, [selectedBillOrder, showGenerateModal, showReceiptModal]);
+
   const handleOpenViewBillSheet = (order) => {
     setSelectedBillOrder(order);
     setIsIncludeGst(true);
@@ -266,7 +283,7 @@ export const BillingPage = () => {
                       {ord.table_number || ord.table ? `Table ${getTableDisplayNum(ord.table_number || ord.table)}` : (ord.order_type || 'Takeaway')}
                     </span>
                     <span className="mobile-card-bill-amount">
-                      ₹{totalAmt.toFixed(2)}
+                      ₹{totalAmt % 1 === 0 ? totalAmt.toFixed(0) : totalAmt.toFixed(2)}
                     </span>
                   </div>
 
@@ -278,17 +295,17 @@ export const BillingPage = () => {
                   {/* Card Badges Row */}
                   <div className="mobile-card-badges-row">
                     {isReady ? (
-                      <span className="badge-ready-serve">READY TO SERVE</span>
+                      <span className="badge-ready-serve">Ready to Serve</span>
                     ) : isServed ? (
-                      <span className="badge-served-order">SERVED</span>
+                      <span className="badge-served-order">Served</span>
                     ) : (
-                      <span className="badge-kitchen-order">🔥 ORDER SENT TO KITCHEN</span>
+                      <span className="badge-kitchen-order">Order Sent to Kitchen 🔥</span>
                     )}
 
                     {ord.is_paid ? (
-                      <span className="badge-payment-paid">PAID</span>
+                      <span className="badge-payment-paid">Paid</span>
                     ) : (
-                      <span className="badge-payment-unpaid">⏳ UNPAID</span>
+                      <span className="badge-payment-unpaid">⏳ Unpaid</span>
                     )}
                   </div>
 
