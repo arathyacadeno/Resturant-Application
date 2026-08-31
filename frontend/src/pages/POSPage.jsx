@@ -42,6 +42,26 @@ export const POSPage = () => {
   const [showViewOrderButton, setShowViewOrderButton] = useState(true);
   const [placedOrderSnapshot, setPlacedOrderSnapshot] = useState(null);
 
+  // Lock body scroll when any modal/sheet is active
+  useEffect(() => {
+    const isModalOpen = Boolean(showMobileCart || showLogoutModal || showTablePicker);
+    if (isModalOpen) {
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
+      document.body.style.touchAction = 'none';
+    } else {
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
+      document.body.style.touchAction = '';
+    }
+
+    return () => {
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
+      document.body.style.touchAction = '';
+    };
+  }, [showMobileCart, showLogoutModal, showTablePicker]);
+
   const {
     cartItems,
     hasDraftItems,
@@ -628,11 +648,11 @@ export const POSPage = () => {
                       {cartItem ? (
                         <div className="quantity-control-bar">
                           <button className="qty-btn" onClick={(e) => { e.stopPropagation(); updateQuantity(item.id, currentPortion, -1); }}>
-                            <Minus size={14} />
+                            <Minus size={14} strokeWidth={2.5} />
                           </button>
-                          <span style={{ fontWeight: 800, fontSize: '0.85rem', color: '#171717' }}>{cartItem.quantity}</span>
+                          <span className="qty-num">{cartItem.quantity}</span>
                           <button className="qty-btn" onClick={(e) => { e.stopPropagation(); updateQuantity(item.id, currentPortion, 1); }}>
-                            <Plus size={14} />
+                            <Plus size={14} strokeWidth={2.5} />
                           </button>
                         </div>
                       ) : (
@@ -644,12 +664,12 @@ export const POSPage = () => {
                           {item.is_available ? (
                             <>
                               <img
-                                src="/cart-icon.png"
+                                src="/.jpg"
                                 alt="Cart"
                                 className="add-cart-icon-img"
                                 onError={(e) => {
                                   e.target.onerror = null;
-                                  e.target.src = '/Frame 26.png';
+                                  e.target.src = '/cart-icon.png';
                                 }}
                               />
                               <span>Add</span>
@@ -830,7 +850,15 @@ export const POSPage = () => {
 
         {/* Mobile Slide-Up Order Drawer Modal */}
         {showMobileCart && (
-          <div className="order-overlay" onClick={() => setShowMobileCart(false)}>
+          <div
+            className="order-overlay"
+            onClick={() => setShowMobileCart(false)}
+            onTouchMove={(e) => {
+              if (e.target === e.currentTarget) {
+                e.preventDefault();
+              }
+            }}
+          >
             <div className="order-sheet" onClick={(e) => e.stopPropagation()}>
               {/* Header */}
               <div className="order-sheet-header">
@@ -840,7 +868,7 @@ export const POSPage = () => {
                   onClick={() => setShowMobileCart(false)}
                   aria-label="Close"
                 >
-                  &times;
+                  <X size={16} strokeWidth={2.5} />
                 </button>
               </div>
 

@@ -5,7 +5,7 @@ import { ordersApi } from '../api/ordersApi';
 import { authApi } from '../api/authApi';
 import { useAuth } from '../context/AuthContext';
 import { useOrder } from '../context/OrderContext';
-import { Receipt, Printer, Share2, Plus, RefreshCw, CheckCircle, CreditCard, XCircle } from 'lucide-react';
+import { Receipt, Printer, Share2, Plus, RefreshCw, CheckCircle, CreditCard, XCircle, X } from 'lucide-react';
 
 const getTableDisplayNum = (val) => {
   if (!val) return '';
@@ -41,6 +41,23 @@ export const BillingPage = () => {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('cash');
   const [settlingBill, setSettlingBill] = useState(false);
   const [settleSuccessToast, setSettleSuccessToast] = useState(false);
+
+  // Lock body scroll when any modal or sheet is open
+  useEffect(() => {
+    const isModalOpen = Boolean(selectedBillOrder || showGenerateModal || showReceiptModal);
+    if (isModalOpen) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.touchAction = 'none';
+    } else {
+      document.body.style.overflow = '';
+      document.body.style.touchAction = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.touchAction = '';
+    };
+  }, [selectedBillOrder, showGenerateModal, showReceiptModal]);
 
   const handleOpenViewBillSheet = (order) => {
     setSelectedBillOrder(order);
@@ -110,12 +127,13 @@ export const BillingPage = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Auto-open target table bill on navigation if specified
+  // Auto-open target table bill on navigation if specified via location.state
   useEffect(() => {
     if (hasAutoOpenedRef.current) return;
 
-    const targetTableId = location.state?.targetTableId || selectedTable?.id;
-    const targetTableNum = location.state?.targetTableNumber || selectedTable?.number;
+    // Only auto-open if explicitly navigated with targetTableId/Number in location.state
+    const targetTableId = location.state?.targetTableId;
+    const targetTableNum = location.state?.targetTableNumber;
 
     if ((targetTableId || targetTableNum) && activeOrders.length > 0) {
       const match = activeOrders.find((ord) => {
@@ -140,7 +158,7 @@ export const BillingPage = () => {
         hasAutoOpenedRef.current = true;
       }
     }
-  }, [activeOrders, location.state, selectedTable]);
+  }, [activeOrders, location.state]);
 
   const handleMarkReady = async (orderId) => {
     try {
@@ -266,7 +284,7 @@ export const BillingPage = () => {
                       {ord.table_number || ord.table ? `Table ${getTableDisplayNum(ord.table_number || ord.table)}` : (ord.order_type || 'Takeaway')}
                     </span>
                     <span className="mobile-card-bill-amount">
-                      ₹{totalAmt.toFixed(2)}
+                      ₹{totalAmt % 1 === 0 ? totalAmt.toFixed(0) : totalAmt.toFixed(2)}
                     </span>
                   </div>
 
@@ -278,17 +296,17 @@ export const BillingPage = () => {
                   {/* Card Badges Row */}
                   <div className="mobile-card-badges-row">
                     {isReady ? (
-                      <span className="badge-ready-serve">READY TO SERVE</span>
+                      <span className="badge-ready-serve">Ready to Serve</span>
                     ) : isServed ? (
-                      <span className="badge-served-order">SERVED</span>
+                      <span className="badge-served-order">Served</span>
                     ) : (
-                      <span className="badge-kitchen-order">🔥 ORDER SENT TO KITCHEN</span>
+                      <span className="badge-kitchen-order">Order Sent to Kitchen 🔥</span>
                     )}
 
                     {ord.is_paid ? (
-                      <span className="badge-payment-paid">PAID</span>
+                      <span className="badge-payment-paid">Paid</span>
                     ) : (
-                      <span className="badge-payment-unpaid">⏳ UNPAID</span>
+                      <span className="badge-payment-unpaid">⏳ Unpaid</span>
                     )}
                   </div>
 
@@ -664,8 +682,9 @@ export const BillingPage = () => {
                 <button
                   className="bill-sheet-close-btn"
                   onClick={() => setSelectedBillOrder(null)}
+                  aria-label="Close"
                 >
-                  ×
+                  <X size={16} strokeWidth={2.5} />
                 </button>
               </div>
             </div>

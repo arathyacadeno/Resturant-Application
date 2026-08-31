@@ -1300,35 +1300,220 @@ h6 {
     filter: none !important;
   }
 
-  /* Occupied & Reserved Table Detail Bottom Sheet */
+  /* Shared Table Details Bottom Sheet Overlay & Modal (Available & Reserved) */
   .table-modal-overlay,
   .reserved-overlay,
-  .reserved-modal-overlay {
+  .reserved-modal-overlay,
+  .table-sheet-overlay {
     position: fixed !important;
     inset: 0 !important;
-    background: rgba(0, 0, 0, 0.12) !important;
+    background: rgba(0, 0, 0, 0.25) !important;
     backdrop-filter: blur(5px) !important;
     -webkit-backdrop-filter: blur(5px) !important;
-    z-index: 1000 !important;
+    z-index: 9999 !important;
+    overscroll-behavior: contain !important;
+    touch-action: none !important;
     animation: fadeInOverlay 0.25s ease-out !important;
   }
 
   .occupied-table-sheet,
+  .reserved-table-sheet,
   .reserved-details-sheet,
-  .reserved-table-sheet {
+  .table-details-sheet {
     position: fixed !important;
     left: 0 !important;
     right: 0 !important;
     bottom: 0 !important;
+    width: 100% !important;
+    max-width: 440px !important;
+    margin: 0 auto !important;
     background: #FFFFFF !important;
-    border-radius: 26px 26px 0 0 !important;
-    padding: 18px 20px 24px !important;
-    z-index: 1100 !important;
-    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.12) !important;
+    border-radius: 32px 32px 0 0 !important;
+    padding: 22px 24px 28px 24px !important;
+    z-index: 10000 !important;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15) !important;
     animation: occupiedSheetUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
     box-sizing: border-box !important;
-    max-width: 430px !important;
-    margin: 0 auto !important;
+    overscroll-behavior: contain !important;
+  }
+
+  .table-sheet-header,
+  .reserved-sheet-header,
+  .occupied-sheet-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 20px !important;
+  }
+
+  .table-sheet-location,
+  .reserved-sheet-location,
+  .occupied-sheet-location {
+    font-size: 14px !important;
+    color: #85807D !important;
+    font-weight: 500 !important;
+  }
+
+  .table-sheet-close,
+  .reserved-sheet-close,
+  .occupied-sheet-close {
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50% !important;
+    background: #F4F4F5 !important;
+    border: none !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: #71717A !important;
+    font-size: 18px !important;
+    cursor: pointer !important;
+    padding: 0 !important;
+    line-height: 1 !important;
+    transition: background 0.15s ease !important;
+  }
+
+  .table-sheet-close:hover {
+    background: #E4E4E7 !important;
+  }
+
+  .table-sheet-body,
+  .reserved-sheet-body,
+  .occupied-sheet-body {
+    display: flex !important;
+    align-items: center !important;
+    gap: 16px !important;
+    margin-bottom: 24px !important;
+  }
+
+  .table-sheet-avatar,
+  .reserved-sheet-avatar,
+  .occupied-sheet-avatar {
+    width: 58px !important;
+    height: 58px !important;
+    border-radius: 50% !important;
+    background: #F8F4F1 !important;
+    border: 1px solid #E5D9D2 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0 !important;
+  }
+
+  .table-sheet-avatar img,
+  .reserved-sheet-avatar img,
+  .occupied-sheet-avatar img {
+    width: 30px !important;
+    height: 30px !important;
+    object-fit: contain !important;
+  }
+
+  .table-sheet-info,
+  .reserved-sheet-info,
+  .occupied-sheet-info {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+  }
+
+  .table-sheet-title,
+  .reserved-sheet-title,
+  .occupied-sheet-title {
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    color: #171717 !important;
+    margin: 0 !important;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    line-height: 1.2 !important;
+  }
+
+  .table-sheet-status,
+  .reserved-sheet-status,
+  .occupied-sheet-status {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    font-size: 13.5px !important;
+    color: #71717A !important;
+    font-weight: 400 !important;
+  }
+
+  .table-status-dot {
+    width: 8px !important;
+    height: 8px !important;
+    border-radius: 50% !important;
+    display: inline-block !important;
+    flex-shrink: 0 !important;
+  }
+
+  .table-status-dot.green {
+    background: #2C8238 !important;
+  }
+
+  .table-status-dot.blue {
+    background: #7A9FD3 !important;
+  }
+
+  .table-sheet-actions,
+  .reserved-sheet-actions,
+  .occupied-sheet-actions {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    width: 100% !important;
+  }
+
+  /* Shared Table Modal Pill Buttons (Available & Reserved) */
+  .table-modal-button,
+  .primary-button,
+  .secondary-button,
+  .table-sheet-btn-primary,
+  .table-sheet-btn-secondary,
+  .start-order-btn,
+  .reserve-this-table-btn,
+  .cancel-reservation-btn {
+    width: 100% !important;
+    height: 46px !important;
+    border-radius: 999px !important;
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+    transition: all 0.15s ease !important;
+    margin: 0 !important;
+    outline: none !important;
+  }
+
+  .primary-button,
+  .table-sheet-btn-primary,
+  .start-order-btn {
+    background: #350505 !important;
+    color: #FFFFFF !important;
+    border: none !important;
+  }
+
+  .secondary-button,
+  .table-sheet-btn-secondary,
+  .reserve-this-table-btn,
+  .cancel-reservation-btn {
+    background: #FFFFFF !important;
+    color: #350505 !important;
+    border: 1.5px solid #350505 !important;
+  }
+
+  @keyframes popModalUp {
+    from {
+      opacity: 0;
+      transform: scale(0.94);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
   }
 
   @keyframes fadeInOverlay {
@@ -1637,28 +1822,29 @@ h6 {
   }
 
   .quantity-control-bar {
-    width: 133px !important;
-    min-width: 133px !important;
-    max-width: 133px !important;
-    height: 22px !important;
-    min-height: 22px !important;
-    max-height: 22px !important;
+    width: 137px !important;
+    min-width: 137px !important;
+    max-width: 137px !important;
+    height: 26px !important;
+    min-height: 26px !important;
+    max-height: 26px !important;
     margin: 0 auto !important;
     padding: 0 !important;
-    background: #FCE4D0 !important;
-    border: 1px solid #E5D5C8 !important;
+    background: transparent !important;
+    border: 1.5px solid #C8956D !important;
     border-radius: 999px !important;
     display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
+    align-items: stretch !important;
+    justify-content: stretch !important;
     overflow: hidden !important;
     box-sizing: border-box !important;
   }
 
   .quantity-control-bar .qty-btn,
   .qty-btn {
-    width: 32px !important;
-    height: 22px !important;
+    flex: 1 1 0% !important;
+    width: 33.333% !important;
+    height: 100% !important;
     padding: 0 !important;
     margin: 0 !important;
     display: flex !important;
@@ -1666,19 +1852,25 @@ h6 {
     justify-content: center !important;
     flex-shrink: 0 !important;
     border-radius: 0 !important;
-    background: transparent !important;
+    background: #FCEBDC !important;
     color: #171717 !important;
     border: none !important;
     cursor: pointer !important;
     font-weight: 800 !important;
     font-size: 14px !important;
+    transition: background 0.15s ease !important;
+  }
+
+  .quantity-control-bar .qty-btn:hover {
+    background: #F8DABF !important;
   }
 
   .quantity-control-bar span,
   .quantity-control-bar .quantity-value,
   .quantity-control-bar .qty-num {
-    width: 35px !important;
-    height: 22px !important;
+    flex: 1 1 0% !important;
+    width: 33.333% !important;
+    height: 100% !important;
     padding: 0 !important;
     margin: 0 !important;
     display: flex !important;
@@ -1687,9 +1879,10 @@ h6 {
     background: #FFFFFF !important;
     color: #171717 !important;
     font-weight: 800 !important;
-    font-size: 13px !important;
+    font-size: 14px !important;
     text-align: center !important;
     border: none !important;
+    box-sizing: border-box !important;
   }
 
   .view-order-pill {
@@ -1775,6 +1968,8 @@ h6 {
     -webkit-backdrop-filter: blur(4px) !important;
     z-index: 10000 !important;
     animation: fadeInOverlay 0.25s ease-out !important;
+    touch-action: none !important;
+    overscroll-behavior: contain !important;
   }
 
   .order-sheet {
@@ -1793,6 +1988,7 @@ h6 {
     flex-direction: column !important;
     box-sizing: border-box !important;
     overflow-y: auto !important;
+    overscroll-behavior: contain !important;
   }
 
   @keyframes orderSheetUp {
@@ -1821,22 +2017,59 @@ h6 {
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
   }
 
-  .order-sheet-close {
+  .order-sheet-close,
+  .table-sheet-close,
+  .reserved-sheet-close,
+  .occupied-sheet-close,
+  .bill-sheet-close-btn,
+  .modal-close {
     width: 32px !important;
     height: 32px !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
+    flex-shrink: 0 !important;
     border-radius: 50% !important;
-    background: transparent !important;
-    background-color: transparent !important;
-    border: 1px solid rgba(71, 85, 105, 0.18) !important;
-    color: #475569 !important;
-    font-size: 16px !important;
+    background: #FFFFFF !important;
+    border: 1px solid #E5E0DC !important;
+    color: #71717A !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     cursor: pointer !important;
     line-height: 1 !important;
     padding: 0 !important;
+    margin: 0 !important;
     box-shadow: none !important;
+    box-sizing: border-box !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    transform: none !important;
+    outline: none !important;
+    transition: background 0.15s ease, border-color 0.15s ease !important;
+  }
+
+  .order-sheet-close:hover,
+  .table-sheet-close:hover,
+  .reserved-sheet-close:hover,
+  .occupied-sheet-close:hover,
+  .bill-sheet-close-btn:hover,
+  .modal-close:hover {
+    background: #F4F4F5 !important;
+    border-color: #D4D4D8 !important;
+  }
+
+  .order-sheet-close svg,
+  .table-sheet-close svg,
+  .reserved-sheet-close svg,
+  .occupied-sheet-close svg,
+  .bill-sheet-close-btn svg,
+  .modal-close svg {
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    flex-shrink: 0 !important;
+    transform: none !important;
+    pointer-events: none !important;
   }
 
   .order-table-card {
@@ -2242,38 +2475,6 @@ h6 {
     font-weight: 400 !important;
   }
 
-  .start-order-btn {
-    width: 100% !important;
-    height: 44px !important;
-    background: #350505 !important;
-    color: #FFFFFF !important;
-    border: none !important;
-    border-radius: 24px !important;
-    font-size: 15px !important;
-    font-weight: 600 !important;
-    cursor: pointer !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    transition: all 0.15s ease !important;
-  }
-
-  .cancel-reservation-btn {
-    width: 100% !important;
-    height: 44px !important;
-    background: #FFFFFF !important;
-    color: #350505 !important;
-    border: 1px solid #350505 !important;
-    border-radius: 24px !important;
-    font-size: 15px !important;
-    font-weight: 600 !important;
-    cursor: pointer !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    transition: all 0.15s ease !important;
-  }
-
   /* Billing Mobile Restyling */
   .billing-page-wrapper {
     width: 100% !important;
@@ -2392,128 +2593,135 @@ h6 {
     max-width: calc(100% - 32px) !important;
     margin: 0 auto !important;
     background: #FFFFFF !important;
-    border-radius: 18px !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+    border-radius: 20px !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04) !important;
     display: flex !important;
     flex-direction: column !important;
-    gap: 4px !important;
-    min-height: 175px !important;
-    padding: 18px 16px !important;
+    gap: 0px !important;
+    min-height: 0 !important;
+    padding: 16px 18px 14px 18px !important;
     box-sizing: border-box !important;
   }
 
   .mobile-card-top-row {
     display: flex !important;
     justify-content: space-between !important;
-    align-items: center !important;
+    align-items: baseline !important;
+    width: 100% !important;
   }
 
   .mobile-card-table-name {
-    font-size: 18px !important;
-    font-weight: 600 !important;
-    color: #4B3B35 !important;
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    color: #4A3525 !important;
+    letter-spacing: -0.2px !important;
   }
 
   .mobile-card-bill-amount {
-    font-size: 14px !important;
-    font-weight: 700 !important;
-    color: #4B3B35 !important;
+    font-size: 21px !important;
+    font-weight: 800 !important;
+    color: #4A3525 !important;
+    letter-spacing: -0.3px !important;
   }
 
   .mobile-card-item-count {
-    font-size: 12px !important;
-    color: #8A817C !important;
+    font-size: 13px !important;
+    color: #9A8A80 !important;
     font-weight: 400 !important;
-    margin-bottom: 6px !important;
+    margin-top: 1px !important;
+    margin-bottom: 12px !important;
   }
 
   .mobile-card-badges-row {
     display: flex !important;
     align-items: center !important;
-    gap: 8px !important;
-    margin-bottom: 10px !important;
+    gap: 10px !important;
+    margin-bottom: 14px !important;
     flex-wrap: wrap !important;
   }
 
   .badge-kitchen-order {
-    background: #FCE2D9 !important;
-    color: #C0392B !important;
+    background: #FFF4E8 !important;
+    color: #E05315 !important;
     font-size: 12px !important;
-    font-weight: 700 !important;
-    padding: 3px 8px !important;
-    border-radius: 12px !important;
-    letter-spacing: 0.2px !important;
+    font-weight: 600 !important;
+    padding: 5px 12px !important;
+    border-radius: 9px !important;
     display: inline-flex !important;
     align-items: center !important;
+    line-height: 1.2 !important;
   }
 
   .badge-ready-serve {
     background: #E2F3E8 !important;
     color: #18834B !important;
     font-size: 12px !important;
-    font-weight: 700 !important;
-    padding: 3px 8px !important;
-    border-radius: 12px !important;
-    letter-spacing: 0.2px !important;
+    font-weight: 600 !important;
+    padding: 5px 12px !important;
+    border-radius: 9px !important;
     display: inline-flex !important;
     align-items: center !important;
+    line-height: 1.2 !important;
   }
 
   .badge-served-order {
     background: #E2F3E8 !important;
     color: #18834B !important;
     font-size: 12px !important;
-    font-weight: 700 !important;
-    padding: 3px 8px !important;
-    border-radius: 12px !important;
-    letter-spacing: 0.2px !important;
+    font-weight: 600 !important;
+    padding: 5px 12px !important;
+    border-radius: 9px !important;
     display: inline-flex !important;
     align-items: center !important;
+    line-height: 1.2 !important;
   }
 
   .badge-payment-unpaid {
-    background: #FCE8E6 !important;
-    color: #C0392B !important;
+    background: #FDEEEF !important;
+    color: #D9383A !important;
     font-size: 12px !important;
-    font-weight: 700 !important;
-    padding: 3px 8px !important;
-    border-radius: 12px !important;
-    letter-spacing: 0.2px !important;
+    font-weight: 600 !important;
+    padding: 5px 12px !important;
+    border-radius: 9px !important;
     display: inline-flex !important;
     align-items: center !important;
+    line-height: 1.2 !important;
   }
 
   .badge-payment-paid {
     background: #E2F3E8 !important;
     color: #18834B !important;
-    font-size: 9px !important;
-    font-weight: 700 !important;
-    padding: 3px 8px !important;
-    border-radius: 12px !important;
-    letter-spacing: 0.2px !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    padding: 5px 12px !important;
+    border-radius: 9px !important;
     display: inline-flex !important;
     align-items: center !important;
+    line-height: 1.2 !important;
   }
 
   .mobile-card-action-row {
     width: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
   }
 
   .mobile-billing-btn {
     width: 100% !important;
-    height: 30px !important;
+    height: 38px !important;
     background: #350505 !important;
     color: #FFFFFF !important;
     border: none !important;
-    border-radius: 20px !important;
+    border-radius: 999px !important;
     font-size: 14px !important;
-    font-weight: 600 !important;
+    font-weight: 700 !important;
     cursor: pointer !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     transition: opacity 0.15s ease !important;
-    margin-top: 10px !important;
+    margin: 0 !important;
+    padding: 0 16px !important;
   }
 
   .mobile-billing-btn.disabled,
@@ -2531,6 +2739,8 @@ h6 {
     backdrop-filter: blur(8px) !important;
     -webkit-backdrop-filter: blur(8px) !important;
     z-index: 9999 !important;
+    overscroll-behavior: contain !important;
+    touch-action: none !important;
   }
 
   .bill-sheet {
@@ -2539,13 +2749,17 @@ h6 {
     right: 0 !important;
     bottom: 0 !important;
     width: 100% !important;
-    max-width: 100% !important;
-    margin: 0 !important;
-    background: #F2F2F2 !important;
-    border-radius: 40px 40px 0 0 !important;
+    max-width: 480px !important;
+    margin: 0 auto !important;
+    background: #F4F4F5 !important;
+    border-radius: 36px 36px 0 0 !important;
     z-index: 10000 !important;
+    max-height: 94dvh !important;
+    display: flex !important;
+    flex-direction: column !important;
     overflow-x: hidden !important;
     overflow-y: auto !important;
+    overscroll-behavior: contain !important;
     box-sizing: border-box !important;
     padding-bottom: 24px !important;
     animation: slideUpBill 0.25s ease-out !important;
@@ -2565,9 +2779,10 @@ h6 {
     display: flex !important;
     justify-content: space-between !important;
     align-items: center !important;
-    padding: 28px 24px 20px 32px !important;
+    padding: 22px 24px 14px 28px !important;
     box-sizing: border-box !important;
-    min-height: 90px !important;
+    min-height: 0 !important;
+    flex-shrink: 0 !important;
   }
 
   .bill-sheet-title {
@@ -2631,16 +2846,26 @@ h6 {
     width: 306px !important;
     min-width: 306px !important;
     max-width: 306px !important;
-    height: 434px !important;
-    min-height: 434px !important;
+    height: auto !important;
+    min-height: 0 !important;
+    flex-shrink: 0 !important;
     background: #FFFFFF !important;
     border-radius: 16px !important;
     border: 1px solid rgba(255, 255, 255, 0.8) !important;
-    padding: 20px !important;
+    padding: 16px 18px !important;
     box-sizing: border-box !important;
     margin: 0 auto !important;
     box-shadow: 0 8px 32px rgba(31, 38, 135, 0.07) !important;
-    overflow-y: auto !important;
+    overflow: hidden !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+
+  .bill-preview::-webkit-scrollbar,
+  .bill-sheet::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
   }
 
   .resto-header {
@@ -2871,6 +3096,191 @@ h6 {
     font-size: 13px !important;
     cursor: pointer !important;
     box-shadow: 0 4px 12px rgba(53, 5, 5, 0.18) !important;
+  }
+
+  /* Responsive Height Adjustments for Small-Height Mobile Viewports (e.g. iPhones) */
+  @media (max-height: 800px) {
+    .bill-sheet {
+      border-radius: 32px 32px 0 0 !important;
+      padding-bottom: 16px !important;
+      max-height: 95dvh !important;
+    }
+
+    .bill-sheet-header {
+      padding: 16px 20px 10px 24px !important;
+    }
+
+    .bill-preview {
+      max-height: none !important;
+      overflow: hidden !important;
+      padding: 14px 16px !important;
+    }
+
+    .resto-header {
+      margin-bottom: 10px !important;
+    }
+
+    .resto-address {
+      font-size: 8.5px !important;
+      line-height: 1.4 !important;
+    }
+
+    .bill-divider,
+    .bill-divider-thick {
+      margin: 8px 0 !important;
+    }
+
+    .bill-meta-grid {
+      gap: 3px !important;
+      margin-bottom: 8px !important;
+    }
+
+    .gst-selector-container {
+      height: 36px !important;
+      margin: 12px auto 0 !important;
+    }
+
+    .payment-method-container {
+      margin: 12px auto 0 !important;
+    }
+
+    .payment-section-label {
+      margin-bottom: 6px !important;
+    }
+
+    .payment-grid-2x2 {
+      gap: 8px !important;
+    }
+
+    .payment-method-card {
+      height: 36px !important;
+      font-size: 11px !important;
+    }
+
+    .settle-bill-container {
+      margin: 12px auto 0 !important;
+    }
+
+    .settle-bill-btn {
+      height: 38px !important;
+      font-size: 13.5px !important;
+    }
+  }
+
+  @media (max-height: 700px) {
+    .bill-sheet {
+      border-radius: 28px 28px 0 0 !important;
+      padding-bottom: 10px !important;
+      max-height: 98dvh !important;
+    }
+
+    .bill-sheet-header {
+      padding: 10px 16px 6px 18px !important;
+    }
+
+    .bill-sheet-title {
+      font-size: 16px !important;
+    }
+
+    .bill-sheet-print-btn,
+    .bill-sheet-close-btn {
+      width: 34px !important;
+      height: 34px !important;
+      min-width: 34px !important;
+      min-height: 34px !important;
+    }
+
+    .bill-preview {
+      max-height: none !important;
+      overflow: hidden !important;
+      padding: 10px 12px !important;
+      border-radius: 12px !important;
+    }
+
+    .resto-header {
+      margin-bottom: 6px !important;
+    }
+
+    .resto-name {
+      font-size: 12px !important;
+      letter-spacing: 1px !important;
+    }
+
+    .resto-tagline {
+      font-size: 9.5px !important;
+      margin-bottom: 3px !important;
+    }
+
+    .resto-address {
+      font-size: 8px !important;
+      line-height: 1.3 !important;
+    }
+
+    .bill-divider,
+    .bill-divider-thick {
+      margin: 5px 0 !important;
+    }
+
+    .bill-meta-grid {
+      gap: 2px !important;
+      margin-bottom: 5px !important;
+    }
+
+    .bill-meta-row {
+      font-size: 10px !important;
+      line-height: 1.4 !important;
+    }
+
+    .bill-item-line,
+    .bill-calc-row {
+      font-size: 10px !important;
+    }
+
+    .bill-total-row {
+      font-size: 13px !important;
+    }
+
+    .bill-footer-msg {
+      margin-top: 8px !important;
+      font-size: 9px !important;
+    }
+
+    .gst-selector-container {
+      height: 32px !important;
+      margin: 8px auto 0 !important;
+    }
+
+    .gst-option-btn {
+      font-size: 11px !important;
+    }
+
+    .payment-method-container {
+      margin: 8px auto 0 !important;
+    }
+
+    .payment-section-label {
+      margin-bottom: 4px !important;
+      font-size: 9px !important;
+    }
+
+    .payment-grid-2x2 {
+      gap: 6px !important;
+    }
+
+    .payment-method-card {
+      height: 32px !important;
+      font-size: 10.5px !important;
+      border-radius: 8px !important;
+    }
+
+    .settle-bill-container {
+      margin: 8px auto 0 !important;
+    }
+
+    .settle-bill-btn {
+      height: 36px !important;
+      font-size: 13px !important;
+    }
   }
 
   .settle-success-toast,
