@@ -46,14 +46,17 @@ export const POSPage = () => {
   useEffect(() => {
     const isModalOpen = Boolean(showMobileCart || showLogoutModal || showTablePicker);
     if (isModalOpen) {
+      document.documentElement.style.overflow = 'hidden';
       document.body.style.overflow = 'hidden';
       document.body.style.touchAction = 'none';
     } else {
+      document.documentElement.style.overflow = '';
       document.body.style.overflow = '';
       document.body.style.touchAction = '';
     }
 
     return () => {
+      document.documentElement.style.overflow = '';
       document.body.style.overflow = '';
       document.body.style.touchAction = '';
     };
@@ -661,7 +664,7 @@ export const POSPage = () => {
                           {item.is_available ? (
                             <>
                               <img
-                                src="/cart.png"
+                                src="/.jpg"
                                 alt="Cart"
                                 className="add-cart-icon-img"
                                 onError={(e) => {
@@ -847,7 +850,15 @@ export const POSPage = () => {
 
         {/* Mobile Slide-Up Order Drawer Modal */}
         {showMobileCart && (
-          <div className="order-overlay" onClick={() => setShowMobileCart(false)}>
+          <div
+            className="order-overlay"
+            onClick={() => setShowMobileCart(false)}
+            onTouchMove={(e) => {
+              if (e.target === e.currentTarget) {
+                e.preventDefault();
+              }
+            }}
+          >
             <div className="order-sheet" onClick={(e) => e.stopPropagation()}>
               {/* Header */}
               <div className="order-sheet-header">
@@ -857,7 +868,7 @@ export const POSPage = () => {
                   onClick={() => setShowMobileCart(false)}
                   aria-label="Close"
                 >
-                  &times;
+                  <X size={16} strokeWidth={2.5} />
                 </button>
               </div>
 

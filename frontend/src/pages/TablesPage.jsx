@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { tablesApi } from '../api/tablesApi';
 import { useOrder } from '../context/OrderContext';
 import { useAuth } from '../context/AuthContext';
-import { Plus, RefreshCw, QrCode, Trash2 } from 'lucide-react';
+import { Plus, RefreshCw, QrCode, Trash2, X } from 'lucide-react';
 
 // Reusable status styling configuration matching reference image specs
 const STATUS_STYLES = {
@@ -760,7 +760,7 @@ export const TablesPage = () => {
                   onClick={handleClose}
                   aria-label="Close"
                 >
-                  &times;
+                  <X size={16} strokeWidth={2.5} />
                 </button>
               </div>
 

@@ -5,7 +5,7 @@ import { ordersApi } from '../api/ordersApi';
 import { authApi } from '../api/authApi';
 import { useAuth } from '../context/AuthContext';
 import { useOrder } from '../context/OrderContext';
-import { Receipt, Printer, Share2, Plus, RefreshCw, CheckCircle, CreditCard, XCircle } from 'lucide-react';
+import { Receipt, Printer, Share2, Plus, RefreshCw, CheckCircle, CreditCard, XCircle, X } from 'lucide-react';
 
 const getTableDisplayNum = (val) => {
   if (!val) return '';
@@ -127,12 +127,13 @@ export const BillingPage = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Auto-open target table bill on navigation if specified
+  // Auto-open target table bill on navigation if specified via location.state
   useEffect(() => {
     if (hasAutoOpenedRef.current) return;
 
-    const targetTableId = location.state?.targetTableId || selectedTable?.id;
-    const targetTableNum = location.state?.targetTableNumber || selectedTable?.number;
+    // Only auto-open if explicitly navigated with targetTableId/Number in location.state
+    const targetTableId = location.state?.targetTableId;
+    const targetTableNum = location.state?.targetTableNumber;
 
     if ((targetTableId || targetTableNum) && activeOrders.length > 0) {
       const match = activeOrders.find((ord) => {
@@ -157,7 +158,7 @@ export const BillingPage = () => {
         hasAutoOpenedRef.current = true;
       }
     }
-  }, [activeOrders, location.state, selectedTable]);
+  }, [activeOrders, location.state]);
 
   const handleMarkReady = async (orderId) => {
     try {
@@ -681,8 +682,9 @@ export const BillingPage = () => {
                 <button
                   className="bill-sheet-close-btn"
                   onClick={() => setSelectedBillOrder(null)}
+                  aria-label="Close"
                 >
-                  ×
+                  <X size={16} strokeWidth={2.5} />
                 </button>
               </div>
             </div>
