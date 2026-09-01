@@ -160,7 +160,13 @@ export const BillingPage = () => {
     }
   }, [activeOrders, location.state]);
 
+  const isKitchen = user?.role === 'kitchen' || user?.role === 'admin';
+
   const handleMarkReady = async (orderId) => {
+    if (!isKitchen) {
+      alert('Only kitchen staff can mark orders as ready.');
+      return;
+    }
     try {
       await ordersApi.updateOrderStatus(orderId, 'ready');
       loadData();
@@ -328,9 +334,13 @@ export const BillingPage = () => {
                       </button>
                     ) : (
                       <button
-                        className="mobile-billing-btn"
-                        onClick={() => handleMarkReady(ord.id)}
-                        title="Click when kitchen order is ready"
+                        className={`mobile-billing-btn ${!isKitchen ? 'disabled' : ''}`}
+                        disabled={!isKitchen}
+                        onClick={isKitchen ? () => handleMarkReady(ord.id) : undefined}
+                        title={isKitchen ? "Click when kitchen order is ready" : "Order is being prepared in the kitchen (Only kitchen can mark ready)"}
+                        style={{
+                          cursor: isKitchen ? 'pointer' : 'default',
+                        }}
                       >
                         Preparing Your Order
                       </button>

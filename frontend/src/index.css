@@ -815,7 +815,7 @@ h6 {
   }
 
   .table-card-mobile.occupied .table-card-num {
-    color: #B91C1C !important;
+    color: #B3261E !important;
   }
 
   .table-card-mobile.occupied .status-badge {
@@ -849,7 +849,9 @@ h6 {
   }
 
   .table-card-mobile.reserved .table-card-num {
-    color: #1D4ED8 !important;
+    color: #004372 !important;
+    /* background: #004372; */
+
   }
 
   .table-card-mobile.reserved .status-badge {
@@ -3634,5 +3636,239 @@ h6 {
     font-weight: 600 !important;
     z-index: 100000 !important;
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2) !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MenuItemCard  (mic-*)
+   Reusable card that auto-adapts for single-price & multi-price
+   items on the POS menu grid.
+═══════════════════════════════════════════════════════════════ */
+
+/* Card shell */
+.mic-card {
+  width: 100%;
+  max-width: 160px;
+  min-height: 220px;
+  margin: 0 auto;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+  transition: box-shadow 0.2s ease, transform 0.15s ease;
+}
+
+.mic-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.09);
+  transform: translateY(-2px);
+}
+
+/* Hero image */
+.mic-img {
+  width: 100%;
+  height: 130px;
+  object-fit: cover;
+  border-radius: 12px;
+  background: #f8fafc;
+  display: block;
+}
+
+/* Out-of-stock badge */
+.mic-oos-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: #dc2626;
+  color: #fff;
+  font-size: 0.58rem;
+  font-weight: 800;
+  padding: 0.18rem 0.4rem;
+  border-radius: 8px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+/* Info block */
+.mic-info {
+  padding-top: 0.45rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Item name */
+.mic-name {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #171717;
+  margin: 0 0 0.12rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -0.01em;
+}
+
+/* Price */
+.mic-price {
+  font-size: 0.93rem;
+  font-weight: 800;
+  color: #B77D55;
+  margin-bottom: 0.35rem;
+}
+
+/* Variant pill row */
+.mic-pill-group {
+  display: flex;
+  gap: 0.2rem;
+  margin-top: 0.2rem;
+  margin-bottom: 0.45rem;
+}
+
+.mic-pill {
+  flex: 1;
+  padding: 0.2rem 0;
+  font-size: 0.67rem;
+  font-weight: 600;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #f8fafc;
+  color: #64748b;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.mic-pill:hover {
+  background: #f1ece8;
+  border-color: #c9a98e;
+  color: #7c4a2c;
+}
+
+.mic-pill--active {
+  background: #B77D55;
+  color: #ffffff;
+  border-color: #B77D55;
+}
+
+/* Footer — houses Add btn or qty selector */
+.mic-footer {
+  margin-top: auto;
+  padding-top: 0.4rem;
+  display: flex;
+  justify-content: center;
+}
+
+/* Add to cart button */
+.mic-add-btn {
+  width: 100%;
+  max-width: 137px;
+  height: 28px;
+  padding: 0;
+  border-radius: 10px;
+  background: #B77D55;
+  color: #ffffff;
+  border: none;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  box-shadow: 0 4px 10px rgba(183, 125, 85, 0.25);
+  transition: background 0.18s ease, box-shadow 0.18s ease, transform 0.12s ease;
+  box-sizing: border-box;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.mic-add-btn:hover:not(:disabled) {
+  background: #a06840;
+  box-shadow: 0 6px 16px rgba(183, 125, 85, 0.35);
+  transform: translateY(-1px);
+}
+
+.mic-add-btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.mic-add-btn:disabled {
+  background: #cbd5e1;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* Quantity control bar (Matches peach-white-peach 3-section pill) */
+.mic-qty-bar {
+  width: 137px;
+  max-width: 137px;
+  height: 26px;
+  background: #FCEBDC;
+  border: 1.2px solid #C8956D;
+  border-radius: 999px;
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.mic-qty-btn {
+  flex: 1 1 0%;
+  width: 33.333%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: #FCEBDC;
+  color: #171717;
+  border: none;
+  cursor: pointer;
+  font-weight: 800;
+  font-size: 14px;
+  transition: background 0.15s ease;
+}
+
+.mic-qty-btn:hover {
+  background: #F5DEC9;
+}
+
+.mic-qty-num {
+  flex: 1 1 0%;
+  width: 33.333%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #FFFFFF;
+  color: #171717;
+  font-weight: 800;
+  font-size: 14px;
+  text-align: center;
+  border: none;
+  pointer-events: none;
+  box-sizing: border-box;
+}
+
+/* ── Responsive overrides ────────────────────────────────────── */
+@media (min-width: 768px) {
+  .mic-card {
+    max-width: 100%;
+  }
+}
+
+@media (min-width: 1200px) {
+  .mic-img {
+    height: 140px;
   }
 }

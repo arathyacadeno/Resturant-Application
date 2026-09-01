@@ -18,10 +18,6 @@ export const DashboardPage = () => {
   const [topItems, setTopItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  if (user?.role === 'staff') {
-    return <Navigate to="/tables" replace />;
-  }
-
   const loadData = async () => {
     setLoading(true);
     try {
@@ -46,6 +42,10 @@ export const DashboardPage = () => {
       loadData();
     }
   }, [user?.role]);
+
+  if (user?.role === 'staff') {
+    return <Navigate to="/tables" replace />;
+  }
 
   return (
     <div>

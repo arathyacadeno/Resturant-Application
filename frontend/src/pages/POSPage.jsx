@@ -4,6 +4,7 @@ import { menuApi } from '../api/menuApi';
 import { tablesApi } from '../api/tablesApi';
 import { useOrder } from '../context/OrderContext';
 import { useAuth } from '../context/AuthContext';
+import MenuItemCard from '../components/pos/MenuItemCard';
 import {
   Search,
   Plus,
@@ -592,88 +593,15 @@ export const POSPage = () => {
                 const cartItem = getCartItem(item.id, currentPortion);
 
                 return (
-                  <div key={item.id} className="food-card" style={{ opacity: item.is_available ? 1 : 0.65 }}>
-                    <div>
-                      {/* Image with robust fallback */}
-                      <img
-                        src={item.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&auto=format&fit=crop&q=80'}
-                        alt={item.name}
-                        className="food-card-img"
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&auto=format&fit=crop&q=80';
-                        }}
-                      />
-
-                      {/* Out of Stock Indicator */}
-                      {!item.is_available && (
-                        <span style={{ position: 'absolute', top: '10px', right: '10px', background: '#dc2626', color: '#fff', fontSize: '0.6rem', padding: '0.2rem 0.4rem', borderRadius: '8px', fontWeight: 800 }}>
-                          Out of Stock
-                        </span>
-                      )}
-
-                      {/* Title & Price */}
-                      <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#171717', marginBottom: '0.15rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                        {item.name}
-                      </h4>
-                      <div style={{ fontSize: '0.95rem', fontWeight: 800, color: '#B77D55' }}>
-                        ₹{(() => {
-                          if (currentPortion === 'Half' && item.half_price) return parseFloat(item.half_price).toFixed(2);
-                          if (currentPortion === 'Quarter' && item.quarter_price) return parseFloat(item.quarter_price).toFixed(2);
-                          return parseFloat(item.price).toFixed(2);
-                        })()}
-                      </div>
-
-                      {/* Portion Pills - Only show if item has Half or Quarter portion pricing */}
-                      {(item.half_price || item.quarter_price) && (
-                        <div className="portion-pill-group">
-                          {['Full', 'Half', 'Quarter'].map((pOption) => {
-                            if (pOption === 'Half' && !item.half_price) return null;
-                            if (pOption === 'Quarter' && !item.quarter_price) return null;
-                            return (
-                              <button
-                                key={pOption}
-                                className={`portion-pill ${currentPortion === pOption ? 'active' : ''}`}
-                                onClick={() => handlePortionSelect(item.id, pOption)}
-                              >
-                                {pOption}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Add / Quantity Control */}
-                    <div>
-                      {cartItem ? (
-                        <div className="quantity-control-bar">
-                          <button className="qty-btn" onClick={(e) => { e.stopPropagation(); updateQuantity(item.id, currentPortion, -1); }}>
-                            <Minus size={14} strokeWidth={2.5} />
-                          </button>
-                          <span className="qty-num">{cartItem.quantity}</span>
-                          <button className="qty-btn" onClick={(e) => { e.stopPropagation(); updateQuantity(item.id, currentPortion, 1); }}>
-                            <Plus size={14} strokeWidth={2.5} />
-                          </button>
-                        </div>
-                      ) : (
-                        <button
-                          className="add-cart-btn"
-                          disabled={!item.is_available}
-                          onClick={(e) => { e.stopPropagation(); addToCart(item, currentPortion); }}
-                        >
-                          {item.is_available ? (
-                            <>
-                              <ShoppingCart size={16} strokeWidth={2.5} style={{ flexShrink: 0, display: 'block' }} />
-                              <span>Add</span>
-                            </>
-                          ) : (
-                            <span>Out of Stock</span>
-                          )}
-                        </button>
-                      )}
-                    </div>
-                  </div>
+                  <MenuItemCard
+                    key={item.id}
+                    item={item}
+                    currentPortion={currentPortion}
+                    cartItem={cartItem}
+                    onPortionSelect={handlePortionSelect}
+                    onAdd={addToCart}
+                    onUpdateQty={updateQuantity}
+                  />
                 );
               })}
             </div>
