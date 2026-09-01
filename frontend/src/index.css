@@ -1814,8 +1814,8 @@ h6 {
   .add-cart-btn img,
   .add-cart-btn svg,
   .add-cart-icon-img {
-    width: 14px !important;
-    height: 14px !important;
+    width: 18px !important;
+    height: 18px !important;
     object-fit: contain !important;
     flex-shrink: 0 !important;
     filter: brightness(0) invert(1) !important;

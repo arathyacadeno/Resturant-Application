@@ -4,18 +4,19 @@ import { menuApi } from '../api/menuApi';
 import { tablesApi } from '../api/tablesApi';
 import { useOrder } from '../context/OrderContext';
 import { useAuth } from '../context/AuthContext';
-import { 
-  Search, 
-  Plus, 
-  Minus, 
-  Trash2, 
-  Send, 
-  ShoppingBag, 
+import {
+  Search,
+  Plus,
+  Minus,
+  Trash2,
+  Send,
+  ShoppingBag,
   SlidersHorizontal,
   ChevronUp,
   X,
   LogOut,
-  Power
+  Power,
+  ShoppingCart
 } from 'lucide-react';
 
 export const POSPage = () => {
@@ -663,15 +664,7 @@ export const POSPage = () => {
                         >
                           {item.is_available ? (
                             <>
-                              <img
-                                src="/.jpg"
-                                alt="Cart"
-                                className="add-cart-icon-img"
-                                onError={(e) => {
-                                  e.target.onerror = null;
-                                  e.target.src = '/cart-icon.png';
-                                }}
-                              />
+                              <ShoppingCart size={16} strokeWidth={2.5} style={{ flexShrink: 0, display: 'block' }} />
                               <span>Add</span>
                             </>
                           ) : (
