@@ -27,14 +27,15 @@ export const Sidebar = () => {
   const isKitchen = user?.role === 'kitchen' || user?.role === 'admin';
 
   return (
-    <aside className="admin-sidebar">
+    <aside className="sidebar admin-sidebar">
       {/* ── Brand Header ── */}
       <div className="admin-brand-header">
-        <div className="admin-brand-logo-wrap">
+        <div className="admin-brand-logo-wrap" style={{ width: '44px', height: '44px', minWidth: '44px', maxWidth: '44px', minHeight: '44px', maxHeight: '44px', borderRadius: '50%', overflow: 'hidden' }}>
           <img 
             src="/logo.png" 
             alt="T Clock" 
             className="admin-brand-logo-img"
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             onError={(e) => {
               e.target.onerror = null;
               e.target.src = '/cart.png';

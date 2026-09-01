@@ -14,7 +14,7 @@ export const BottomNav = () => {
     <nav className="mobile-bottom-nav">
       <NavLink
         to="/tables"
-        className={`bottom-nav-item ${currentPath === '/tables' ? 'active' : ''}`}
+        className={`bottom-nav-item ${currentPath.includes('tables') ? 'active' : ''}`}
       >
         <div className="bottom-nav-icon-wrapper">
           <img
@@ -32,7 +32,7 @@ export const BottomNav = () => {
 
       <NavLink
         to="/pos"
-        className={`bottom-nav-item ${currentPath === '/pos' || currentPath === '/' ? 'active' : ''}`}
+        className={`bottom-nav-item ${currentPath.includes('pos') ? 'active' : ''}`}
       >
         <div className="bottom-nav-icon-wrapper">
           <img
@@ -50,7 +50,7 @@ export const BottomNav = () => {
 
       <NavLink
         to="/billing"
-        className={`bottom-nav-item ${currentPath === '/billing' ? 'active' : ''}`}
+        className={`bottom-nav-item ${currentPath.includes('billing') ? 'active' : ''}`}
       >
         <div className="bottom-nav-icon-wrapper">
           <img
@@ -68,7 +68,7 @@ export const BottomNav = () => {
 
       <NavLink
         to="/qr"
-        className={`bottom-nav-item ${currentPath === '/qr' ? 'active' : ''}`}
+        className={`bottom-nav-item ${currentPath.includes('qr') ? 'active' : ''}`}
       >
         <div className="bottom-nav-icon-wrapper">
           <img

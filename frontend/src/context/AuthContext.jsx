@@ -76,13 +76,19 @@ export const AuthProvider = ({ children }) => {
       const createdStaff = JSON.parse(localStorage.getItem('created_staff_accounts') || '[]');
       const matchedStaff = createdStaff.find(s => s.username === username && s.password === password);
 
+      const createdAdmins = JSON.parse(localStorage.getItem('created_admin_accounts') || '[]');
+      const matchedAdmin = createdAdmins.find(a => (a.username === username || a.email === username) && a.password === password);
+
       if (
         matchedStaff ||
+        matchedAdmin ||
         (username === 'staff' && password === 'staff123') ||
         (username === 'admin' && password === 'admin123') ||
         (username === 'kitchen' && password === 'kitchen123')
       ) {
-        const role = matchedStaff
+        const role = matchedAdmin
+          ? 'admin'
+          : matchedStaff
           ? matchedStaff.role
           : username === 'staff'
           ? 'staff'
@@ -90,11 +96,12 @@ export const AuthProvider = ({ children }) => {
           ? 'kitchen'
           : 'admin';
         const userObj = {
-          id: matchedStaff ? Date.now() : username === 'staff' ? 2 : username === 'kitchen' ? 3 : 1,
-          username: username,
-          first_name: username,
+          id: matchedAdmin ? matchedAdmin.id : matchedStaff ? Date.now() : username === 'staff' ? 2 : username === 'kitchen' ? 3 : 1,
+          username: matchedAdmin ? matchedAdmin.username : username,
+          first_name: matchedAdmin ? (matchedAdmin.first_name || matchedAdmin.username) : username,
           last_name: role.toUpperCase(),
           role: role,
+          email: matchedAdmin?.email || '',
           savedPassword: password,
         };
         localStorage.setItem('access_token', 'session_access_token');
@@ -108,6 +115,27 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const registerAdmin = async (adminData) => {
+    try {
+      const data = await authApi.registerAdmin(adminData);
+      return data;
+    } catch (err) {
+      // Fallback local persistence if backend network unreachable
+      const createdAdmins = JSON.parse(localStorage.getItem('created_admin_accounts') || '[]');
+      const newAdmin = {
+        id: Date.now(),
+        username: adminData.username,
+        email: adminData.email,
+        password: adminData.password,
+        first_name: adminData.first_name || adminData.name || adminData.username,
+        role: 'admin',
+      };
+      createdAdmins.push(newAdmin);
+      localStorage.setItem('created_admin_accounts', JSON.stringify(createdAdmins));
+      return newAdmin;
+    }
+  };
+
   const logout = () => {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
@@ -118,7 +146,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, fetchProfile, isProfileOpen, openProfile, closeProfile }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, registerAdmin, fetchProfile, isProfileOpen, openProfile, closeProfile }}>
       {children}
     </AuthContext.Provider>
   );

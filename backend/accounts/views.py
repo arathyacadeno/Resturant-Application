@@ -38,6 +38,16 @@ class RegisterView(generics.CreateAPIView):
     permission_classes = [IsAdmin]
 
 
+class AdminRegisterView(generics.CreateAPIView):
+    """POST /api/auth/admin/register/ — register new Admin user in shared database."""
+    queryset = User.objects.all()
+    serializer_class = RegisterSerializer
+    permission_classes = [AllowAny]
+
+    def perform_create(self, serializer):
+        serializer.save(role='admin', is_staff=True)
+
+
 class ProfileView(APIView):
     """GET /api/auth/profile/ — current user profile."""
     permission_classes = [IsAuthenticated]

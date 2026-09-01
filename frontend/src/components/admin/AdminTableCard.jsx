@@ -73,7 +73,7 @@ export const AdminTableCard = ({
                     onEdit(table);
                   }}
                 >
-                  <Edit2 size={11} color="#555" />
+                  <Edit2 size={13} color="#555" />
                 </button>
               )}
               {onDelete && (
@@ -86,7 +86,7 @@ export const AdminTableCard = ({
                     onDelete(table);
                   }}
                 >
-                  <X size={12} color="#D9383A" />
+                  <X size={14} color="#D9383A" />
                 </button>
               )}
             </>
@@ -102,7 +102,7 @@ export const AdminTableCard = ({
                 onPrint(table);
               }}
             >
-              <Printer size={13} color="#4A3525" />
+              <Printer size={14} color="#4A3525" />
             </button>
           )}
         </div>
@@ -114,8 +114,8 @@ export const AdminTableCard = ({
           <svg
             className="atc-chair-icon"
             viewBox="0 0 24 24"
-            width="14"
-            height="14"
+            width="16"
+            height="16"
             fill="none"
             stroke="currentColor"
             strokeWidth="2"

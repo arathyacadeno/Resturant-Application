@@ -35,11 +35,11 @@ export const LoginPage = () => {
           : 'admin');
 
       if (userRole === 'staff') {
-        navigate('/tables');
+        navigate('/staff/tables');
       } else if (userRole === 'kitchen') {
-        navigate('/kitchen');
+        navigate('/staff/kitchen');
       } else {
-        navigate('/');
+        navigate('/admin/dashboard');
       }
     } catch (err) {
       console.error(err);
@@ -331,6 +331,20 @@ export const LoginPage = () => {
             <button type="submit" className="staff-submit-btn" disabled={loading}>
               {loading ? 'Logging in...' : 'Login'}
             </button>
+
+            <div style={{ textAlign: 'center', marginTop: '1.25rem' }}>
+              <a
+                href="/admin/login"
+                style={{
+                  fontSize: '0.78rem',
+                  color: '#B77D56',
+                  textDecoration: 'none',
+                  fontWeight: 600,
+                }}
+              >
+                Administrator? Go to Admin Portal →
+              </a>
+            </div>
           </form>
         </div>
       </div>
