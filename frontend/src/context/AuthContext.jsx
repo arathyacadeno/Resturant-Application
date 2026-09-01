@@ -76,15 +76,26 @@ export const AuthProvider = ({ children }) => {
       const createdStaff = JSON.parse(localStorage.getItem('created_staff_accounts') || '[]');
       const matchedStaff = createdStaff.find(s => s.username === username && s.password === password);
 
-      if (matchedStaff || (username === 'staff' && password === 'staff123') || (username === 'admin' && password === 'admin123')) {
-        const role = matchedStaff ? matchedStaff.role : (username === 'staff' ? 'staff' : 'admin');
+      if (
+        matchedStaff ||
+        (username === 'staff' && password === 'staff123') ||
+        (username === 'admin' && password === 'admin123') ||
+        (username === 'kitchen' && password === 'kitchen123')
+      ) {
+        const role = matchedStaff
+          ? matchedStaff.role
+          : username === 'staff'
+          ? 'staff'
+          : username === 'kitchen'
+          ? 'kitchen'
+          : 'admin';
         const userObj = {
-          id: matchedStaff ? Date.now() : (username === 'staff' ? 2 : 1),
+          id: matchedStaff ? Date.now() : username === 'staff' ? 2 : username === 'kitchen' ? 3 : 1,
           username: username,
           first_name: username,
           last_name: role.toUpperCase(),
           role: role,
-          savedPassword: password
+          savedPassword: password,
         };
         localStorage.setItem('access_token', 'session_access_token');
         localStorage.setItem('refresh_token', 'session_refresh_token');

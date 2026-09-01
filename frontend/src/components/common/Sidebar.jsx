@@ -1,14 +1,15 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { 
-  LayoutDashboard, 
-  ShoppingBag, 
-  Grid, 
-  ChefHat, 
-  UtensilsCrossed, 
+  LayoutGrid, 
   Receipt, 
+  UtensilsCrossed, 
+  Users, 
+  BarChart2, 
   Settings, 
-  LogOut
+  LogOut,
+  ShoppingBag,
+  Grid
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -21,107 +22,115 @@ export const Sidebar = () => {
     navigate('/login');
   };
 
-  const isAdmin = user?.role === 'admin';
+  const isAdmin = user?.role === 'admin' || !user?.role;
   const isStaff = user?.role === 'staff' || user?.role === 'admin';
   const isKitchen = user?.role === 'kitchen' || user?.role === 'admin';
 
   return (
-    <aside className="sidebar">
-      <div className="brand-header">
-        <img 
-          src="/logo.png" 
-          alt="T-Clock Logo" 
-          style={{ width: '48px', height: '48px', objectFit: 'contain', borderRadius: '50%' }} 
-        />
-        <div>
-          <h2 className="brand-title">T-CLOCK</h2>
-          <span className="brand-subtitle">RESTO CAFE</span>
+    <aside className="admin-sidebar">
+      {/* ── Brand Header ── */}
+      <div className="admin-brand-header">
+        <div className="admin-brand-logo-wrap">
+          <img 
+            src="/logo.png" 
+            alt="T Clock" 
+            className="admin-brand-logo-img"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = '/cart.png';
+            }}
+          />
+        </div>
+        <div className="admin-brand-text">
+          <h2 className="admin-brand-title">T Clock</h2>
+          <span className="admin-brand-subtitle">ADMIN PORTAL</span>
         </div>
       </div>
 
-      <ul className="nav-list">
-        {/* Admin Dashboard */}
-        {isAdmin && (
+      {/* ── Nav Links ── */}
+      <nav className="admin-nav-menu">
+        <ul className="admin-nav-list">
+          {/* Dashboard */}
           <li>
-            <NavLink to="/" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-              <LayoutDashboard size={20} />
+            <NavLink 
+              to="/" 
+              end
+              className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}
+            >
+              <LayoutGrid size={18} className="admin-nav-icon" />
               <span>Dashboard</span>
             </NavLink>
           </li>
-        )}
 
-        {/* Staff Dashboard Items: Tables, Orders (POS), Billing */}
-        {isStaff && (
+          {/* Order History */}
           <li>
-            <NavLink to="/tables" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-              <Grid size={20} />
-              <span>Tables</span>
+            <NavLink 
+              to="/billing" 
+              className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}
+            >
+              <Receipt size={18} className="admin-nav-icon" />
+              <span>Order History</span>
             </NavLink>
           </li>
-        )}
 
-        {isStaff && (
+          {/* Menu Catalogue */}
           <li>
-            <NavLink to="/pos" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-              <ShoppingBag size={20} />
-              <span>Orders</span>
+            <NavLink 
+              to="/menu" 
+              className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}
+            >
+              <UtensilsCrossed size={18} className="admin-nav-icon" />
+              <span>Menu Catalogue</span>
             </NavLink>
           </li>
-        )}
 
-        {isStaff && (
+          {/* Staffs */}
           <li>
-            <NavLink to="/billing" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-              <Receipt size={20} />
-              <span>Billing</span>
+            <NavLink 
+              to="/settings?tab=staffs" 
+              className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}
+            >
+              <Users size={18} className="admin-nav-icon" />
+              <span>Staffs</span>
             </NavLink>
           </li>
-        )}
 
-        {/* Kitchen Display */}
-        {isKitchen && (
+          {/* Swiggy & Zomato */}
           <li>
-            <NavLink to="/kitchen" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-              <ChefHat size={20} />
-              <span>Kitchen Display</span>
+            <NavLink 
+              to="/pos" 
+              className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}
+            >
+              <BarChart2 size={18} className="admin-nav-icon" />
+              <span>Swiggy & Zomato</span>
             </NavLink>
           </li>
-        )}
 
-        {/* Admin Only Items: Menu Editor & Settings */}
-        {isAdmin && (
+          {/* Settings */}
           <li>
-            <NavLink to="/menu" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-              <UtensilsCrossed size={20} />
-              <span>Menu Editor</span>
-            </NavLink>
-          </li>
-        )}
-
-        {isAdmin && (
-          <li>
-            <NavLink to="/settings" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-              <Settings size={20} />
+            <NavLink 
+              to="/settings" 
+              className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}
+            >
+              <Settings size={18} className="admin-nav-icon" />
               <span>Settings</span>
             </NavLink>
           </li>
-        )}
-      </ul>
+        </ul>
+      </nav>
 
-      <div className="sidebar-user">
-        <div className="user-info">
-          <div className="avatar-circle">
-            {user?.username ? user.username[0].toUpperCase() : 'U'}
-          </div>
-          <div className="user-details">
-            <h4>{user?.first_name || user?.username || 'Staff'}</h4>
-            <span>{user?.role || 'Staff'}</span>
-          </div>
-        </div>
-        <button className="btn btn-secondary btn-sm" onClick={handleLogout} title="Logout">
-          <LogOut size={16} />
+      {/* ── Fixed Bottom Logout Button ── */}
+      <div className="admin-sidebar-footer">
+        <button 
+          type="button"
+          className="admin-logout-btn" 
+          onClick={handleLogout}
+        >
+          Logout
         </button>
       </div>
     </aside>
   );
 };
+
+export default Sidebar;

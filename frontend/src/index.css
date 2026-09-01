@@ -25,7 +25,7 @@
   --status-info: #2563eb;
   --status-purple: #7c3aed;
 
-  --sidebar-width: 270px;
+  --sidebar-width: 240px;
   --header-height: 70px;
   --radius-sm: 8px;
   --radius-md: 14px;
@@ -1818,6 +1818,8 @@ h6 {
   .add-cart-icon-img {
     width: 18px !important;
     height: 18px !important;
+    width: 18px !important;
+    height: 18px !important;
     object-fit: contain !important;
     flex-shrink: 0 !important;
     filter: brightness(0) invert(1) !important;
@@ -2730,7 +2732,7 @@ h6 {
   .mobile-billing-btn:disabled {
     background: #350505 !important;
     opacity: 0.9 !important;
-    cursor: default !important;
+    cursor: not-allowed !important;
   }
 
   /* Bill Sheet Overlay & Modal */

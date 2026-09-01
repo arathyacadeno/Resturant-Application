@@ -334,6 +334,7 @@ export const BillingPage = () => {
                       </button>
                     ) : (
                       <button
+<<<<<<< HEAD
                         className={`mobile-billing-btn ${!isKitchen ? 'disabled' : ''}`}
                         disabled={!isKitchen}
                         onClick={isKitchen ? () => handleMarkReady(ord.id) : undefined}
@@ -341,6 +342,11 @@ export const BillingPage = () => {
                         style={{
                           cursor: isKitchen ? 'pointer' : 'default',
                         }}
+=======
+                        className="mobile-billing-btn disabled"
+                        disabled
+                        title="Order is being prepared in the kitchen"
+>>>>>>> 670fa29a32cf914610b41db25dee08ada1e55aa4
                       >
                         Preparing Your Order
                       </button>

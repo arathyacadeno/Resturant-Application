@@ -25,8 +25,22 @@ export const LoginPage = () => {
     setLoading(true);
 
     try {
-      await login(username, password);
-      navigate('/');
+      const res = await login(username, password);
+      const userRole =
+        res?.user?.role ||
+        (username.toLowerCase().includes('staff')
+          ? 'staff'
+          : username.toLowerCase().includes('kitchen')
+          ? 'kitchen'
+          : 'admin');
+
+      if (userRole === 'staff') {
+        navigate('/tables');
+      } else if (userRole === 'kitchen') {
+        navigate('/kitchen');
+      } else {
+        navigate('/');
+      }
     } catch (err) {
       console.error(err);
       setError('Invalid email/username or password');
