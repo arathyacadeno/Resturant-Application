@@ -48,7 +48,11 @@ export const AdminSidebar = () => {
               to="/admin/dashboard" 
               className={({ isActive }) => `admin-portal-nav-link ${isActive ? 'active' : ''}`}
             >
-              <LayoutGrid size={18} />
+              <img 
+                src="/sidebar1.png" 
+                alt="Dashboard" 
+                style={{ width: '18px', height: '18px', objectFit: 'contain', flexShrink: 0 }}
+              />
               <span>Dashboard</span>
             </NavLink>
           </li>

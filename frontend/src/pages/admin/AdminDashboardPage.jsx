@@ -8,29 +8,16 @@ import { analyticsApi } from '../../api/analyticsApi';
 import { AdminTableCard } from '../../components/admin/AdminTableCard';
 import { AddTableModal } from '../../components/admin/AddTableModal';
 import { EditTableModal } from '../../components/admin/EditTableModal';
-import { 
-  Search, 
-  Bell, 
-  Plus, 
-  Grid, 
-  CheckSquare, 
-  User, 
-  Receipt, 
-  TrendingUp 
+import {
+  Search,
+  Bell,
+  Plus,
+  Grid,
+  CheckSquare,
+  User,
+  Receipt,
+  TrendingUp
 } from 'lucide-react';
-
-const DEFAULT_REFERENCE_TABLES = [
-  { id: 1, number: '1', capacity: 4, section: 'indoor', status: 'occupied' },
-  { id: 2, number: '2', capacity: 4, section: 'indoor', status: 'available' },
-  { id: 3, number: '3', capacity: 4, section: 'indoor', status: 'reserved', guest_name: 'Sameesha', arrival_time: '7:30 PM' },
-  { id: 4, number: '4', capacity: 4, section: 'indoor', status: 'available' },
-  { id: 5, number: '5', capacity: 8, section: 'indoor', status: 'billing', total_bill: 128.50 },
-  { id: 6, number: '6', capacity: 2, section: 'indoor', status: 'billing', total_bill: 1050.00 },
-  { id: 7, number: '7', capacity: 4, section: 'indoor', status: 'reserved', guest_name: 'Sameesha', arrival_time: '7:30 PM' },
-  { id: 8, number: '8', capacity: 9, section: 'indoor', status: 'available' },
-  { id: 9, number: '9', capacity: 7, section: 'indoor', status: 'occupied' },
-  { id: 10, number: '10', capacity: 2, section: 'indoor', status: 'reserved', guest_name: 'Arathy', arrival_time: '9:30 PM' },
-];
 
 export const AdminDashboardPage = () => {
   const { user, openProfile } = useAuth();
@@ -38,10 +25,10 @@ export const AdminDashboardPage = () => {
   const navigate = useNavigate();
 
   // Data States
-  const [tables, setTables] = useState(DEFAULT_REFERENCE_TABLES);
+  const [tables, setTables] = useState([]);
   const [activeOrders, setActiveOrders] = useState([]);
   const [summary, setSummary] = useState(null);
-  const [_loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   // Filters & Search
   const [activeFilter, setActiveFilter] = useState('All'); // 'All', 'Indoor', 'Outdoor'
@@ -61,7 +48,6 @@ export const AdminDashboardPage = () => {
   };
 
   const loadDashboardData = async () => {
-    setLoading(true);
     try {
       const [tablesRes, ordersRes, summaryRes] = await Promise.allSettled([
         tablesApi.getTables(),
@@ -71,7 +57,7 @@ export const AdminDashboardPage = () => {
 
       if (tablesRes.status === 'fulfilled') {
         const loadedTables = tablesRes.value.results || tablesRes.value;
-        if (Array.isArray(loadedTables) && loadedTables.length > 0) {
+        if (Array.isArray(loadedTables)) {
           setTables(loadedTables);
         }
       }
@@ -129,17 +115,25 @@ export const AdminDashboardPage = () => {
     return matchesFilter && matchesSearch;
   });
 
-  // Calculate top 6 metrics matching reference styling
-  const totalTablesCount = tables.length === 10 ? 12 : tables.length;
+  // Sort tables numerically: T 1, T 2, T 3, T 4, T 5...
+  const sortedFilteredTables = [...filteredTables].sort((a, b) => {
+    const numA = parseInt(String(a.number).replace(/[^0-9]/g, ''), 10) || 0;
+    const numB = parseInt(String(b.number).replace(/[^0-9]/g, ''), 10) || 0;
+    if (numA !== numB) return numA - numB;
+    return String(a.number).localeCompare(String(b.number), undefined, { numeric: true });
+  });
+
+  // Calculate live metrics from fetched original data
+  const totalTablesCount = tables.length;
   const availableCount = tables.filter((t) => (t.status || '').toLowerCase() === 'available').length;
   const occupiedCount = tables.filter((t) => (t.status || '').toLowerCase() === 'occupied').length;
   const billingCount = tables.filter((t) => (t.status || '').toLowerCase() === 'billing').length;
 
   const todaySales = summary?.today_revenue
     ? parseFloat(summary.today_revenue).toLocaleString('en-IN', { maximumFractionDigits: 0 })
-    : '1200';
+    : '0';
 
-  const todayOrders = summary?.today_orders || summary?.today_bills_count || 100;
+  const todayOrders = summary?.today_orders || summary?.today_bills_count || 0;
 
   // Table click handler
   const handleTableClick = (table) => {
@@ -187,7 +181,7 @@ export const AdminDashboardPage = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
             <button type="button" className="admin-search-icon-btn" title="Search">
-              <Search size={16} color="#FFFFFF" strokeWidth={2.5} />
+              <Search size={20} color="#FFFFFF" strokeWidth={2.5} />
             </button>
           </div>
 
@@ -225,7 +219,7 @@ export const AdminDashboardPage = () => {
         {/* 1. Total Tables */}
         <div className="admin-stat-item accent-purple">
           <div className="admin-stat-icon-box purple">
-            <Grid size={15} strokeWidth={2.2} />
+            <img src='/card1.png' alt='' />
           </div>
           <div className="admin-stat-num">{totalTablesCount}</div>
           <div className="admin-stat-label purple">Total Tables</div>
@@ -235,7 +229,7 @@ export const AdminDashboardPage = () => {
         {/* 2. Available Tables */}
         <div className="admin-stat-item accent-green">
           <div className="admin-stat-icon-box green">
-            <CheckSquare size={15} strokeWidth={2.2} />
+            <img src='/card2.png' alt='' />
           </div>
           <div className="admin-stat-num">{availableCount}</div>
           <div className="admin-stat-label green">Available Tables</div>
@@ -245,7 +239,7 @@ export const AdminDashboardPage = () => {
         {/* 3. Occupied Tables */}
         <div className="admin-stat-item accent-red">
           <div className="admin-stat-icon-box red">
-            <User size={15} strokeWidth={2.2} />
+            <img src='/card3.png' alt='' />
           </div>
           <div className="admin-stat-num">{occupiedCount}</div>
           <div className="admin-stat-label red">Occupied Tables</div>
@@ -255,7 +249,7 @@ export const AdminDashboardPage = () => {
         {/* 4. Billing Pending */}
         <div className="admin-stat-item accent-amber">
           <div className="admin-stat-icon-box amber">
-            <Receipt size={15} strokeWidth={2.2} />
+            <img src='/card4.png' alt='' />
           </div>
           <div className="admin-stat-num">{billingCount}</div>
           <div className="admin-stat-label amber">Billing Pending</div>
@@ -265,7 +259,7 @@ export const AdminDashboardPage = () => {
         {/* 5. Today's Sales */}
         <div className="admin-stat-item accent-blue">
           <div className="admin-stat-icon-box blue">
-            <span style={{ fontWeight: 800, fontSize: '15px' }}>₹</span>
+            <img src='/card5.png' alt='' />
           </div>
           <div className="admin-stat-num">₹ {todaySales}</div>
           <div className="admin-stat-label blue">Today's Sales</div>
@@ -275,7 +269,8 @@ export const AdminDashboardPage = () => {
         {/* 6. Today's Orders */}
         <div className="admin-stat-item accent-teal">
           <div className="admin-stat-icon-box teal">
-            <TrendingUp size={15} strokeWidth={2.2} />
+            <img src='/card6.png' alt='' />
+
           </div>
           <div className="admin-stat-num">{todayOrders}</div>
           <div className="admin-stat-label teal">Today's Orders</div>
@@ -346,14 +341,14 @@ export const AdminDashboardPage = () => {
               <span>Add New Table</span>
             </button>
           </div>
-        ) : filteredTables.length === 0 ? (
+        ) : sortedFilteredTables.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '3rem 1rem', color: '#756B66' }}>
             <h3>No tables found in this section</h3>
             <p>Click "+ Add New Table" to create a new dining table.</p>
           </div>
         ) : (
           <div className="admin-table-grid">
-            {filteredTables.map((table) => {
+            {sortedFilteredTables.map((table) => {
               const activeOrd = activeOrders.find(
                 (o) =>
                   String(o.table) === String(table.id) ||

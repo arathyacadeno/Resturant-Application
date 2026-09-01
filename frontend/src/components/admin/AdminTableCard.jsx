@@ -6,11 +6,33 @@ import { Edit2, X, Printer, User, Armchair } from 'lucide-react';
  */
 export const formatAdminTableNumber = (val) => {
   if (!val) return 'T 1';
-  const clean = String(val)
-    .replace(/^Table\s*/i, '')
-    .replace(/^T\s*/i, '')
+  const str = String(val).trim();
+  const digits = str.replace(/[^0-9]/g, '');
+  if (digits) return `T ${digits}`;
+  const clean = str
+    .replace(/^Table\s*[-_]?\s*/i, '')
+    .replace(/^T\s*[-_]?\s*/i, '')
     .trim();
   return `T ${clean || '1'}`;
+};
+
+const formatTime12h = (timeStr) => {
+  if (!timeStr) return '';
+  const str = String(timeStr).trim();
+  if (str.toLowerCase().includes('am') || str.toLowerCase().includes('pm')) {
+    return str;
+  }
+  const parts = str.split(':');
+  if (parts.length >= 2) {
+    let hours = parseInt(parts[0], 10);
+    const mins = parts[1].slice(0, 2).padStart(2, '0');
+    if (!isNaN(hours)) {
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12 || 12;
+      return `${hours}:${mins} ${ampm}`;
+    }
+  }
+  return str;
 };
 
 /**
@@ -34,7 +56,8 @@ export const AdminTableCard = ({
 
   // Guest & arrival info for reserved tables
   const guestName = table.active_reservation?.guest_name || table.guest_name || '';
-  const arrivalTime = table.active_reservation?.arrival_time || table.arrival_time || '';
+  const rawArrival = table.active_reservation?.arrival_time || table.arrival_time || '';
+  const arrivalTime = formatTime12h(rawArrival);
   const reservationText = guestName ? `• ${guestName}${arrivalTime ? ` · ${arrivalTime}` : ''}` : '• Reserved';
 
   // Bill amount for billing/occupied tables
@@ -73,7 +96,7 @@ export const AdminTableCard = ({
                     onEdit(table);
                   }}
                 >
-                  <Edit2 size={13} color="#555" />
+                  <Edit2 size={12} color="#555555" />
                 </button>
               )}
               {onDelete && (
@@ -86,23 +109,27 @@ export const AdminTableCard = ({
                     onDelete(table);
                   }}
                 >
-                  <X size={14} color="#D9383A" />
+                  <X size={13} color="#E02424" strokeWidth={2.5} />
                 </button>
               )}
             </>
           )}
 
-          {statusKey === 'billing' && onPrint && (
+          {statusKey === 'billing' && (
             <button
               type="button"
-              className="atc-action-btn"
+              className="atc-action-btn atc-action-btn--print"
               title="Print Receipt"
               onClick={(e) => {
                 e.stopPropagation();
-                onPrint(table);
+                if (onPrint) onPrint(table);
               }}
             >
-              <Printer size={14} color="#4A3525" />
+              <img
+                src="/print.png"
+                alt="Print"
+                style={{ width: '28px', height: '28px', objectFit: 'contain' }}
+              />
             </button>
           )}
         </div>
@@ -111,24 +138,16 @@ export const AdminTableCard = ({
       {/* ── Middle: Capacity & Details ── */}
       <div className="atc-body">
         <div className="atc-capacity">
-          <svg
+          <img
+            src="/Vector.png"
+            alt="Seats"
             className="atc-chair-icon"
-            viewBox="0 0 24 24"
-            width="16"
-            height="16"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M19 9V6a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v3" />
-            <path d="M3 11v5a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0v2H7v-2a2 2 0 0 0-4 0Z" />
-            <path d="M5 18v3" />
-            <path d="M19 18v3" />
-          </svg>
+            style={{ width: '16px', height: '16px', objectFit: 'contain', flexShrink: 0 }}
+          />
           <span>{table.capacity || 4} seats</span>
         </div>
+
+        {statusKey === 'billing' && <div className="atc-billing-divider" />}
 
         <div className="atc-subtext">
           {statusKey === 'reserved' ? (
@@ -138,7 +157,7 @@ export const AdminTableCard = ({
           ) : statusKey === 'billing' ? (
             <div className="atc-billing-info">
               <span className="atc-bill-label">Total Bill</span>
-              <span className="atc-bill-value">₹ {billAmount || '128.50'}</span>
+              <span className="atc-bill-value">₹ {billAmount || '0.00'}</span>
             </div>
           ) : (
             <span className="atc-section-info">• {sectionName}</span>

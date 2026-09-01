@@ -16,12 +16,7 @@ export const AdminStaffsPage = () => {
       }
     } catch (err) {
       console.error('Failed to load staffs:', err);
-      // Fallback demo data
-      setStaffs([
-        { id: 1, username: 'admin', first_name: 'Admin', role: 'admin', is_active: true, email: 'admin@tclock.com' },
-        { id: 2, username: 'staff1', first_name: 'Rahul', role: 'staff', is_active: true, email: 'rahul@tclock.com' },
-        { id: 3, username: 'kitchen1', first_name: 'Chef Kumar', role: 'kitchen', is_active: true, email: 'chef@tclock.com' },
-      ]);
+      setStaffs([]);
     } finally {
       setLoading(false);
     }
