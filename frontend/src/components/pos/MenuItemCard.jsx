@@ -109,7 +109,7 @@ const MenuItemCard = ({
                 onUpdateQty(item.id, currentPortion, -1);
               }}
             >
-              <Minus size={14} strokeWidth={2.5} />
+              <Minus size={13} strokeWidth={2.8} />
             </button>
             <span className="mic-qty-num">{cartItem.quantity}</span>
             <button
@@ -119,7 +119,7 @@ const MenuItemCard = ({
                 onUpdateQty(item.id, currentPortion, 1);
               }}
             >
-              <Plus size={14} strokeWidth={2.5} />
+              <Plus size={13} strokeWidth={2.8} />
             </button>
           </div>
         ) : (
