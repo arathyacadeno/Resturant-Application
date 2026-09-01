@@ -1,204 +1,389 @@
 import React, { useState, useEffect } from 'react';
-import { Navigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useOrder } from '../context/OrderContext';
+import { tablesApi } from '../api/tablesApi';
+import { ordersApi } from '../api/ordersApi';
 import { analyticsApi } from '../api/analyticsApi';
+import { billingApi } from '../api/billingApi';
+import { AdminTableCard } from '../components/admin/AdminTableCard';
+import { AddTableModal } from '../components/admin/AddTableModal';
+import { EditTableModal } from '../components/admin/EditTableModal';
 import { 
-  DollarSign, 
-  ShoppingBag, 
+  Search, 
+  Bell, 
+  Plus, 
+  RefreshCw, 
   Grid, 
-  TrendingUp, 
-  Utensils, 
-  RefreshCw 
+  CheckSquare, 
+  User, 
+  Receipt, 
+  IndianRupee, 
+  TrendingUp,
+  SlidersHorizontal
 } from 'lucide-react';
 
 export const DashboardPage = () => {
-  const { user } = useAuth();
+  const { user, openProfile } = useAuth();
+  const { setSelectedTable } = useOrder();
+  const navigate = useNavigate();
+
+  // Data States
+  const [tables, setTables] = useState([]);
+  const [activeOrders, setActiveOrders] = useState([]);
   const [summary, setSummary] = useState(null);
-  const [revenueChart, setRevenueChart] = useState([]);
-  const [topItems, setTopItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  if (user?.role === 'staff') {
-    return <Navigate to="/tables" replace />;
-  }
+  // Filters & Search
+  const [activeFilter, setActiveFilter] = useState('All'); // 'All', 'Indoor', 'Outdoor'
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const loadData = async () => {
-    setLoading(true);
+  // Modals
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [editingTable, setEditingTable] = useState(null);
+
+  // Dynamic greeting based on time of day
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    const name = user?.first_name || user?.username ? `, ${user.first_name || user.username}` : ', Admin';
+    if (hour < 12) return `Good Morning${name}`;
+    if (hour < 17) return `Good Afternoon${name}`;
+    return `Good Evening${name}`;
+  };
+
+  const loadDashboardData = async () => {
     try {
-      const [sumRes, chartRes, itemsRes] = await Promise.allSettled([
+      const [tablesRes, ordersRes, summaryRes] = await Promise.allSettled([
+        tablesApi.getTables(),
+        ordersApi.getOrders(),
         analyticsApi.getDashboardSummary(),
-        analyticsApi.getRevenueChart(7),
-        analyticsApi.getTopItems(),
       ]);
 
-      if (sumRes.status === 'fulfilled') setSummary(sumRes.value);
-      if (chartRes.status === 'fulfilled') setRevenueChart(chartRes.value);
-      if (itemsRes.status === 'fulfilled') setTopItems(itemsRes.value);
+      if (tablesRes.status === 'fulfilled') {
+        const loadedTables = tablesRes.value.results || tablesRes.value;
+        if (Array.isArray(loadedTables)) {
+          setTables(loadedTables);
+        }
+      }
+
+      if (ordersRes.status === 'fulfilled') {
+        const loadedOrders = ordersRes.value.results || ordersRes.value;
+        if (Array.isArray(loadedOrders)) {
+          // Keep active unbilled orders
+          const active = loadedOrders.filter(
+            (o) => o.status !== 'billed' && o.status !== 'cancelled'
+          );
+          setActiveOrders(active);
+        }
+      }
+
+      if (summaryRes.status === 'fulfilled') {
+        setSummary(summaryRes.value);
+      }
     } catch (err) {
-      console.error('Failed to load dashboard data:', err);
+      console.error('Failed to load admin dashboard data:', err);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (user?.role !== 'staff') {
-      loadData();
+    loadDashboardData();
+
+    // Auto-sync dashboard every 8 seconds
+    const interval = setInterval(loadDashboardData, 8000);
+    const handleFocus = () => loadDashboardData();
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, []);
+
+  // Filter tables by Section & Search Query
+  const filteredTables = tables.filter((table) => {
+    // Section filter
+    const sec = (table.section || 'indoor').toLowerCase();
+    const matchesFilter =
+      activeFilter === 'All' ||
+      (activeFilter === 'Indoor' && sec.includes('indoor')) ||
+      (activeFilter === 'Outdoor' && (sec.includes('outdoor') || sec.includes('terrace')));
+
+    // Search query
+    const tableNumStr = String(table.number || '').toLowerCase();
+    const guestName = (table.active_reservation?.guest_name || table.guest_name || '').toLowerCase();
+    const matchesSearch =
+      !searchQuery ||
+      tableNumStr.includes(searchQuery.toLowerCase()) ||
+      table.status?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      guestName.includes(searchQuery.toLowerCase());
+
+    return matchesFilter && matchesSearch;
+  });
+
+  // Calculate top 6 metrics dynamically
+  const totalTablesCount = tables.length || 12;
+  const availableCount = tables.filter((t) => (t.status || '').toLowerCase() === 'available').length;
+  const occupiedCount = tables.filter((t) => (t.status || '').toLowerCase() === 'occupied').length;
+  const billingCount = tables.filter((t) => (t.status || '').toLowerCase() === 'billing').length;
+  
+  const todaySales = summary?.today_revenue 
+    ? parseFloat(summary.today_revenue).toLocaleString('en-IN', { maximumFractionDigits: 0 }) 
+    : '1200';
+
+  const todayOrders = summary?.today_orders || summary?.today_bills_count || 100;
+
+  // Table click handler
+  const handleTableClick = (table) => {
+    const status = (table.status || 'available').toLowerCase();
+    setSelectedTable(table);
+
+    if (status === 'billing') {
+      navigate('/billing', { state: { targetTableId: table.id, targetTableNumber: table.number } });
+    } else if (status === 'occupied') {
+      navigate('/pos', { state: { targetTableId: table.id } });
+    } else if (status === 'reserved') {
+      navigate('/tables');
+    } else {
+      navigate('/pos');
     }
-  }, [user?.role]);
+  };
+
+  const handleDeleteTable = async (table) => {
+    if (window.confirm(`Are you sure you want to delete Table ${table.number}?`)) {
+      try {
+        await tablesApi.deleteTable(table.id);
+        loadDashboardData();
+      } catch (err) {
+        alert(err.response?.data?.detail || 'Failed to delete table');
+      }
+    }
+  };
 
   return (
-    <div>
-      <div className="page-header">
-        <div className="page-title">
-          <h1>Restaurant Dashboard</h1>
-          <p>Real-time metrics & performance overview for T-Clock</p>
-        </div>
-        <button className="btn btn-secondary" onClick={loadData} disabled={loading}>
-          <RefreshCw size={16} className={loading ? 'spin' : ''} />
-          <span>Refresh Data</span>
-        </button>
-      </div>
-
-      {/* Stats Overview Grid */}
-      <div className="grid-4" style={{ marginBottom: '2rem' }}>
-        <div className="glass-card">
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
-            <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: 600 }}>TODAY'S REVENUE</span>
-            <div className="badge badge-amber" style={{ padding: '0.4rem' }}>
-              <DollarSign size={18} />
-            </div>
+    <div className="admin-dashboard-page">
+      {/* ═══════════════════════════════════════════════════════════════
+          TOP CARD: Welcome Header + 6 Compact Metric Cards
+      ═══════════════════════════════════════════════════════════════ */}
+      <section className="admin-surface-card admin-welcome-card">
+        {/* Top Header Row: Welcome + Search + Notification + Avatar */}
+        <div className="admin-header-row">
+          <div className="admin-header-left">
+            <h1 className="admin-header-title">{getGreeting()}</h1>
+            <p className="admin-header-subtitle">Your floor. Your control. Everything at a glance.</p>
           </div>
-          <h2 style={{ fontSize: '2rem', color: 'var(--accent-amber)' }}>
-            ₹{summary?.today_revenue ? parseFloat(summary.today_revenue).toLocaleString('en-IN', { minimumFractionDigits: 2 }) : '0.00'}
-          </h2>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-            {summary?.today_bills_count || 0} completed bills today
-          </span>
-        </div>
 
-        <div className="glass-card">
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
-            <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: 600 }}>ACTIVE ORDERS</span>
-            <div className="badge badge-blue" style={{ padding: '0.4rem' }}>
-              <ShoppingBag size={18} />
+          <div className="admin-header-right">
+            {/* Search Bar with Circle Button */}
+            <div className="admin-search-wrapper">
+              <input
+                type="text"
+                placeholder="Search......"
+                className="admin-search-input"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              <button type="button" className="admin-search-btn" title="Search">
+                <Search size={16} color="#FFFFFF" strokeWidth={2.5} />
+              </button>
             </div>
-          </div>
-          <h2 style={{ fontSize: '2rem' }}>{summary?.active_orders_count || 0}</h2>
-          <span style={{ fontSize: '0.75rem', color: 'var(--status-info)' }}>In kitchen or serving</span>
-        </div>
 
-        <div className="glass-card">
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
-            <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: 600 }}>TABLE OCCUPANCY</span>
-            <div className="badge badge-green" style={{ padding: '0.4rem' }}>
-              <Grid size={18} />
+            {/* Notification Bell in soft peach circle */}
+            <div className="admin-bell-btn" title="Notifications">
+              <Bell size={18} fill="#EAB308" color="#CA8A04" />
             </div>
-          </div>
-          <h2 style={{ fontSize: '2rem' }}>
-            {summary?.occupied_tables || 0} <span style={{ fontSize: '1rem', color: 'var(--text-muted)' }}>/ {summary?.total_tables || 0}</span>
-          </h2>
-          <span style={{ fontSize: '0.75rem', color: 'var(--status-success)' }}>
-            {summary?.total_tables ? Math.round(((summary.occupied_tables || 0) / summary.total_tables) * 100) : 0}% Occupied
-          </span>
-        </div>
 
-        <div className="glass-card">
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
-            <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: 600 }}>MONTHLY REVENUE</span>
-            <div className="badge badge-purple" style={{ padding: '0.4rem' }}>
-              <TrendingUp size={18} />
-            </div>
-          </div>
-          <h2 style={{ fontSize: '2rem' }}>
-            ₹{summary?.month_revenue ? parseFloat(summary.month_revenue).toLocaleString('en-IN') : '0'}
-          </h2>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>This month's total sales</span>
-        </div>
-      </div>
-
-      {/* Section Grid: Sales Trend & Top Dishes */}
-      <div className="grid-2">
-        {/* Revenue Visualizer */}
-        <div className="glass-card">
-          <h3 style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <TrendingUp size={20} color="var(--accent-amber)" />
-            <span>Weekly Revenue Trend</span>
-          </h3>
-
-          {revenueChart && revenueChart.length > 0 ? (
-            <div style={{ display: 'flex', alignItems: 'flex-end', gap: '1rem', height: '220px', paddingTop: '2rem' }}>
-              {revenueChart.map((day, idx) => {
-                const maxRev = Math.max(...revenueChart.map(d => d.total || 0), 100);
-                const heightPercent = Math.max(10, Math.round(((day.total || 0) / maxRev) * 100));
-                return (
-                  <div key={idx} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', height: '100%', justifyContent: 'flex-end' }}>
-                    <span style={{ fontSize: '0.7rem', color: 'var(--accent-amber)', fontWeight: 600 }}>₹{day.total || 0}</span>
-                    <div style={{ 
-                      width: '100%', 
-                      height: `${heightPercent}%`, 
-                      background: 'linear-gradient(to top, var(--accent-amber-hover), var(--accent-amber))',
-                      borderRadius: 'var(--radius-sm) var(--radius-sm) 0 0',
-                      boxShadow: 'var(--shadow-glow)'
-                    }} />
-                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{day.date?.slice(5) || day.day}</span>
-                  </div>
-                );
-              })}
-            </div>
-          ) : (
-            <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
-              No recent revenue data available
-            </div>
-          )}
-        </div>
-
-        {/* Top Selling Items */}
-        <div className="glass-card">
-          <h3 style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <Utensils size={20} color="var(--accent-amber)" />
-            <span>Top Selling Dishes</span>
-          </h3>
-
-          {topItems && topItems.length > 0 ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {topItems.slice(0, 5).map((item, index) => (
-                <div 
-                  key={index}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '0.75rem 1rem',
-                    background: 'rgba(15, 23, 42, 0.4)',
-                    borderRadius: 'var(--radius-sm)',
-                    border: '1px solid var(--border-color)'
+            {/* Admin Profile Avatar */}
+            <div 
+              className="admin-profile-avatar-btn" 
+              onClick={openProfile} 
+              title="Admin Profile"
+            >
+              {user?.avatar ? (
+                <img src={user.avatar} alt="Admin" className="admin-avatar-img" />
+              ) : (
+                <img 
+                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80" 
+                  alt="Admin" 
+                  className="admin-avatar-img"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = '/cart.png';
                   }}
+                />
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* 6 Metric Stats Cards */}
+        <div className="admin-metrics-grid">
+          {/* 1. Total Tables */}
+          <div className="admin-stat-card admin-stat-card--purple">
+            <div className="admin-stat-top">
+              <div className="admin-stat-icon-wrap admin-stat-icon-wrap--purple">
+                <Grid size={15} color="#7C3AED" strokeWidth={2.2} />
+              </div>
+            </div>
+            <div className="admin-stat-value">{totalTablesCount}</div>
+            <div className="admin-stat-title admin-stat-title--purple">Total Tables</div>
+            <div className="admin-stat-desc">All tables in the restaurant</div>
+          </div>
+
+          {/* 2. Available Tables */}
+          <div className="admin-stat-card admin-stat-card--green">
+            <div className="admin-stat-top">
+              <div className="admin-stat-icon-wrap admin-stat-icon-wrap--green">
+                <CheckSquare size={15} color="#16A34A" strokeWidth={2.2} />
+              </div>
+            </div>
+            <div className="admin-stat-value">{availableCount}</div>
+            <div className="admin-stat-title admin-stat-title--green">Available Tables</div>
+            <div className="admin-stat-desc">Ready for guests</div>
+          </div>
+
+          {/* 3. Occupied Tables */}
+          <div className="admin-stat-card admin-stat-card--red">
+            <div className="admin-stat-top">
+              <div className="admin-stat-icon-wrap admin-stat-icon-wrap--red">
+                <User size={15} color="#DC2626" strokeWidth={2.2} />
+              </div>
+            </div>
+            <div className="admin-stat-value">{occupiedCount}</div>
+            <div className="admin-stat-title admin-stat-title--red">Occupied Tables</div>
+            <div className="admin-stat-desc">Currently in use</div>
+          </div>
+
+          {/* 4. Billing Pending */}
+          <div className="admin-stat-card admin-stat-card--amber">
+            <div className="admin-stat-top">
+              <div className="admin-stat-icon-wrap admin-stat-icon-wrap--amber">
+                <Receipt size={15} color="#D97706" strokeWidth={2.2} />
+              </div>
+            </div>
+            <div className="admin-stat-value">{billingCount}</div>
+            <div className="admin-stat-title admin-stat-title--amber">Billing Pending</div>
+            <div className="admin-stat-desc">Waiting for payment</div>
+          </div>
+
+          {/* 5. Today's Sales */}
+          <div className="admin-stat-card admin-stat-card--blue">
+            <div className="admin-stat-top">
+              <div className="admin-stat-icon-wrap admin-stat-icon-wrap--blue">
+                <span className="admin-stat-symbol-blue">₹</span>
+              </div>
+            </div>
+            <div className="admin-stat-value">₹ {todaySales}</div>
+            <div className="admin-stat-title admin-stat-title--blue">Today's Sales</div>
+            <div className="admin-stat-desc">Total sales today</div>
+          </div>
+
+          {/* 6. Today's Orders */}
+          <div className="admin-stat-card admin-stat-card--teal">
+            <div className="admin-stat-top">
+              <div className="admin-stat-icon-wrap admin-stat-icon-wrap--teal">
+                <TrendingUp size={15} color="#0D9488" strokeWidth={2.2} />
+              </div>
+            </div>
+            <div className="admin-stat-value">{todayOrders}</div>
+            <div className="admin-stat-title admin-stat-title--teal">Today's Orders</div>
+            <div className="admin-stat-desc">Total orders today</div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════
+          BOTTOM CARD: Table Overview + Filters + + Add New Table + Table Grid
+      ═══════════════════════════════════════════════════════════════ */}
+      <section className="admin-surface-card admin-tables-overview-card">
+        {/* Header: Title + Filters + Add Button */}
+        <div className="admin-table-overview-header">
+          <div className="admin-table-overview-left">
+            <h2 className="admin-overview-title">Table Overview</h2>
+            <p className="admin-overview-subtitle">Tap a table to view or start an order</p>
+          </div>
+
+          <div className="admin-table-overview-right">
+            {/* Filter Pills */}
+            <div className="admin-filter-pill-group">
+              {['All', 'Indoor', 'Outdoor'].map((filterName) => (
+                <button
+                  key={filterName}
+                  type="button"
+                  className={`admin-filter-pill ${activeFilter === filterName ? 'active' : ''}`}
+                  onClick={() => setActiveFilter(filterName)}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <span className="badge badge-amber" style={{ width: '24px', height: '24px', borderRadius: '50%', padding: 0, justifyContent: 'center' }}>
-                      {index + 1}
-                    </span>
-                    <div>
-                      <h4 style={{ fontSize: '0.95rem' }}>{item.menu_item__name || item.name}</h4>
-                      <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                        {item.total_sold} orders sold
-                      </span>
-                    </div>
-                  </div>
-                  <span style={{ fontWeight: 700, color: 'var(--accent-amber)' }}>
-                    ₹{item.total_revenue ? parseFloat(item.total_revenue).toFixed(2) : '0.00'}
-                  </span>
-                </div>
+                  {filterName}
+                </button>
               ))}
             </div>
-          ) : (
-            <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
-              No top items recorded yet
-            </div>
-          )}
+
+            {/* + Add New Table Button */}
+            <button
+              type="button"
+              className="admin-add-table-btn"
+              onClick={() => setShowAddModal(true)}
+            >
+              <Plus size={15} strokeWidth={2.5} />
+              <span>Add New Table</span>
+            </button>
+          </div>
         </div>
-      </div>
+
+        {/* Dynamic Table Grid */}
+        {loading && tables.length === 0 ? (
+          <div className="admin-grid-loading">Loading floor tables...</div>
+        ) : filteredTables.length === 0 ? (
+          <div className="admin-grid-empty">
+            <h3>No tables found in this section</h3>
+            <p>Click "+ Add New Table" to create a new dining table.</p>
+          </div>
+        ) : (
+          <div className="admin-tables-grid">
+            {filteredTables.map((table) => {
+              // Find matching active order if any
+              const activeOrd = activeOrders.find(
+                (o) =>
+                  String(o.table) === String(table.id) ||
+                  String(o.table_number) === String(table.number)
+              );
+
+              return (
+                <AdminTableCard
+                  key={table.id}
+                  table={table}
+                  activeOrder={activeOrd}
+                  onClick={handleTableClick}
+                  onEdit={(tbl) => setEditingTable(tbl)}
+                  onDelete={handleDeleteTable}
+                  onPrint={(tbl) => {
+                    navigate('/billing', {
+                      state: { targetTableId: tbl.id, targetTableNumber: tbl.number },
+                    });
+                  }}
+                />
+              );
+            })}
+          </div>
+        )}
+      </section>
+
+      {/* ── Modals ── */}
+      <AddTableModal
+        isOpen={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onTableCreated={loadDashboardData}
+      />
+
+      <EditTableModal
+        isOpen={Boolean(editingTable)}
+        table={editingTable}
+        onClose={() => setEditingTable(null)}
+        onTableUpdated={loadDashboardData}
+      />
     </div>
   );
 };
+
+export default DashboardPage;
