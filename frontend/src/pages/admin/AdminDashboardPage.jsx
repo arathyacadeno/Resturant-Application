@@ -201,6 +201,15 @@ export const AdminDashboardPage = () => {
     }
   };
 
+  const handleTableUpdated = (updatedTable) => {
+    if (updatedTable && updatedTable.id) {
+      setTables((prev) =>
+        prev.map((t) => (t.id === updatedTable.id ? { ...t, ...updatedTable } : t))
+      );
+    }
+    loadDashboardData();
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', width: '100%' }}>
       {/* ═══════════════════════════════════════════════════════════════
@@ -424,7 +433,7 @@ export const AdminDashboardPage = () => {
         isOpen={Boolean(editingTable)}
         table={editingTable}
         onClose={() => setEditingTable(null)}
-        onTableUpdated={loadDashboardData}
+        onTableUpdated={handleTableUpdated}
       />
 
       <AdminBillModal

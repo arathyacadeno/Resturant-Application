@@ -10,8 +10,13 @@ export const tablesApi = {
     return response.data;
   },
   updateTable: async (id, data) => {
-    const response = await api.put(`tables/${id}/`, data);
-    return response.data;
+    try {
+      const response = await api.patch(`tables/${id}/`, data);
+      return response.data;
+    } catch (e) {
+      const response = await api.put(`tables/${id}/`, data);
+      return response.data;
+    }
   },
   deleteTable: async (id) => {
     const response = await api.delete(`tables/${id}/`);

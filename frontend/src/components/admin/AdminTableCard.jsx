@@ -133,7 +133,11 @@ export const AdminTableCard = ({
                 if (onPrint) onPrint(table);
               }}
             >
-              <img src='/print.png' size={16} color="#B87F00" strokeWidth={2} />
+              <img
+                src="/print.png"
+                alt="Print"
+                style={{ width: '16px', height: '16px', objectFit: 'contain' }}
+              />
             </button>
           )}
         </div>

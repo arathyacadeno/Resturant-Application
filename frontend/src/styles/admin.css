@@ -1156,42 +1156,49 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   ADMIN BILL PRINT & SETTLE MODAL
+   ADMIN BILL PRINT & SETTLE MODAL (Exact Reference Replica)
    ═══════════════════════════════════════════════════════════════ */
 .admin-bill-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.45);
+  background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  z-index: 9999;
+  z-index: 99999;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1.25rem;
+  padding: 1.5rem;
   box-sizing: border-box;
 }
 
 .admin-bill-modal {
   width: 100%;
-  max-width: 440px;
-  max-height: 92vh;
-  background: #F4F4F5;
-  border-radius: 28px;
-  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.22);
+  max-width: 430px;
+  max-height: 94vh;
+  background: #ECEEF2;
+  border-radius: 36px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
   display: flex;
   flex-direction: column;
   overflow-y: auto;
   overflow-x: hidden;
   box-sizing: border-box;
-  padding: 0 0 20px 0;
+  padding: 28px 24px 24px 24px;
+  scrollbar-width: none;
   animation: adminModalPopIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.admin-bill-modal::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
 }
 
 @keyframes adminModalPopIn {
   from {
     opacity: 0;
-    transform: scale(0.95) translateY(10px);
+    transform: scale(0.96) translateY(12px);
   }
   to {
     opacity: 1;
@@ -1203,17 +1210,17 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 24px 12px 24px;
-  box-sizing: border-box;
+  margin-bottom: 20px;
   flex-shrink: 0;
 }
 
 .admin-bill-modal-title {
-  font-size: 19px;
+  font-family: 'Inter', 'Outfit', sans-serif;
+  font-size: 24px;
   font-weight: 800;
-  color: #171717;
+  color: #111827;
   margin: 0;
-  line-height: 1.1;
+  line-height: 1;
   letter-spacing: -0.5px;
 }
 
@@ -1224,42 +1231,265 @@
 }
 
 .admin-bill-print-btn {
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
-  border: 1.5px solid #171717;
+  border: 1.5px solid #2B2421;
   background: #FFFFFF;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   padding: 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   transition: all 0.15s ease;
 }
 
 .admin-bill-print-btn:hover {
   transform: scale(1.08);
-  background: #FFFBEB;
+  background: #FFFDF9;
 }
 
 .admin-bill-close-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
+  width: 32px;
+  height: 32px;
   border: none;
   background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: #9CA3AF;
   padding: 0;
   transition: all 0.15s ease;
 }
 
 .admin-bill-close-btn:hover {
-  color: #171717;
-  background: rgba(0, 0, 0, 0.05);
+  transform: scale(1.1);
+  opacity: 0.8;
+}
+
+/* ── Centered White Receipt Card ── */
+.admin-receipt-card {
+  background: #FFFFFF;
+  border-radius: 18px;
+  padding: 22px 22px 18px 22px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: 'Space Mono', 'Courier New', monospace, sans-serif;
+}
+
+.admin-receipt-header {
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.admin-receipt-name {
+  font-family: 'Space Mono', 'Courier New', monospace, sans-serif;
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #111827;
+  letter-spacing: 2px;
+  text-align: center;
+  margin: 0 0 4px 0;
+}
+
+.admin-receipt-tagline {
+  font-family: 'Space Mono', 'Courier New', monospace, sans-serif;
+  font-size: 11px;
+  color: #6B7280;
+  text-align: center;
+  margin: 0 0 6px 0;
+}
+
+.admin-receipt-address {
+  font-family: 'Space Mono', 'Courier New', monospace, sans-serif;
+  font-size: 9.5px;
+  color: #6B7280;
+  text-align: center;
+  line-height: 1.5;
+  margin: 0 auto;
+}
+
+.admin-receipt-divider {
+  border-top: 1px dashed #D1D5DB;
+  margin: 10px 0;
+  height: 0;
+  width: 100%;
+}
+
+.admin-receipt-meta,
+.admin-receipt-items,
+.admin-receipt-calc {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.admin-receipt-meta-row,
+.admin-receipt-item-row,
+.admin-receipt-calc-row {
+  display: flex;
+  justify-content: space-between;
+  font-family: 'Space Mono', 'Courier New', monospace, sans-serif;
+  font-size: 11.5px;
+  color: #374151;
+  line-height: 1.5;
+}
+
+.admin-receipt-meta-val {
+  font-weight: 600;
+  color: #111827;
+}
+
+.admin-receipt-item-name {
+  font-weight: 500;
+  color: #111827;
+}
+
+.admin-receipt-item-price {
+  font-weight: 500;
+  color: #111827;
+}
+
+.admin-receipt-total-row {
+  display: flex;
+  justify-content: space-between;
+  font-family: 'Space Mono', 'Courier New', monospace, sans-serif;
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #111827;
+  letter-spacing: 0.5px;
+  margin: 4px 0;
+}
+
+.admin-receipt-footer {
+  text-align: center;
+  font-family: 'Space Mono', 'Courier New', monospace, sans-serif;
+  font-size: 10px;
+  color: #6B7280;
+  line-height: 1.5;
+  margin-top: 14px;
+}
+
+/* ── GST Segmented Control ── */
+.admin-gst-control {
+  background: #E2E4E9;
+  border-radius: 999px;
+  padding: 4px;
+  display: flex;
+  gap: 4px;
+  width: 280px;
+  margin: 20px auto 0;
+  box-sizing: border-box;
+}
+
+.admin-gst-btn {
+  flex: 1;
+  height: 36px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6B7280;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: 'Inter', sans-serif;
+}
+
+.admin-gst-btn.active {
+  background: #FFFFFF;
+  color: #15803D;
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* ── Payment Method Section ── */
+.admin-payment-section {
+  margin-top: 22px;
+  width: 100%;
+}
+
+.admin-payment-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  color: #111827;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+.admin-payment-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.admin-payment-btn {
+  height: 44px;
+  background: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1F2937;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  font-family: 'Inter', sans-serif;
+}
+
+.admin-payment-btn:hover {
+  border-color: #D1D5DB;
+}
+
+.admin-payment-btn.active {
+  border: 2px solid #250906;
+  background: #FFF9F7;
+  color: #250906;
+  font-weight: 700;
+}
+
+/* ── Settle Bill Action Button ── */
+.admin-settle-section {
+  margin-top: 20px;
+  width: 100%;
+}
+
+.admin-settle-btn {
+  width: 100%;
+  height: 50px;
+  background: #250906;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 999px;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(37, 9, 6, 0.25);
+  transition: all 0.15s ease;
+}
+
+.admin-settle-btn:hover {
+  background: #3A100B;
+  transform: translateY(-1px);
+}
+
+.admin-settle-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -1270,12 +1500,12 @@
     visibility: hidden !important;
   }
 
-  .bill-preview,
-  .bill-preview * {
+  .admin-receipt-card,
+  .admin-receipt-card * {
     visibility: visible !important;
   }
 
-  .bill-preview {
+  .admin-receipt-card {
     position: fixed !important;
     left: 50% !important;
     top: 0 !important;
@@ -1290,20 +1520,195 @@
     color: #000000 !important;
   }
 
-  .admin-bill-modal-overlay,
-  .bill-sheet-overlay {
+  .admin-bill-modal-overlay {
     position: static !important;
     background: transparent !important;
     backdrop-filter: none !important;
   }
 
   .admin-bill-modal-header,
-  .bill-sheet-header,
-  .gst-selector-container,
-  .payment-method-container,
-  .settle-bill-container,
+  .admin-gst-control,
+  .admin-payment-section,
+  .admin-settle-section,
   .admin-sidebar,
   .admin-top-header {
     display: none !important;
   }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   EDIT TABLE MODAL (Exact Reference Replica)
+   ═══════════════════════════════════════════════════════════════ */
+.admin-edit-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  box-sizing: border-box;
+}
+
+.admin-edit-modal-card {
+  position: relative;
+  width: 100%;
+  max-width: 390px;
+  background: #FFFFFF;
+  border-radius: 24px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.2);
+  padding: 28px 26px 26px 26px;
+  box-sizing: border-box;
+  animation: adminModalPopIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.admin-edit-modal-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.admin-edit-modal-close:hover {
+  transform: scale(1.15);
+  opacity: 0.75;
+}
+
+.admin-edit-modal-title {
+  font-family: 'Inter', 'Outfit', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #1A1A1A;
+  text-align: center;
+  margin: 0 0 22px 0;
+  line-height: 1.2;
+}
+
+.admin-edit-modal-error {
+  background: #FEE2E2;
+  border: 1px solid #FCA5A5;
+  color: #DC2626;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 10px;
+  margin-bottom: 14px;
+  text-align: center;
+}
+
+.admin-edit-modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.admin-edit-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.admin-edit-form-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: #374151;
+  text-align: left;
+}
+
+.admin-edit-form-input {
+  width: 100%;
+  height: 44px;
+  border: 1px solid #D1D5DB;
+  border-radius: 12px;
+  padding: 0 14px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #111827;
+  background: #FFFFFF;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.admin-edit-form-input:focus {
+  border-color: #230704;
+  box-shadow: 0 0 0 3px rgba(35, 7, 4, 0.08);
+}
+
+.admin-edit-select-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.admin-edit-form-select {
+  width: 100%;
+  height: 44px;
+  border: 1px solid #D1D5DB;
+  border-radius: 12px;
+  padding: 0 36px 0 14px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #111827;
+  background: #FFFFFF;
+  box-sizing: border-box;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.admin-edit-form-select:focus {
+  border-color: #230704;
+  box-shadow: 0 0 0 3px rgba(35, 7, 4, 0.08);
+}
+
+.admin-edit-select-chevron {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.admin-edit-save-btn {
+  width: 100%;
+  height: 46px;
+  background: #230704;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  cursor: pointer;
+  margin-top: 8px;
+  box-shadow: 0 4px 14px rgba(35, 7, 4, 0.22);
+  transition: all 0.15s ease;
+}
+
+.admin-edit-save-btn:hover {
+  background: #3A100B;
+  transform: translateY(-1px);
+}
+
+.admin-edit-save-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
 }
