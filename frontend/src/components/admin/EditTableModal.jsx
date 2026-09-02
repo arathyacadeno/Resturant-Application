@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { X, ChevronDown } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { X, ChevronDown, Plus, Check } from 'lucide-react';
 import { tablesApi } from '../../api/tablesApi';
 
 /**
@@ -10,10 +10,10 @@ import { tablesApi } from '../../api/tablesApi';
  * - Blurred and dimmed dashboard background
  * - Top-right close icon (X)
  * - Centered dynamic title (e.g. "Edit Table 2")
- * - Form Fields:
+ * - Form Fields with custom dark maroon dropdowns:
  *    1. Table Name: Text input (pre-filled e.g. "T2")
- *    2. Seat Capacity: Dropdown select (pre-selected e.g. "4")
- *    3. Dining Area: Dropdown select (pre-selected e.g. "Indoor")
+ *    2. Seat Capacity: Custom dropdown with capacity options + "+ Add new seats"
+ *    3. Dining Area: Custom dropdown with area options + "+ Add new dining area"
  * - Full-width dark maroon Save button (#230704 / #2A0808)
  */
 export const EditTableModal = ({ isOpen, table, onClose, onTableUpdated }) => {
@@ -23,6 +23,34 @@ export const EditTableModal = ({ isOpen, table, onClose, onTableUpdated }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
+  // Dropdown states
+  const [openDropdown, setOpenDropdown] = useState(null); // 'capacity' | 'area' | null
+  const [capacityOptions, setCapacityOptions] = useState(['2', '4', '6', '8', '10', '12']);
+  const [areaOptions, setAreaOptions] = useState(['Indoor', 'Outdoor', 'Terrace', 'Private Room']);
+
+  // Inline add state
+  const [showAddCustomCapacity, setShowAddCustomCapacity] = useState(false);
+  const [customCapacityInput, setCustomCapacityInput] = useState('');
+  const [showAddCustomArea, setShowAddCustomArea] = useState(false);
+  const [customAreaInput, setCustomAreaInput] = useState('');
+
+  const modalRef = useRef(null);
+
+  // Close dropdown on click outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        setOpenDropdown(null);
+      }
+    };
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
+
   useEffect(() => {
     if (table) {
       const numStr = String(table.number || '2').replace(/^Table\s*/i, '').trim();
@@ -30,17 +58,58 @@ export const EditTableModal = ({ isOpen, table, onClose, onTableUpdated }) => {
         ? numStr.toUpperCase()
         : `T${numStr}`;
       setTableName(table.name || formattedNum);
-      setCapacity(table.capacity || 4);
+
+      const capStr = String(table.capacity || 4);
+      setCapacity(capStr);
+      if (!capacityOptions.includes(capStr)) {
+        setCapacityOptions((prev) => [...prev, capStr].sort((a, b) => parseInt(a, 10) - parseInt(b, 10)));
+      }
 
       const sec = table.section
         ? table.section.charAt(0).toUpperCase() + table.section.slice(1).toLowerCase()
         : 'Indoor';
       setDiningArea(sec);
+      if (!areaOptions.includes(sec)) {
+        setAreaOptions((prev) => [...prev, sec]);
+      }
+
       setError('');
+      setOpenDropdown(null);
     }
   }, [table]);
 
   if (!isOpen || !table) return null;
+
+  const handleAddNewCapacity = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const val = customCapacityInput.trim();
+    if (val && !isNaN(val) && parseInt(val, 10) > 0) {
+      if (!capacityOptions.includes(val)) {
+        setCapacityOptions((prev) => [...prev, val].sort((a, b) => parseInt(a, 10) - parseInt(b, 10)));
+      }
+      setCapacity(val);
+      setCustomCapacityInput('');
+      setShowAddCustomCapacity(false);
+      setOpenDropdown(null);
+    }
+  };
+
+  const handleAddNewArea = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const val = customAreaInput.trim();
+    if (val) {
+      const formatted = val.charAt(0).toUpperCase() + val.slice(1);
+      if (!areaOptions.includes(formatted)) {
+        setAreaOptions((prev) => [...prev, formatted]);
+      }
+      setDiningArea(formatted);
+      setCustomAreaInput('');
+      setShowAddCustomArea(false);
+      setOpenDropdown(null);
+    }
+  };
 
   // Title formatting: "Edit Table 2"
   const cleanNumber =
@@ -85,7 +154,7 @@ export const EditTableModal = ({ isOpen, table, onClose, onTableUpdated }) => {
 
   return (
     <div className="admin-edit-modal-overlay" onClick={onClose}>
-      <div className="admin-edit-modal-card" onClick={(e) => e.stopPropagation()}>
+      <div className="admin-edit-modal-card" ref={modalRef} onClick={(e) => e.stopPropagation()}>
         {/* Top-right close button */}
         <button
           type="button"
@@ -115,41 +184,147 @@ export const EditTableModal = ({ isOpen, table, onClose, onTableUpdated }) => {
             />
           </div>
 
-          {/* 2. Seat Capacity */}
+          {/* 2. Seat Capacity (Custom Dropdown) */}
           <div className="admin-edit-form-group">
             <label className="admin-edit-form-label">Seat Capacity</label>
-            <div className="admin-edit-select-wrapper">
-              <select
-                className="admin-edit-form-select"
-                value={capacity}
-                onChange={(e) => setCapacity(e.target.value)}
+            <div className="admin-custom-select-container">
+              {/* Trigger */}
+              <div
+                className={`admin-custom-select-trigger ${openDropdown === 'capacity' ? 'is-active' : ''}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setOpenDropdown((prev) => (prev === 'capacity' ? null : 'capacity'));
+                  setShowAddCustomCapacity(false);
+                }}
               >
-                <option value={2}>2</option>
-                <option value={4}>4</option>
-                <option value={6}>6</option>
-                <option value={8}>8</option>
-                <option value={10}>10</option>
-                <option value={12}>12</option>
-              </select>
-              <ChevronDown size={16} color="#4B5563" className="admin-edit-select-chevron" />
+                <span>{capacity ? `${capacity} Seats` : 'Select seat capacity'}</span>
+                <ChevronDown
+                  size={16}
+                  color={openDropdown === 'capacity' ? '#230704' : '#4B5563'}
+                  className={`admin-custom-select-arrow ${openDropdown === 'capacity' ? 'is-open' : ''}`}
+                />
+              </div>
+
+              {/* Dropdown Menu */}
+              {openDropdown === 'capacity' && (
+                <div className="admin-custom-dropdown-menu" onClick={(e) => e.stopPropagation()}>
+                  <div className="admin-custom-dropdown-list">
+                    {capacityOptions.map((opt) => (
+                      <div
+                        key={opt}
+                        className={`admin-custom-dropdown-option ${String(capacity) === String(opt) ? 'selected' : ''}`}
+                        onClick={() => {
+                          setCapacity(opt);
+                          setOpenDropdown(null);
+                        }}
+                      >
+                        <span>{opt} Seats</span>
+                        {String(capacity) === String(opt) && <Check size={14} color="#FFFFFF" />}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Add New Seats Option */}
+                  {showAddCustomCapacity ? (
+                    <div className="admin-custom-dropdown-inline-add">
+                      <input
+                        type="number"
+                        min="1"
+                        max="50"
+                        placeholder="Seats (e.g. 14)"
+                        value={customCapacityInput}
+                        onChange={(e) => setCustomCapacityInput(e.target.value)}
+                        autoFocus
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') handleAddNewCapacity(e);
+                        }}
+                      />
+                      <button type="button" onClick={handleAddNewCapacity}>
+                        Add
+                      </button>
+                    </div>
+                  ) : (
+                    <div
+                      className="admin-custom-dropdown-add-btn"
+                      onClick={() => setShowAddCustomCapacity(true)}
+                    >
+                      <Plus size={14} strokeWidth={2.5} />
+                      <span>Add new seats</span>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 
-          {/* 3. Dining Area */}
+          {/* 3. Dining Area (Custom Dropdown) */}
           <div className="admin-edit-form-group">
             <label className="admin-edit-form-label">Dining Area</label>
-            <div className="admin-edit-select-wrapper">
-              <select
-                className="admin-edit-form-select"
-                value={diningArea}
-                onChange={(e) => setDiningArea(e.target.value)}
+            <div className="admin-custom-select-container">
+              {/* Trigger */}
+              <div
+                className={`admin-custom-select-trigger ${openDropdown === 'area' ? 'is-active' : ''}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setOpenDropdown((prev) => (prev === 'area' ? null : 'area'));
+                  setShowAddCustomArea(false);
+                }}
               >
-                <option value="Indoor">Indoor</option>
-                <option value="Outdoor">Outdoor</option>
-                <option value="Terrace">Terrace</option>
-                <option value="Private Room">Private Room</option>
-              </select>
-              <ChevronDown size={16} color="#4B5563" className="admin-edit-select-chevron" />
+                <span>{diningArea || 'Select dining area'}</span>
+                <ChevronDown
+                  size={16}
+                  color={openDropdown === 'area' ? '#230704' : '#4B5563'}
+                  className={`admin-custom-select-arrow ${openDropdown === 'area' ? 'is-open' : ''}`}
+                />
+              </div>
+
+              {/* Dropdown Menu */}
+              {openDropdown === 'area' && (
+                <div className="admin-custom-dropdown-menu" onClick={(e) => e.stopPropagation()}>
+                  <div className="admin-custom-dropdown-list">
+                    {areaOptions.map((opt) => (
+                      <div
+                        key={opt}
+                        className={`admin-custom-dropdown-option ${diningArea === opt ? 'selected' : ''}`}
+                        onClick={() => {
+                          setDiningArea(opt);
+                          setOpenDropdown(null);
+                        }}
+                      >
+                        <span>{opt}</span>
+                        {diningArea === opt && <Check size={14} color="#FFFFFF" />}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Add New Area Option */}
+                  {showAddCustomArea ? (
+                    <div className="admin-custom-dropdown-inline-add">
+                      <input
+                        type="text"
+                        placeholder="Area name (e.g. Garden)"
+                        value={customAreaInput}
+                        onChange={(e) => setCustomAreaInput(e.target.value)}
+                        autoFocus
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') handleAddNewArea(e);
+                        }}
+                      />
+                      <button type="button" onClick={handleAddNewArea}>
+                        Add
+                      </button>
+                    </div>
+                  ) : (
+                    <div
+                      className="admin-custom-dropdown-add-btn"
+                      onClick={() => setShowAddCustomArea(true)}
+                    >
+                      <Plus size={14} strokeWidth={2.5} />
+                      <span>Add new dining area</span>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 

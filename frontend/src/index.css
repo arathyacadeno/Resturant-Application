@@ -5208,3 +5208,385 @@ h6 {
   cursor: not-allowed;
   transform: none;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   ADD NEW TABLE MODAL (Exact Reference Replica)
+   ═══════════════════════════════════════════════════════════════ */
+.admin-add-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  box-sizing: border-box;
+}
+
+.admin-add-modal-card {
+  position: relative;
+  width: 100%;
+  max-width: 390px;
+  background: #FFFFFF;
+  border-radius: 24px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.2);
+  padding: 30px 28px 26px 28px;
+  box-sizing: border-box;
+  animation: adminModalPopIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.admin-add-modal-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.admin-add-modal-close:hover {
+  transform: scale(1.15);
+  opacity: 0.75;
+}
+
+.admin-add-modal-header {
+  text-align: center;
+  margin-bottom: 22px;
+}
+
+.admin-add-modal-title {
+  font-family: 'Inter', 'Outfit', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  color: #1F2937;
+  text-align: center;
+  margin: 0 0 4px 0;
+  line-height: 1.2;
+}
+
+.admin-add-modal-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #6B7280;
+  text-align: center;
+  margin: 0;
+}
+
+.admin-add-modal-error {
+  background: #FEE2E2;
+  border: 1px solid #FCA5A5;
+  color: #DC2626;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 10px;
+  margin-bottom: 14px;
+  text-align: center;
+}
+
+.admin-add-modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.admin-add-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.admin-add-form-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: #374151;
+  text-align: left;
+}
+
+.admin-add-form-input {
+  width: 100%;
+  height: 44px;
+  border: 1px solid #D1D5DB;
+  border-radius: 12px;
+  padding: 0 14px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #111827;
+  background: #FFFFFF;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.admin-add-form-input::placeholder {
+  color: #9CA3AF;
+  font-weight: 400;
+}
+
+.admin-add-form-input:focus {
+  border-color: #230704;
+  box-shadow: 0 0 0 3px rgba(35, 7, 4, 0.08);
+}
+
+.admin-add-select-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.admin-add-form-select {
+  width: 100%;
+  height: 44px;
+  border: 1px solid #D1D5DB;
+  border-radius: 12px;
+  padding: 0 36px 0 14px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #111827;
+  background: #FFFFFF;
+  box-sizing: border-box;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.admin-add-form-select.placeholder-selected {
+  color: #9CA3AF;
+  font-weight: 400;
+}
+
+.admin-add-form-select:focus {
+  border-color: #230704;
+  box-shadow: 0 0 0 3px rgba(35, 7, 4, 0.08);
+}
+
+.admin-add-select-chevron {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.admin-add-save-btn {
+  width: 100%;
+  height: 48px;
+  background: #230704;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  cursor: pointer;
+  margin-top: 8px;
+  box-shadow: 0 4px 14px rgba(35, 7, 4, 0.22);
+  transition: all 0.15s ease;
+}
+
+.admin-add-save-btn:hover {
+  background: #3A100B;
+  transform: translateY(-1px);
+}
+
+.admin-add-save-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CUSTOM DARK MAROON DROPDOWNS (Modals)
+   ═══════════════════════════════════════════════════════════════ */
+.admin-custom-select-container {
+  position: relative;
+  width: 100%;
+}
+
+.admin-custom-select-trigger {
+  width: 100%;
+  height: 44px;
+  border: 1px solid #D1D5DB;
+  border-radius: 12px;
+  padding: 0 14px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #111827;
+  background: #FFFFFF;
+  box-sizing: border-box;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.admin-custom-select-trigger.is-placeholder {
+  color: #9CA3AF;
+  font-weight: 400;
+}
+
+.admin-custom-select-trigger.is-active,
+.admin-custom-select-trigger:focus {
+  border-color: #230704;
+  box-shadow: 0 0 0 3px rgba(35, 7, 4, 0.08);
+}
+
+.admin-custom-select-arrow {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  flex-shrink: 0;
+}
+
+.admin-custom-select-arrow.is-open {
+  transform: rotate(180deg);
+}
+
+/* Dropdown Menu directly below input */
+.admin-custom-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  width: 100%;
+  background: #230704; /* Dark Maroon */
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
+  z-index: 1000;
+  padding: 6px;
+  box-sizing: border-box;
+  animation: adminDropdownFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes adminDropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.admin-custom-dropdown-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 160px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+.admin-custom-dropdown-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.admin-custom-dropdown-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+.admin-custom-dropdown-option {
+  padding: 9px 12px;
+  border-radius: 8px;
+  color: #E5E7EB;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.12s ease;
+  user-select: none;
+}
+
+.admin-custom-dropdown-option:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #FFFFFF;
+}
+
+.admin-custom-dropdown-option.selected {
+  background: rgba(255, 255, 255, 0.18);
+  color: #FFFFFF;
+  font-weight: 700;
+}
+
+/* + Add New Button */
+.admin-custom-dropdown-add-btn {
+  padding: 9px 12px;
+  margin-top: 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0 0 8px 8px;
+  color: #FCD34D;
+  font-family: 'Inter', sans-serif;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.12s ease;
+  user-select: none;
+}
+
+.admin-custom-dropdown-add-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #FDE68A;
+}
+
+/* Inline Add Form */
+.admin-custom-dropdown-inline-add {
+  display: flex;
+  gap: 6px;
+  padding: 6px 4px 2px 4px;
+  margin-top: 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.admin-custom-dropdown-inline-add input {
+  flex: 1;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  color: #FFFFFF;
+  font-size: 12px;
+  padding: 0 8px;
+  outline: none;
+}
+
+.admin-custom-dropdown-inline-add input:focus {
+  border-color: #FCD34D;
+}
+
+.admin-custom-dropdown-inline-add button {
+  height: 32px;
+  padding: 0 12px;
+  background: #FCD34D;
+  color: #230704;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}

@@ -210,6 +210,13 @@ export const AdminDashboardPage = () => {
     loadDashboardData();
   };
 
+  const handleTableCreated = (newTable) => {
+    if (newTable && newTable.id) {
+      setTables((prev) => [...prev, newTable]);
+    }
+    loadDashboardData();
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', width: '100%' }}>
       {/* ═══════════════════════════════════════════════════════════════
@@ -426,7 +433,7 @@ export const AdminDashboardPage = () => {
       <AddTableModal
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}
-        onTableCreated={loadDashboardData}
+        onTableCreated={handleTableCreated}
       />
 
       <EditTableModal
