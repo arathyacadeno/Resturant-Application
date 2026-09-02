@@ -132,8 +132,23 @@ export const KitchenPage = () => {
                 </div>
 
                 {order.customer_name && (
-                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.75rem' }}>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>
                     Customer: {order.customer_name}
+                  </div>
+                )}
+
+                {(order.kitchen_notes || order.notes) && (
+                  <div style={{
+                    fontSize: '0.82rem',
+                    color: '#92400E',
+                    backgroundColor: '#FEF3C7',
+                    border: '1px solid #FCD34D',
+                    padding: '0.4rem 0.6rem',
+                    borderRadius: '8px',
+                    marginBottom: '0.75rem',
+                    fontWeight: 600
+                  }}>
+                    📝 Kitchen Note: {order.kitchen_notes || order.notes}
                   </div>
                 )}
 

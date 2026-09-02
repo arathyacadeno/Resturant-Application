@@ -45,7 +45,7 @@ class OrderSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'table', 'table_number', 'table_name',
             'order_type', 'status', 'customer_name', 'customer_phone',
-            'notes', 'items', 'subtotal', 'created_by', 'created_by_name',
+            'notes', 'kitchen_notes', 'items', 'subtotal', 'created_by', 'created_by_name',
             'created_at', 'updated_at',
         ]
         read_only_fields = ['created_by', 'created_at', 'updated_at']
@@ -56,10 +56,22 @@ class OrderCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ['table', 'order_type', 'customer_name', 'customer_phone', 'notes', 'items']
+        fields = ['table', 'order_type', 'customer_name', 'customer_phone', 'notes', 'kitchen_notes', 'items']
+
+    def validate_table(self, table):
+        if table and table.status in ['no_service', 'inactive']:
+            raise serializers.ValidationError(f"Table {table.number} is currently out of service.")
+        return table
 
     def create(self, validated_data):
         items_data = validated_data.pop('items')
+        # Sync notes and kitchen_notes if only one is passed
+        kitchen_note = validated_data.get('kitchen_notes') or validated_data.get('notes') or ''
+        if not validated_data.get('kitchen_notes') and kitchen_note:
+            validated_data['kitchen_notes'] = kitchen_note
+        if not validated_data.get('notes') and kitchen_note:
+            validated_data['notes'] = kitchen_note
+
         order = Order.objects.create(
             **validated_data,
             status='pending',

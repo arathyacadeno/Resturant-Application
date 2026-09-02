@@ -39,8 +39,13 @@ export const QRCodePage = () => {
     };
   }, []);
 
-  // Dynamic filter logic
-  const filteredTables = tables.filter((t) => {
+  // Dynamic filter logic (exclude deactivated / no_service tables)
+  const activeTables = tables.filter((t) => {
+    const st = (t.status || '').toLowerCase();
+    return st !== 'no_service' && st !== 'inactive' && t.is_active !== false;
+  });
+
+  const filteredTables = activeTables.filter((t) => {
     if (activeFilter === 'All' || activeFilter === 'All tables') return true;
     const sec = (t.section || t.seating_type || '').toLowerCase();
     if (activeFilter === 'Indoor') {

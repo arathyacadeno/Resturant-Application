@@ -30,6 +30,7 @@ class Order(models.Model):
     customer_name = models.CharField(max_length=100, blank=True)
     customer_phone = models.CharField(max_length=15, blank=True)
     notes = models.TextField(blank=True)
+    kitchen_notes = models.TextField(blank=True, default='')
     created_by = models.ForeignKey(
         'accounts.User', on_delete=models.SET_NULL,
         null=True, blank=True, related_name='orders_created'

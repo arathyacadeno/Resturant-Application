@@ -1,5 +1,5 @@
 import React from 'react';
-import { Edit2, X, Printer, User, Armchair } from 'lucide-react';
+import { Edit2, X, Printer, User, Armchair, Pencil, Ban } from 'lucide-react';
 
 /**
  * Format table number into clean format e.g. "T 1", "T 2", etc.
@@ -49,10 +49,23 @@ export const AdminTableCard = ({
   activeOrder,
   onClick,
   onEdit,
+  onToggleService,
   onDelete,
   onPrint,
 }) => {
   const statusKey = (table.status || 'available').toLowerCase();
+  const isNoService = statusKey === 'no_service' || statusKey === 'inactive';
+  const isAvailable = statusKey === 'available';
+
+  // Toggle handler: calls onToggleService or onDelete
+  const handleToggle = (e) => {
+    e.stopPropagation();
+    if (onToggleService) {
+      onToggleService(table);
+    } else if (onDelete) {
+      onDelete(table);
+    }
+  };
 
   // Guest & arrival info for reserved tables
   const guestName = table.active_reservation?.guest_name || table.guest_name || '';
@@ -84,42 +97,29 @@ export const AdminTableCard = ({
         <h3 className="atc-table-num">{formatAdminTableNumber(table.number)}</h3>
 
         <div className="atc-actions" onClick={(e) => e.stopPropagation()}>
-          {statusKey === 'available' && (
+          {(isAvailable || isNoService) && (
             <>
               {onEdit && (
                 <button
                   type="button"
-                  className="atc-action-btn"
+                  className={`atc-action-btn atc-action-btn--edit ${isNoService ? 'atc-action-btn--dark' : ''}`}
                   title="Edit Table"
                   onClick={(e) => {
                     e.stopPropagation();
                     onEdit(table);
                   }}
                 >
-                  <img
-                    src="/edit.png"
-                    alt="Edit"
-                    style={{ width: '14px', height: '14px', objectFit: 'contain' }}
-                  />
+                  <Pencil size={11} color={isNoService ? '#FFFFFF' : '#475569'} strokeWidth={2.2} />
                 </button>
               )}
-              {onDelete && (
-                <button
-                  type="button"
-                  className="atc-action-btn"
-                  title="Delete Table"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onDelete(table);
-                  }}
-                >
-                  <img
-                    src="/disable.png"
-                    alt="Delete"
-                    style={{ width: '14px', height: '14px', objectFit: 'contain' }}
-                  />
-                </button>
-              )}
+              <button
+                type="button"
+                className={`atc-action-btn atc-action-btn--ban ${isNoService ? 'atc-action-btn--deactivated' : ''}`}
+                title={isNoService ? "Activate Table" : "Deactivate Table"}
+                onClick={handleToggle}
+              >
+                <Ban size={11} color={isNoService ? '#FFFFFF' : '#DC2626'} strokeWidth={2.2} />
+              </button>
             </>
           )}
 
@@ -133,11 +133,7 @@ export const AdminTableCard = ({
                 if (onPrint) onPrint(table);
               }}
             >
-              <img
-                src="/print.png"
-                alt="Print"
-                style={{ width: '28px', height: '28px', objectFit: 'contain' }}
-              />
+              <img src='/print.png' size={16} color="#B87F00" strokeWidth={2} />
             </button>
           )}
         </div>
@@ -178,7 +174,9 @@ export const AdminTableCard = ({
         <div className={`atc-badge atc-badge--${statusKey}`}>
           <span className="atc-badge-dot">•</span>
           <span className="atc-badge-label">
-            {statusKey === 'available'
+            {isNoService
+              ? 'No Service'
+              : statusKey === 'available'
               ? 'Available'
               : statusKey === 'reserved'
               ? 'Reserved'

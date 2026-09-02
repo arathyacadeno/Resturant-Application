@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const rawUrl = import.meta.env.VITE_API_URL || 'https://t-clock-application.onrender.com/api/';
+const rawUrl = import.meta.env.VITE_API_URL || '/api/';
 const API_BASE_URL = rawUrl.endsWith('/') ? rawUrl : `${rawUrl}/`;
 
 const api = axios.create({

@@ -28,6 +28,9 @@ export const OrderProvider = ({ children }) => {
         setActiveTableOrder(orderData);
         setCustomerName(orderData.customer_name || guestFromTable || '');
         setCustomerPhone(orderData.customer_phone || '');
+        if (orderData.kitchen_notes || orderData.notes) {
+          setOrderNotes(orderData.kitchen_notes || orderData.notes);
+        }
       } else {
         setActiveTableOrder(null);
       }
@@ -237,7 +240,11 @@ export const OrderProvider = ({ children }) => {
       }));
 
       if (activeTableOrder && activeTableOrder.id) {
-        createdOrder = await ordersApi.addItemsToOrder(activeTableOrder.id, itemsPayload);
+        createdOrder = await ordersApi.addItemsToOrder(activeTableOrder.id, {
+          items: itemsPayload,
+          notes: orderNotes,
+          kitchen_notes: orderNotes,
+        });
       } else {
         const payload = {
           table: orderType === 'dine_in' ? (selectedTable?.id || null) : null,
@@ -245,6 +252,7 @@ export const OrderProvider = ({ children }) => {
           customer_name: customerName,
           customer_phone: customerPhone,
           notes: orderNotes,
+          kitchen_notes: orderNotes,
           items: itemsPayload,
         };
         createdOrder = await ordersApi.createOrder(payload);

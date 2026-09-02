@@ -8,6 +8,7 @@ import { analyticsApi } from '../../api/analyticsApi';
 import { AdminTableCard } from '../../components/admin/AdminTableCard';
 import { AddTableModal } from '../../components/admin/AddTableModal';
 import { EditTableModal } from '../../components/admin/EditTableModal';
+import { AdminBillModal } from '../../components/admin/AdminBillModal';
 import {
   Search,
   Bell,
@@ -37,6 +38,18 @@ export const AdminDashboardPage = () => {
   // Modals
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingTable, setEditingTable] = useState(null);
+  const [billModalTable, setBillModalTable] = useState(null);
+  const [billModalOrder, setBillModalOrder] = useState(null);
+
+  const handleOpenBillModal = (tbl, ord = null) => {
+    const activeOrd = ord || activeOrders.find(
+      (o) =>
+        String(o.table) === String(tbl.id) ||
+        String(o.table_number) === String(tbl.number)
+    );
+    setBillModalTable(tbl);
+    setBillModalOrder(activeOrd || null);
+  };
 
   // Dynamic greeting based on time of day
   const getGreeting = () => {
@@ -138,6 +151,10 @@ export const AdminDashboardPage = () => {
   // Table click handler
   const handleTableClick = (table) => {
     const status = (table.status || 'available').toLowerCase();
+    if (status === 'no_service' || status === 'inactive') {
+      // Table is deactivated: prevent starting/placing orders
+      return;
+    }
     setSelectedTable(table);
 
     if (status === 'billing') {
@@ -149,13 +166,37 @@ export const AdminDashboardPage = () => {
     }
   };
 
-  const handleDeleteTable = async (table) => {
-    if (window.confirm(`Are you sure you want to delete Table ${table.number}?`)) {
+  const handleToggleTableService = async (table) => {
+    const rawStatus = (table.status || '').toLowerCase();
+    const isCurrentlyInactive = rawStatus === 'no_service' || rawStatus === 'inactive';
+    const newStatus = isCurrentlyInactive ? 'available' : 'no_service';
+
+    // Optimistically update UI immediately so user sees the change with 0 latency
+    setTables((prev) =>
+      prev.map((t) => (t.id === table.id ? { ...t, status: newStatus } : t))
+    );
+
+    try {
+      await tablesApi.updateStatus(table.id, newStatus);
+      await loadDashboardData();
+    } catch (err) {
+      console.error('Failed to toggle table status via updateStatus:', err);
       try {
-        await tablesApi.deleteTable(table.id);
-        loadDashboardData();
-      } catch (err) {
-        alert(err.response?.data?.detail || 'Failed to delete table');
+        await tablesApi.updateTable(table.id, {
+          number: table.number,
+          name: table.name,
+          capacity: table.capacity,
+          section: table.section || 'indoor',
+          status: newStatus,
+        });
+        await loadDashboardData();
+      } catch (err2) {
+        console.error('Failed to update table status:', err2);
+        // Revert on error
+        setTables((prev) =>
+          prev.map((t) => (t.id === table.id ? { ...t, status: table.status } : t))
+        );
+        alert(err2.response?.data?.error || err2.response?.data?.detail || err2.message || 'Failed to update table status');
       }
     }
   };
@@ -362,12 +403,9 @@ export const AdminDashboardPage = () => {
                   activeOrder={activeOrd}
                   onClick={handleTableClick}
                   onEdit={(tbl) => setEditingTable(tbl)}
-                  onDelete={handleDeleteTable}
-                  onPrint={(tbl) => {
-                    navigate('/admin/orders', {
-                      state: { targetTableId: tbl.id, targetTableNumber: tbl.number },
-                    });
-                  }}
+                  onToggleService={handleToggleTableService}
+                  onDelete={handleToggleTableService}
+                  onPrint={(tbl) => handleOpenBillModal(tbl, activeOrd)}
                 />
               );
             })}
@@ -387,6 +425,19 @@ export const AdminDashboardPage = () => {
         table={editingTable}
         onClose={() => setEditingTable(null)}
         onTableUpdated={loadDashboardData}
+      />
+
+      <AdminBillModal
+        isOpen={Boolean(billModalTable)}
+        table={billModalTable}
+        activeOrder={billModalOrder}
+        onClose={() => {
+          setBillModalTable(null);
+          setBillModalOrder(null);
+        }}
+        onBillSettled={() => {
+          loadDashboardData();
+        }}
       />
     </div>
   );

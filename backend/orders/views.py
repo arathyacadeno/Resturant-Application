@@ -142,6 +142,13 @@ class AddItemsToOrderView(APIView):
             except MenuItem.DoesNotExist:
                 pass
 
+        # Update kitchen_notes and notes if passed
+        kitchen_note = request.data.get('kitchen_notes') or request.data.get('notes')
+        if kitchen_note is not None:
+            order.kitchen_notes = kitchen_note
+            order.notes = kitchen_note
+            order.save()
+
         return Response(OrderSerializer(order).data)
 
 

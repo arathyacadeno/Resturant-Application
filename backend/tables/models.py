@@ -11,6 +11,8 @@ class DiningTable(models.Model):
         ('reserved', 'Reserved'),
         ('billing', 'Billing'),
         ('cleaning', 'Cleaning'),
+        ('no_service', 'No Service'),
+        ('inactive', 'No Service'),
     ]
     SECTION_CHOICES = [
         ('indoor', 'Indoor'),

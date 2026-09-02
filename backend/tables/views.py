@@ -53,20 +53,40 @@ class TableByQRView(APIView):
 
 
 class TableStatusUpdateView(APIView):
-    """PATCH /api/tables/<id>/status/ — quickly update table status."""
+    """PATCH / PUT / POST /api/tables/<id>/status/ — update table status."""
     permission_classes = [IsStaffOrAdmin]
 
-    def patch(self, request, pk):
+    def _update_status(self, request, pk):
         try:
             table = DiningTable.objects.get(pk=pk)
-            new_status = request.data.get('status')
-            if new_status not in dict(DiningTable.STATUS_CHOICES):
-                return Response({'error': 'Invalid status'}, status=400)
-            table.status = new_status
+            raw_status = str(request.data.get('status', '')).strip().lower()
+            
+            # Map friendly aliases
+            if raw_status in ['no_service', 'inactive', 'no service', 'disabled', 'deactivated']:
+                table.status = 'no_service'
+            elif raw_status in ['available', 'active', 'free']:
+                table.status = 'available'
+            elif raw_status in dict(DiningTable.STATUS_CHOICES):
+                table.status = raw_status
+            else:
+                return Response({'error': f'Invalid status: {raw_status}'}, status=400)
+
+            if 'is_active' in request.data:
+                table.is_active = bool(request.data.get('is_active'))
+
             table.save()
             return Response(TableSerializer(table).data)
         except DiningTable.DoesNotExist:
             return Response({'error': 'Not found'}, status=404)
+
+    def patch(self, request, pk):
+        return self._update_status(request, pk)
+
+    def put(self, request, pk):
+        return self._update_status(request, pk)
+
+    def post(self, request, pk):
+        return self._update_status(request, pk)
 
 
 class ReservationCreateView(APIView):

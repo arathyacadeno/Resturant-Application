@@ -77,6 +77,8 @@ export const POSPage = () => {
     setCustomerName,
     customerPhone,
     setCustomerPhone,
+    orderNotes,
+    setOrderNotes,
     addToCart,
     removeFromCart,
     updateQuantity,
@@ -965,6 +967,21 @@ export const POSPage = () => {
                   </div>
                 );
               })()}
+
+              {/* Notes for the Kitchen Section */}
+              <div className="order-kitchen-notes-section">
+                <div className="order-kitchen-notes-title">Notes for the Kitchen</div>
+                <div className="order-kitchen-notes-box">
+                  <textarea
+                    id="order-kitchen-notes-input"
+                    className="order-kitchen-notes-input"
+                    placeholder="Any concerns? e.g. less spicy, no sugar in tea, nut allergy..."
+                    value={orderNotes}
+                    onChange={(e) => setOrderNotes(e.target.value)}
+                    rows={2}
+                  />
+                </div>
+              </div>
 
               {/* Bottom Action Buttons */}
               <div className="order-sheet-actions">

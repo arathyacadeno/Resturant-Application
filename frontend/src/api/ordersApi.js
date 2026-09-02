@@ -17,8 +17,9 @@ export const ordersApi = {
     const response = await api.patch(`orders/${id}/status/`, { status });
     return response.data;
   },
-  addItemsToOrder: async (id, items) => {
-    const response = await api.post(`orders/${id}/add-items/`, { items });
+  addItemsToOrder: async (id, payload) => {
+    const data = Array.isArray(payload) ? { items: payload } : payload;
+    const response = await api.post(`orders/${id}/add-items/`, data);
     return response.data;
   },
   getActiveTableOrder: async (tableId) => {

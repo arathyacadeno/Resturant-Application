@@ -52,6 +52,24 @@ const STATUS_STYLES = {
     dotColor: '#FFFFFF',
     cardBg: '#F9E8D0',
   },
+  no_service: {
+    statusClass: 'no_service',
+    label: 'No Service',
+    numColor: '#FFFFFF',
+    badgeBg: '#5A5A5A',
+    badgeText: '#FFFFFF',
+    dotColor: '#FFFFFF',
+    cardBg: '#787878',
+  },
+  inactive: {
+    statusClass: 'no_service',
+    label: 'No Service',
+    numColor: '#FFFFFF',
+    badgeBg: '#5A5A5A',
+    badgeText: '#FFFFFF',
+    dotColor: '#FFFFFF',
+    cardBg: '#787878',
+  },
 };
 
 const getStatusConfig = (rawStatus) => {
@@ -354,19 +372,25 @@ export const TablesPage = () => {
     }
   };
 
-  // Dynamic Statistics computed strictly from backend database tables
-  const freeCount = tables.filter(
+  // Filter out deactivated / no_service tables for Staff Dashboard
+  const activeStaffTables = tables.filter((t) => {
+    const st = (t.status || '').toLowerCase();
+    return st !== 'no_service' && st !== 'inactive' && t.is_active !== false;
+  });
+
+  // Dynamic Statistics computed strictly from active tables on floor
+  const freeCount = activeStaffTables.filter(
     (t) => (t.status || '').toLowerCase() === 'available'
   ).length;
   
-  const occupiedCount = tables.filter((t) =>
+  const occupiedCount = activeStaffTables.filter((t) =>
     ['occupied', 'billing', 'cleaning'].includes((t.status || '').toLowerCase())
   ).length;
   
-  const totalCount = tables.length;
+  const totalCount = activeStaffTables.length;
 
   // Filter backend tables dynamically by section
-  const filteredTables = tables.filter((t) => {
+  const filteredTables = activeStaffTables.filter((t) => {
     if (activeFilter === 'All') return true;
     const sec = (t.section || '').toLowerCase();
     if (activeFilter === 'Indoor') {

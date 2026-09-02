@@ -659,6 +659,11 @@
   background-color: #FAF4E5;
 }
 
+.admin-table-card--no_service,
+.admin-table-card--inactive {
+  background-color: #787878 !important;
+}
+
 /* Header Row inside Card */
 .atc-header {
   display: flex;
@@ -691,35 +696,57 @@
   color: #B87F00;
 }
 
+.admin-table-card--no_service .atc-table-num,
+.admin-table-card--inactive .atc-table-num {
+  color: #FFFFFF !important;
+}
+
+.admin-table-card--no_service .atc-capacity,
+.admin-table-card--inactive .atc-capacity,
+.admin-table-card--no_service .atc-subtext,
+.admin-table-card--inactive .atc-subtext {
+  color: #FFFFFF !important;
+}
+
+.admin-table-card--no_service .atc-chair-icon,
+.admin-table-card--inactive .atc-chair-icon {
+  filter: brightness(0) invert(1) !important;
+}
+
 .atc-actions {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
 }
 
 .atc-action-btn {
-  width: 28px;
-  height: 28px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   background: #FFFFFF;
-  border: none;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: transform 0.1s ease;
+  padding: 0;
+  margin: 0;
+  outline: none;
+  transition: all 0.15s ease;
 }
 
 .atc-action-btn:hover {
   transform: scale(1.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.12);
 }
 
 .atc-action-btn--print {
   background: transparent;
   box-shadow: none;
-  width: 32px;
-  height: 32px;
+  border: none;
+  width: 26px;
+  height: 26px;
 }
 
 /* Body & Details */
@@ -830,6 +857,22 @@
 .atc-badge--billing {
   background-color: #B87F00;
   color: #FFFFFF;
+}
+
+.atc-action-btn--dark {
+  background: #525252 !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+.atc-action-btn--deactivated {
+  background: #FF5A5A !important;
+  border: none !important;
+}
+
+.atc-badge--no_service,
+.atc-badge--inactive {
+  background-color: #555555 !important;
+  color: #FFFFFF !important;
 }
 
 /* Responsive grid rules */
@@ -1110,4 +1153,157 @@
 
 .admin-footer-link:hover {
   text-decoration: underline;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ADMIN BILL PRINT & SETTLE MODAL
+   ═══════════════════════════════════════════════════════════════ */
+.admin-bill-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  box-sizing: border-box;
+}
+
+.admin-bill-modal {
+  width: 100%;
+  max-width: 440px;
+  max-height: 92vh;
+  background: #F4F4F5;
+  border-radius: 28px;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.22);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  padding: 0 0 20px 0;
+  animation: adminModalPopIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes adminModalPopIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.admin-bill-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px 12px 24px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.admin-bill-modal-title {
+  font-size: 19px;
+  font-weight: 800;
+  color: #171717;
+  margin: 0;
+  line-height: 1.1;
+  letter-spacing: -0.5px;
+}
+
+.admin-bill-modal-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.admin-bill-print-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid #171717;
+  background: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.15s ease;
+}
+
+.admin-bill-print-btn:hover {
+  transform: scale(1.08);
+  background: #FFFBEB;
+}
+
+.admin-bill-close-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #9CA3AF;
+  padding: 0;
+  transition: all 0.15s ease;
+}
+
+.admin-bill-close-btn:hover {
+  color: #171717;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PRINT STYLING (Receipt Only)
+   ═══════════════════════════════════════════════════════════════ */
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+
+  .bill-preview,
+  .bill-preview * {
+    visibility: visible !important;
+  }
+
+  .bill-preview {
+    position: fixed !important;
+    left: 50% !important;
+    top: 0 !important;
+    transform: translateX(-50%) !important;
+    width: 320px !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 16px !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: #FFFFFF !important;
+    color: #000000 !important;
+  }
+
+  .admin-bill-modal-overlay,
+  .bill-sheet-overlay {
+    position: static !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+  }
+
+  .admin-bill-modal-header,
+  .bill-sheet-header,
+  .gst-selector-container,
+  .payment-method-container,
+  .settle-bill-container,
+  .admin-sidebar,
+  .admin-top-header {
+    display: none !important;
+  }
 }

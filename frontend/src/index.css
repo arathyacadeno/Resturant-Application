@@ -2217,7 +2217,7 @@ h6 {
     border-radius: 18px !important;
     background: #FFFFFF !important;
     padding: 16px !important;
-    margin-bottom: 20px !important;
+    margin-bottom: 16px !important;
     display: flex !important;
     flex-direction: column !important;
     gap: 8px !important;
@@ -2243,40 +2243,105 @@ h6 {
     color: #171717 !important;
   }
 
+  /* Notes for the Kitchen Section */
+  .order-kitchen-notes-section {
+    display: flex !important;
+    flex-direction: column !important;
+    margin-bottom: 20px !important;
+    width: 100% !important;
+  }
+
+  .order-kitchen-notes-title {
+    font-size: 13.5px !important;
+    font-weight: 700 !important;
+    color: #171717 !important;
+    margin-bottom: 8px !important;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  }
+
+  .order-kitchen-notes-box {
+    border: 1px solid #350505 !important;
+    border-radius: 18px !important;
+    background: #FFFFFF !important;
+    padding: 12px 14px !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+  }
+
+  .order-kitchen-notes-input {
+    width: 100% !important;
+    border: none !important;
+    outline: none !important;
+    background: transparent !important;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    font-size: 13px !important;
+    line-height: 1.4 !important;
+    color: #171717 !important;
+    resize: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    display: block !important;
+  }
+
+  .order-kitchen-notes-input::placeholder {
+    color: #8C827A !important;
+    font-size: 12.5px !important;
+    font-weight: 400 !important;
+  }
+
   .order-sheet-actions {
     display: flex !important;
-    gap: 10px !important;
+    gap: 12px !important;
     width: 100% !important;
   }
 
   .btn-add-item {
     flex: 1 !important;
-    height: 42px !important;
+    height: 46px !important;
     background: #FFFFFF !important;
-    border: 1.5px solid #350505 !important;
-    color: #350505 !important;
-    border-radius: 22px !important;
-    font-weight: 600 !important;
-    font-size: 14px !important;
+    border: 1.5px solid #2B0707 !important;
+    color: #2B0707 !important;
+    border-radius: 999px !important;
+    font-weight: 700 !important;
+    font-size: 15px !important;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
     cursor: pointer !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+    transition: all 0.15s ease !important;
+    box-sizing: border-box !important;
+    outline: none !important;
+  }
+
+  .btn-add-item:active {
+    background: #FDF5F2 !important;
+    transform: scale(0.98) !important;
   }
 
   .btn-place-order {
     flex: 1 !important;
-    height: 42px !important;
-    background: #350505 !important;
-    border: 1.5px solid #350505 !important;
+    height: 46px !important;
+    background: #2B0707 !important;
+    border: 1.5px solid #2B0707 !important;
     color: #FFFFFF !important;
-    border-radius: 22px !important;
-    font-weight: 600 !important;
-    font-size: 14px !important;
+    border-radius: 999px !important;
+    font-weight: 700 !important;
+    font-size: 15px !important;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
     cursor: pointer !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+    transition: all 0.15s ease !important;
+    box-sizing: border-box !important;
+    outline: none !important;
+  }
+
+  .btn-place-order:active {
+    background: #1F0505 !important;
+    transform: scale(0.98) !important;
   }
 
   .btn-place-order:disabled {
@@ -4338,17 +4403,21 @@ h6 {
   height: 22px;
   border-radius: 50%;
   background: #FFFFFF;
-  border: none;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: transform 0.1s ease;
+  padding: 0;
+  margin: 0;
+  outline: none;
+  transition: all 0.15s ease;
 }
 
 .atc-action-btn:hover {
   transform: scale(1.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.12);
 }
 
 /* Body & Details */
@@ -4442,9 +4511,47 @@ h6 {
   color: #FFFFFF;
 }
 
+.admin-table-card--no_service,
+.admin-table-card--inactive {
+  background-color: #787878 !important;
+}
+
+.admin-table-card--no_service .atc-table-num,
+.admin-table-card--inactive .atc-table-num {
+  color: #FFFFFF !important;
+}
+
+.admin-table-card--no_service .atc-capacity,
+.admin-table-card--inactive .atc-capacity,
+.admin-table-card--no_service .atc-subtext,
+.admin-table-card--inactive .atc-subtext {
+  color: #FFFFFF !important;
+}
+
+.admin-table-card--no_service .atc-chair-icon,
+.admin-table-card--inactive .atc-chair-icon {
+  filter: brightness(0) invert(1) !important;
+}
+
 .atc-badge--billing {
   background-color: #D97706;
   color: #FFFFFF;
+}
+
+.atc-action-btn--dark {
+  background: #525252 !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+.atc-action-btn--deactivated {
+  background: #FF5A5A !important;
+  border: none !important;
+}
+
+.atc-badge--no_service,
+.atc-badge--inactive {
+  background-color: #555555 !important;
+  color: #FFFFFF !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════

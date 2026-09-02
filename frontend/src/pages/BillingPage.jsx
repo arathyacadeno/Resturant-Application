@@ -682,11 +682,7 @@ export const BillingPage = () => {
                   onClick={() => window.print()}
                   title="Print Bill"
                 >
-                  <img
-                    src="/print.png"
-                    alt="Print"
-                    className="bill-sheet-print-icon"
-                  />
+                  <Printer size={18} color="#B87F00" strokeWidth={2} />
                 </div>
 
                 <button
