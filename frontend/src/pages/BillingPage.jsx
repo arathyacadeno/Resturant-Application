@@ -88,30 +88,79 @@ export const BillingPage = () => {
     }
   };
 
+  const isTableOrder = (o) => {
+    if (!o) return false;
+    const tableVal = o.table;
+    const hasTable =
+      tableVal !== null &&
+      tableVal !== undefined &&
+      tableVal !== '' &&
+      tableVal !== 0;
+
+    const hasTableNum =
+      Boolean(o.table_number && String(o.table_number).trim() !== '') ||
+      Boolean(o.table_name && String(o.table_name).trim() !== '');
+
+    return Boolean(hasTable || hasTableNum);
+  };
+
+  const isTableBill = (b) => {
+    if (!b) return false;
+    const od = b.order_details;
+    const hasDirectTable =
+      (b.table !== null && b.table !== undefined && b.table !== '' && b.table !== 0) ||
+      Boolean(b.table_number && String(b.table_number).trim() !== '');
+
+    const hasOrderTable = od && (
+      (od.table !== null && od.table !== undefined && od.table !== '' && od.table !== 0) ||
+      Boolean(od.table_number && String(od.table_number).trim() !== '') ||
+      Boolean(od.table_name && String(od.table_name).trim() !== '')
+    );
+
+    return Boolean(hasDirectTable || hasOrderTable);
+  };
+
+
   const loadData = async () => {
-    setLoading(true);
     try {
-      const [billsRes, ordersRes, settingsRes] = await Promise.all([
+      const [billsRes, ordersRes, settingsRes] = await Promise.allSettled([
         billingApi.getBills(),
         ordersApi.getOrders(),
         authApi.getSettings(),
       ]);
 
-      const loadedBills = billsRes.results || billsRes;
-      setBills(Array.isArray(loadedBills) ? loadedBills : []);
-
-      const allOrders = ordersRes.results || ordersRes;
-      if (Array.isArray(allOrders)) {
-        // Filter active unbilled orders with items
-        const unbilled = allOrders.filter(
-          (o) => o.status !== 'billed' && o.status !== 'cancelled' && Array.isArray(o.items) && o.items.length > 0
-        );
-        setActiveOrders(unbilled);
-      } else {
-        setActiveOrders([]);
+      if (billsRes.status === 'fulfilled' && billsRes.value) {
+        const loadedBills = billsRes.value.results || billsRes.value;
+        if (Array.isArray(loadedBills)) {
+          // In staff billing section, strictly show bills generated for dining tables
+          const tableBills = loadedBills.filter(isTableBill);
+          setBills(tableBills);
+        } else {
+          setBills([]);
+        }
       }
 
-      setSettings(settingsRes);
+      if (ordersRes.status === 'fulfilled' && ordersRes.value) {
+        const allOrders = ordersRes.value.results || ordersRes.value;
+        if (Array.isArray(allOrders)) {
+          // In staff billing section, strictly show active unbilled orders placed through tables
+          const unbilledTableOrders = allOrders.filter(
+            (o) =>
+              o.status !== 'billed' &&
+              o.status !== 'cancelled' &&
+              Array.isArray(o.items) &&
+              o.items.length > 0 &&
+              isTableOrder(o)
+          );
+          setActiveOrders(unbilledTableOrders);
+        } else {
+          setActiveOrders([]);
+        }
+      }
+
+      if (settingsRes.status === 'fulfilled' && settingsRes.value) {
+        setSettings(settingsRes.value);
+      }
     } catch (err) {
       console.error('Failed to load billing data:', err);
     } finally {
@@ -126,6 +175,7 @@ export const BillingPage = () => {
     const interval = setInterval(loadData, 6000);
     return () => clearInterval(interval);
   }, []);
+
 
   // Auto-open target table bill on navigation if specified via location.state
   useEffect(() => {

@@ -7,7 +7,7 @@ from menu.serializers import MenuItemSerializer
 
 class OrderItemSerializer(serializers.ModelSerializer):
     menu_item_name = serializers.CharField(source='menu_item.name', read_only=True)
-    menu_item_image = serializers.ImageField(source='menu_item.image', read_only=True)
+    menu_item_image = serializers.SerializerMethodField()
     is_veg = serializers.BooleanField(source='menu_item.is_veg', read_only=True)
     subtotal = serializers.ReadOnlyField()
 
@@ -17,6 +17,12 @@ class OrderItemSerializer(serializers.ModelSerializer):
             'id', 'menu_item', 'menu_item_name', 'menu_item_image',
             'is_veg', 'quantity', 'unit_price', 'portion', 'subtotal', 'notes', 'status',
         ]
+
+    def get_menu_item_image(self, obj):
+        if obj.menu_item and obj.menu_item.image:
+            return str(obj.menu_item.image)
+        return None
+
 
 
 class OrderItemCreateSerializer(serializers.ModelSerializer):
@@ -101,8 +107,9 @@ class OrderCreateSerializer(serializers.ModelSerializer):
                 portion=portion,
                 notes=item_data.get('notes', ''),
             )
-        # Mark table as occupied if dine_in
-        if order.table and order.order_type == 'dine_in':
+        # Mark table as occupied whenever an order is created on a table
+        if order.table:
             order.table.status = 'occupied'
-            order.table.save()
+            order.table.save(update_fields=['status'])
         return order
+

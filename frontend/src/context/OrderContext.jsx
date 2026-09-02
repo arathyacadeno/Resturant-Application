@@ -260,6 +260,17 @@ export const OrderProvider = ({ children }) => {
 
       setDraftItems([]);
       if (selectedTable?.id) {
+        try {
+          const cached = localStorage.getItem('staff_cached_tables');
+          if (cached) {
+            const list = JSON.parse(cached);
+            const updated = list.map((t) =>
+              String(t.id) === String(selectedTable.id) ? { ...t, status: 'occupied' } : t
+            );
+            localStorage.setItem('staff_cached_tables', JSON.stringify(updated));
+          }
+          window.dispatchEvent(new Event('tablesUpdated'));
+        } catch {}
         await loadActiveTableOrder(selectedTable.id);
       }
       return createdOrder;
@@ -267,6 +278,7 @@ export const OrderProvider = ({ children }) => {
       setIsSubmitting(false);
     }
   };
+
 
   return (
     <OrderContext.Provider

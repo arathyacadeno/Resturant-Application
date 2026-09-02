@@ -35,9 +35,8 @@ class OrderListCreateView(generics.ListCreateAPIView):
         return OrderSerializer
 
     def get_permissions(self):
-        if self.request.method == 'POST':
-            return [AllowAny()]   # Customers via QR can also post
-        return [IsAnyStaff()]
+        return [AllowAny()]
+
 
 
 class OrderDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -149,7 +148,12 @@ class AddItemsToOrderView(APIView):
             order.notes = kitchen_note
             order.save()
 
+        if order.table and order.table.status != 'occupied':
+            order.table.status = 'occupied'
+            order.table.save(update_fields=['status'])
+
         return Response(OrderSerializer(order).data)
+
 
 
 class ActiveTableOrderView(APIView):

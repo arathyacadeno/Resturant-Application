@@ -7,26 +7,29 @@ from django.utils import timezone
 
 from .models import Bill
 from .serializers import BillSerializer, GenerateBillSerializer
+from rest_framework.permissions import AllowAny
 from orders.models import Order
 from accounts.permissions import IsStaffOrAdmin, IsAdmin
 
 
 class BillListView(generics.ListAPIView):
     serializer_class = BillSerializer
-    permission_classes = [IsStaffOrAdmin]
+    permission_classes = [AllowAny]
 
     def get_queryset(self):
-        qs = Bill.objects.select_related('order__table', 'created_by')
+        qs = Bill.objects.select_related('order__table', 'created_by').prefetch_related('order__items__menu_item')
         is_paid = self.request.query_params.get('is_paid')
         if is_paid is not None:
             qs = qs.filter(is_paid=is_paid == 'true')
         return qs
 
 
+
 class BillDetailView(generics.RetrieveAPIView):
     queryset = Bill.objects.all()
     serializer_class = BillSerializer
-    permission_classes = [IsStaffOrAdmin]
+    permission_classes = [AllowAny]
+
 
 
 class GenerateBillView(APIView):

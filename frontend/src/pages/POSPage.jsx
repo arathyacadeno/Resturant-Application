@@ -87,33 +87,44 @@ export const POSPage = () => {
     isSubmitting,
   } = useOrder();
 
-  const fetchData = async () => {
-    setLoading(true);
+  const fetchData = async (isInitial = false) => {
+    if (isInitial) {
+      setLoading(true);
+    }
     try {
-      const [catsData, itemsData, tablesData] = await Promise.all([
+      const [catsRes, itemsRes, tablesRes] = await Promise.allSettled([
         menuApi.getCategories(),
         menuApi.getMenuItems(),
         tablesApi.getTables(),
       ]);
-      setCategories(catsData.results || catsData);
-      setMenuItems(itemsData.results || itemsData);
-      setTables(tablesData.results || tablesData);
+
+      if (catsRes.status === 'fulfilled' && catsRes.value) {
+        setCategories(catsRes.value.results || catsRes.value);
+      }
+      if (itemsRes.status === 'fulfilled' && itemsRes.value) {
+        setMenuItems(itemsRes.value.results || itemsRes.value);
+      }
+      if (tablesRes.status === 'fulfilled' && tablesRes.value) {
+        setTables(tablesRes.value.results || tablesRes.value);
+      }
     } catch (err) {
       console.error('Error fetching POS dynamic data:', err);
     } finally {
-      setLoading(false);
+      if (isInitial) {
+        setLoading(false);
+      }
     }
   };
 
   useEffect(() => {
-    fetchData();
+    fetchData(true);
 
     // Auto-sync with Admin backend data updates on tab focus & periodic poll
-    const handleFocus = () => fetchData();
+    const handleFocus = () => fetchData(false);
     window.addEventListener('focus', handleFocus);
 
     const interval = setInterval(() => {
-      fetchData();
+      fetchData(false);
     }, 10000);
 
     return () => {
@@ -121,6 +132,7 @@ export const POSPage = () => {
       clearInterval(interval);
     };
   }, []);
+
 
   useEffect(() => {
     if (location.state?.openOrderSheet) {
@@ -937,36 +949,10 @@ export const POSPage = () => {
                       <span>Total</span>
                       <span>₹{(currentSubtotal * 1.05).toFixed(2)}</span>
                     </div>
-
-                    {/* Dark-Brown Overlay Pill matching reference image */}
-                    {orderSuccess && (
-                      <div
-                        style={{
-                          position: 'absolute',
-                          bottom: '6px',
-                          left: '50%',
-                          transform: 'translateX(-50%)',
-                          backgroundColor: '#2D0806',
-                          color: '#ffffff',
-                          padding: '0.45rem 1.15rem',
-                          borderRadius: '9999px',
-                          fontSize: '0.78rem',
-                          fontWeight: 700,
-                          boxShadow: '0 4px 14px rgba(0, 0, 0, 0.45)',
-                          zIndex: 20,
-                          whiteSpace: 'nowrap',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '0.35rem',
-                          animation: 'fadeIn 0.2s ease-out'
-                        }}
-                      >
-                        <span>{orderSuccess}</span>
-                      </div>
-                    )}
                   </div>
                 );
               })()}
+
 
               {/* Notes for the Kitchen Section */}
               <div className="order-kitchen-notes-section">

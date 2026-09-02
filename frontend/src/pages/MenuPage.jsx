@@ -34,22 +34,28 @@ export const MenuPage = () => {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [catRes, itemRes, tablesRes] = await Promise.all([
+      const [catRes, itemRes, tablesRes] = await Promise.allSettled([
         menuApi.getCategories(),
         menuApi.getMenuItems(),
         tablesApi.getTables(),
       ]);
-      setCategories(catRes.results || catRes);
-      setMenuItems(itemRes.results || itemRes);
-
-      const loadedTables = tablesRes.results || tablesRes;
-      setTables(Array.isArray(loadedTables) ? loadedTables : []);
+      if (catRes.status === 'fulfilled' && catRes.value) {
+        setCategories(catRes.value.results || catRes.value);
+      }
+      if (itemRes.status === 'fulfilled' && itemRes.value) {
+        setMenuItems(itemRes.value.results || itemRes.value);
+      }
+      if (tablesRes.status === 'fulfilled' && tablesRes.value) {
+        const loadedTables = tablesRes.value.results || tablesRes.value;
+        setTables(Array.isArray(loadedTables) ? loadedTables : []);
+      }
     } catch (err) {
       console.error('Failed to load menu data:', err);
     } finally {
       setLoading(false);
     }
   };
+
 
   useEffect(() => {
     loadData();

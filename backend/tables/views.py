@@ -29,7 +29,8 @@ class TableListCreateView(generics.ListCreateAPIView):
     def get_permissions(self):
         if self.request.method == 'POST':
             return [IsAdmin()]
-        return [IsAnyStaff()]
+        return [AllowAny()]
+
 
 
 class TableDetailView(generics.RetrieveUpdateDestroyAPIView):
