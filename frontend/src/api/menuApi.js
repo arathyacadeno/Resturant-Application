@@ -13,6 +13,11 @@ export const menuApi = {
     const response = await api.delete(`menu/categories/${id}/`);
     return response.data;
   },
+  updateCategory: async (id, data) => {
+    const response = await api.patch(`menu/categories/${id}/`, data);
+    return response.data;
+  },
+
   getMenuItems: async () => {
     const response = await api.get('menu/items/');
     return response.data;
@@ -39,4 +44,16 @@ export const menuApi = {
     const response = await api.post(`menu/items/${id}/toggle/`);
     return response.data;
   },
+  getMenuOptions: async () => {
+    const response = await api.get('menu/options/');
+    return response.data;
+  },
+  addMenuOption: async (optionType, value) => {
+    const response = await api.post('menu/options/', {
+      option_type: optionType,
+      value: value,
+    });
+    return response.data;
+  },
 };
+

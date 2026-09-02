@@ -9,4 +9,6 @@ urlpatterns = [
     path('items/', views.MenuItemListCreateView.as_view(), name='menuitem-list'),
     path('items/<int:pk>/', views.MenuItemDetailView.as_view(), name='menuitem-detail'),
     path('items/<int:pk>/toggle/', views.ToggleItemAvailabilityView.as_view(), name='menuitem-toggle'),
+    path('options/', views.MenuOptionsView.as_view(), name='menu-options'),
 ]
+

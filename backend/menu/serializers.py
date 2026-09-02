@@ -12,12 +12,15 @@ class MenuItemSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'category', 'category_name', 'name', 'description',
             'price', 'half_price', 'quarter_price', 'image', 'is_veg',
+            'diet_type', 'spice_level',
             'is_available', 'is_featured', 'prep_time', 'calories', 'sort_order',
         ]
         extra_kwargs = {
             'half_price': {'required': False, 'allow_null': True},
             'quarter_price': {'required': False, 'allow_null': True},
             'description': {'required': False, 'allow_blank': True},
+            'diet_type': {'required': False, 'allow_blank': True},
+            'spice_level': {'required': False, 'allow_blank': True},
             'image': {'required': False, 'allow_null': True},
         }
 
@@ -27,11 +30,24 @@ class MenuItemSerializer(serializers.ModelSerializer):
         elif isinstance(data, dict):
             data = data.copy()
 
-        for field in ['half_price', 'quarter_price', 'calories', 'image', 'description']:
+        # Numeric and file fields that should be null if empty
+        for field in ['half_price', 'quarter_price', 'calories', 'image']:
             if field in data and (data[field] == '' or data[field] == 'null' or data[field] == 'undefined'):
                 data[field] = None
 
+        # Text fields should be empty string if null/undefined
+        for field in ['description', 'diet_type', 'spice_level']:
+            if field in data and (data[field] == 'null' or data[field] == 'undefined' or data[field] is None):
+                data[field] = ''
+
+        # Parse string booleans from FormData
+        if 'is_veg' in data and isinstance(data['is_veg'], str):
+            data['is_veg'] = data['is_veg'].lower() in ('true', '1', 'yes')
+        if 'is_available' in data and isinstance(data['is_available'], str):
+            data['is_available'] = data['is_available'].lower() in ('true', '1', 'yes')
+
         return super().to_internal_value(data)
+
 
     def create(self, validated_data):
         has_image = 'image' in validated_data and validated_data['image']

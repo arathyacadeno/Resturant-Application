@@ -231,7 +231,10 @@ export const MenuPage = () => {
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid var(--border-color)', paddingTop: '0.75rem', marginTop: '0.5rem' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                   <span style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--accent-amber)' }}>
-                    ₹{parseFloat(item.price).toFixed(2)} <span style={{ fontSize: '0.75rem', fontWeight: 500, color: 'var(--text-muted)' }}>(Full)</span>
+                    ₹{parseFloat(item.price).toFixed(2)}{' '}
+                    {(item.half_price || item.quarter_price) ? (
+                      <span style={{ fontSize: '0.75rem', fontWeight: 500, color: 'var(--text-muted)' }}>(Full)</span>
+                    ) : null}
                   </span>
                   {(item.half_price || item.quarter_price) && (
                     <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'flex', gap: '8px' }}>
@@ -239,6 +242,7 @@ export const MenuPage = () => {
                       {item.quarter_price && <span>Qtr: ₹{parseFloat(item.quarter_price).toFixed(2)}</span>}
                     </div>
                   )}
+
                 </div>
 
                 <div style={{ display: 'flex', gap: '0.35rem' }}>

@@ -51,7 +51,7 @@ export const AdminSidebar = () => {
               <img 
                 src="/sidebar1.png" 
                 alt="Dashboard" 
-                style={{ width: '18px', height: '18px', objectFit: 'contain', flexShrink: 0 }}
+                className="admin-portal-nav-img"
               />
               <span>Dashboard</span>
             </NavLink>
@@ -63,7 +63,11 @@ export const AdminSidebar = () => {
               to="/admin/menu" 
               className={({ isActive }) => `admin-portal-nav-link ${isActive ? 'active' : ''}`}
             >
-              <UtensilsCrossed size={18} />
+              <img 
+                src="/sidebar2.png" 
+                alt="Menu Catalogue" 
+                className="admin-portal-nav-img"
+              />
               <span>Menu Catalogue</span>
             </NavLink>
           </li>
@@ -74,7 +78,7 @@ export const AdminSidebar = () => {
               to="/admin/orders" 
               className={({ isActive }) => `admin-portal-nav-link ${isActive ? 'active' : ''}`}
             >
-              <Receipt size={18} />
+              <Receipt size={21} strokeWidth={1.8} />
               <span>Order History</span>
             </NavLink>
           </li>
@@ -85,7 +89,7 @@ export const AdminSidebar = () => {
               to="/admin/staffs" 
               className={({ isActive }) => `admin-portal-nav-link ${isActive ? 'active' : ''}`}
             >
-              <Users size={18} />
+              <Users size={21} strokeWidth={1.8} />
               <span>Staffs</span>
             </NavLink>
           </li>
@@ -96,7 +100,7 @@ export const AdminSidebar = () => {
               to="/admin/swiggy-zomato" 
               className={({ isActive }) => `admin-portal-nav-link ${isActive ? 'active' : ''}`}
             >
-              <BarChart2 size={18} />
+              <BarChart2 size={21} strokeWidth={1.8} />
               <span>Swiggy & Zomato</span>
             </NavLink>
           </li>
@@ -107,7 +111,7 @@ export const AdminSidebar = () => {
               to="/admin/settings" 
               className={({ isActive }) => `admin-portal-nav-link ${isActive ? 'active' : ''}`}
             >
-              <Settings size={18} />
+              <Settings size={21} strokeWidth={1.8} />
               <span>Settings</span>
             </NavLink>
           </li>

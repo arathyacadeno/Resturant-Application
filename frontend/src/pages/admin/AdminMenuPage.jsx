@@ -1,20 +1,67 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../context/AuthContext';
+import { useOrder } from '../../context/OrderContext';
 import { menuApi } from '../../api/menuApi';
-import { Search } from 'lucide-react';
+import { UserAvatarPlaceholder } from '../../components/common/UserAvatarPlaceholder';
+import { AddMenuItemModal } from '../../components/admin/AddMenuItemModal';
+import { AddCategoryModal } from '../../components/admin/AddCategoryModal';
+import { EditCategoryModal } from '../../components/admin/EditCategoryModal';
+import { EditMenuItemModal } from '../../components/admin/EditMenuItemModal';
+import { Search, Bell, Pencil, Trash2, UtensilsCrossed, ChevronDown } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
+/**
+ * Resolve backend image URL strictly from database record
+ */
+const getFoodImage = (item) => {
+  if (item?.image && typeof item.image === 'string' && item.image.trim() !== '') {
+    if (item.image.startsWith('http://') || item.image.startsWith('https://')) {
+      return item.image;
+    }
+    const cleanPath = item.image.startsWith('/') ? item.image : `/${item.image}`;
+    return `http://127.0.0.1:8000${cleanPath}`;
+  }
+  return null;
+};
+
+/**
+ * AdminMenuPage
+ *
+ * Menu Catalogue Overview strictly rendering backend values:
+ * - Categories strictly from backend database
+ * - Dishes, descriptions, portion prices, veg/non-veg strictly from backend
+ * - Backend image resolution with clean neutral placeholder fallback
+ */
 export const AdminMenuPage = () => {
+  const { user, openProfile } = useAuth();
+  const { cartItems, addToCart, updateQuantity } = useOrder();
+  const navigate = useNavigate();
+
   const [categories, setCategories] = useState([]);
   const [menuItems, setMenuItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
 
+  // Diet Type filter state (strictly from backend values)
+  const [selectedDietType, setSelectedDietType] = useState('All');
+  const [isDietDropdownOpen, setIsDietDropdownOpen] = useState(false);
+  const [dietTypeOptions, setDietTypeOptions] = useState(['All', 'Veg', 'Non-Veg']);
+
+  // Modals
+  const [isAddCatModalOpen, setIsAddCatModalOpen] = useState(false);
+  const [editingCategory, setEditingCategory] = useState(null);
+  const [isAddItemModalOpen, setIsAddItemModalOpen] = useState(false);
+  const [editingItem, setEditingItem] = useState(null);
+
+
   const loadMenuData = async () => {
     setLoading(true);
     try {
-      const [catRes, itemRes] = await Promise.allSettled([
+      const [catRes, itemRes, optRes] = await Promise.allSettled([
         menuApi.getCategories(),
         menuApi.getMenuItems(),
+        menuApi.getMenuOptions(),
       ]);
 
       if (catRes.status === 'fulfilled') {
@@ -26,149 +73,557 @@ export const AdminMenuPage = () => {
         const list = itemRes.value.results || itemRes.value;
         if (Array.isArray(list)) setMenuItems(list);
       }
+
+      if (optRes.status === 'fulfilled' && optRes.value?.diet_types && Array.isArray(optRes.value.diet_types)) {
+        const cleanDiets = optRes.value.diet_types.filter(Boolean);
+        setDietTypeOptions(['All', ...cleanDiets]);
+      } else if (itemRes.status === 'fulfilled') {
+        const list = itemRes.value.results || itemRes.value;
+        if (Array.isArray(list)) {
+          const backendDiets = Array.from(
+            new Set(
+              list
+                .map((i) => i.diet_type || (i.is_veg ? 'Veg' : 'Non-Veg'))
+                .filter(Boolean)
+            )
+          );
+          setDietTypeOptions(['All', ...backendDiets]);
+        }
+      }
     } catch (err) {
-      console.error('Failed to load menu:', err);
+      console.error('Failed to load menu data:', err);
     } finally {
       setLoading(false);
     }
   };
 
+
   useEffect(() => {
     loadMenuData();
   }, []);
 
+  useEffect(() => {
+    const handleGlobalClick = () => {
+      setIsDietDropdownOpen(false);
+    };
+    window.addEventListener('click', handleGlobalClick);
+    return () => window.removeEventListener('click', handleGlobalClick);
+  }, []);
+
+  // Filter items strictly against backend category id / name & diet type
   const filteredItems = menuItems.filter((item) => {
-    const matchesCat = activeCategory === 'All' || String(item.category) === String(activeCategory);
+    const itemCatName = (item.category_name || (item.category_data && item.category_data.name) || '').toLowerCase();
+    const itemCatId = String(item.category || (item.category_data && item.category_data.id) || '');
+
+    const matchesCat =
+      activeCategory === 'All' ||
+      itemCatId === String(activeCategory) ||
+      itemCatName === String(activeCategory).toLowerCase();
+
     const matchesSearch =
       !search ||
       (item.name || '').toLowerCase().includes(search.toLowerCase()) ||
       (item.description || '').toLowerCase().includes(search.toLowerCase());
-    return matchesCat && matchesSearch;
+
+    const matchesDiet = (() => {
+      if (selectedDietType === 'All') return true;
+      if (selectedDietType.toLowerCase() === 'veg') {
+        return item.is_veg === true || (item.diet_type && item.diet_type.toLowerCase() === 'veg');
+      }
+      if (selectedDietType.toLowerCase() === 'non-veg') {
+        return item.is_veg === false || (item.diet_type && item.diet_type.toLowerCase() === 'non-veg');
+      }
+      return item.diet_type && item.diet_type.toLowerCase() === selectedDietType.toLowerCase();
+    })();
+
+    return matchesCat && matchesSearch && matchesDiet;
   });
 
-  const toggleAvailability = async (item) => {
-    try {
-      await menuApi.updateMenuItem(item.id, { is_available: !item.is_available });
-      loadMenuData();
-    } catch (err) {
-      alert('Failed to update item availability');
+
+  const [selectedPortions, setSelectedPortions] = useState({});
+
+  // Calculate live quantity for a menu item in cart
+  const getItemQuantity = (itemId, portion) => {
+    if (!cartItems || !Array.isArray(cartItems)) return 0;
+    const itemEntries = cartItems.filter((c) => {
+      const matchId = String(c.menu_item?.id || c.menu_item) === String(itemId);
+      if (!matchId) return false;
+      if (portion) return (c.portion || 'Full') === portion;
+      return true;
+    });
+    return itemEntries.reduce((total, c) => total + (c.quantity || 0), 0);
+  };
+
+  // Total items in order
+  const totalOrderCount = (cartItems || []).reduce((acc, item) => acc + (item.quantity || 0), 0);
+
+  // Delete item handler
+  const handleDeleteItem = async (item) => {
+    if (window.confirm(`Are you sure you want to delete "${item.name}"?`)) {
+      try {
+        await menuApi.deleteMenuItem(item.id);
+        setMenuItems((prev) => prev.filter((i) => i.id !== item.id));
+      } catch (err) {
+        console.error('Failed to delete item:', err);
+        alert('Failed to delete menu item');
+      }
     }
   };
 
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', width: '100%' }}>
-      <div className="admin-portal-card admin-top-card">
-        <div className="admin-top-header">
-          <div className="admin-top-greeting">
-            <h1>Menu Catalogue</h1>
-            <p>Manage categories, item pricing variants, and kitchen availability.</p>
-          </div>
+  // Delete category handler
+  const handleDeleteCategory = async (cat, e) => {
+    e.stopPropagation();
+    if (window.confirm(`Are you sure you want to delete category "${cat.name}"?`)) {
+      try {
+        await menuApi.deleteCategory(cat.id);
+        setCategories((prev) => prev.filter((c) => c.id !== cat.id));
+        if (
+          activeCategory === cat.id ||
+          String(activeCategory).toLowerCase() === cat.name.toLowerCase()
+        ) {
+          setActiveCategory('All');
+        }
+      } catch (err) {
+        console.error('Failed to delete category:', err);
+        alert('Failed to delete category');
+      }
+    }
+  };
 
-          <div className="admin-top-actions">
-            <div className="admin-search-pill">
-              <input
-                type="text"
-                placeholder="Search menu..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-              <button type="button" className="admin-search-icon-btn">
-                <Search size={16} color="#FFFFFF" />
-              </button>
-            </div>
-          </div>
+  // Category updated handler
+  const handleCategoryUpdated = (updatedCat) => {
+    setCategories((prev) =>
+      prev.map((c) => (c.id === updatedCat.id ? updatedCat : c))
+    );
+    if (activeCategory === updatedCat.id) {
+      setActiveCategory(updatedCat.id);
+    }
+  };
+
+  // Strict backend categories list
+  const displayCategories = [
+    { id: 'All', name: 'All Items' },
+    ...categories.map((c) => ({ id: c.id, name: c.name, description: c.description })),
+  ];
+
+  return (
+    <div className="admin-menu-page-root">
+      {/* ═══════════════════════════════════════════════════════════════
+          TOP HEADER ROW: Search Pill + Bell + Avatar
+      ═══════════════════════════════════════════════════════════════ */}
+      <div className="admin-menu-top-header">
+        <div className="admin-search-pill" style={{ flex: 1 }}>
+          <input
+            type="text"
+            placeholder="Search......"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <button type="button" className="admin-search-icon-btn" title="Search">
+            <Search size={20} color="#FFFFFF" strokeWidth={2.5} />
+          </button>
+        </div>
+
+        {/* Notification Bell */}
+        <div className="admin-bell-circle" title="Notifications">
+          <Bell size={18} fill="#EAB308" color="#CA8A04" />
+        </div>
+
+        {/* Admin Profile Avatar */}
+        <div
+          className="admin-profile-circle-btn"
+          onClick={openProfile}
+          title="Admin Profile"
+          style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+        >
+          {user?.avatar ? (
+            <img
+              src={user.avatar}
+              alt="Admin"
+              style={{ width: '42px', height: '42px', borderRadius: '50%', objectFit: 'cover' }}
+            />
+          ) : (
+            <UserAvatarPlaceholder size={42} />
+          )}
         </div>
       </div>
 
-      <div className="admin-portal-card admin-overview-card">
-        <div className="admin-overview-header">
-          <div className="admin-overview-title">
-            <h2>Food & Beverage Items</h2>
-            <p>Showing {filteredItems.length} items</p>
+      {/* ═══════════════════════════════════════════════════════════════
+          MAIN WHITE CONTENT CONTAINER
+      ═══════════════════════════════════════════════════════════════ */}
+      <div className="admin-menu-main-card">
+        {/* Header */}
+        <div className="admin-menu-header-row">
+          <div>
+            <h1 className="admin-menu-title">Menu Catalogue Overview</h1>
+            <p className="admin-menu-subtitle">Manage your menu items, categories, pricing, and availability</p>
           </div>
 
-          <div className="admin-filter-pill-container" style={{ flexWrap: 'wrap' }}>
+          <div className="admin-menu-header-actions">
             <button
               type="button"
-              className={`admin-filter-pill-btn ${activeCategory === 'All' ? 'active' : ''}`}
-              onClick={() => setActiveCategory('All')}
+              className="admin-menu-btn-add-category"
+              onClick={() => setIsAddCatModalOpen(true)}
             >
-              All
+              + Add Category
             </button>
-            {categories.map((c) => (
-              <button
-                key={c.id}
-                type="button"
-                className={`admin-filter-pill-btn ${String(activeCategory) === String(c.id) ? 'active' : ''}`}
-                onClick={() => setActiveCategory(c.id)}
-              >
-                {c.name}
-              </button>
-            ))}
+            <button
+              type="button"
+              className="admin-menu-btn-add-item"
+              onClick={() => setIsAddItemModalOpen(true)}
+            >
+              + Add New Item
+            </button>
           </div>
         </div>
 
-        {loading ? (
-          <div style={{ textAlign: 'center', padding: '3rem', color: '#756B66' }}>Loading menu items...</div>
-        ) : filteredItems.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '3rem', color: '#756B66' }}>No menu items found.</div>
-        ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '1rem' }}>
-            {filteredItems.map((item) => (
-              <div
-                key={item.id}
+        {/* Category Tabs & Diet Type Filter Row */}
+        <div className="admin-menu-tabs-and-filter-row">
+          {/* Category Tabs Row (Strictly Backend Categories with Edit/Delete) */}
+          <div className="admin-menu-category-tabs-row">
+            {displayCategories.map((cat) => {
+              const isActive =
+                activeCategory === cat.id ||
+                (activeCategory === 'All' && cat.id === 'All') ||
+                String(activeCategory).toLowerCase() === cat.name.toLowerCase();
+
+              const isAll = cat.id === 'All';
+
+              return (
+                <div
+                  key={cat.id}
+                  className={`admin-menu-category-pill ${isAll ? 'all-items' : ''} ${isActive ? 'active' : ''}`}
+                  onClick={() => setActiveCategory(cat.id)}
+                >
+                  <span className="admin-category-pill-name">{cat.name}</span>
+
+                  {!isAll && (
+                    <div className="admin-category-pill-actions">
+                      <button
+                        type="button"
+                        className="admin-category-pill-action-btn edit"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEditingCategory(cat);
+                        }}
+                        title={`Edit ${cat.name}`}
+                      >
+                        <Pencil size={11.5} color="#1F2937" strokeWidth={2.4} />
+                      </button>
+                      <button
+                        type="button"
+                        className="admin-category-pill-action-btn delete"
+                        onClick={(e) => handleDeleteCategory(cat, e)}
+                        title={`Delete ${cat.name}`}
+                      >
+                        <Trash2 size={11.5} color="#DC2626" strokeWidth={2.4} />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Diet Type Dropdown on Right */}
+          <div className="admin-diet-filter-wrap">
+            <button
+              type="button"
+              className={`admin-diet-filter-btn ${selectedDietType !== 'All' ? 'active' : ''}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsDietDropdownOpen(!isDietDropdownOpen);
+              }}
+            >
+              <img
+                src="/diet.png"
+                alt="Diet Type"
+                className="admin-diet-icon-img"
+              />
+              <span className="admin-diet-filter-label">
+                {selectedDietType === 'All' ? 'Diet Type' : selectedDietType}
+              </span>
+              <ChevronDown
+                size={14}
+                color="#4B5563"
                 style={{
-                  background: '#FFFFFF',
-                  borderRadius: '16px',
-                  border: '1px solid #EAE1D8',
-                  padding: '1rem',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '0.5rem',
-                  boxShadow: '0 2px 8px rgba(70, 40, 25, 0.04)',
+                  transform: isDietDropdownOpen ? 'rotate(180deg)' : 'none',
+                  transition: 'transform 0.2s ease',
                 }}
+              />
+            </button>
+
+
+            {isDietDropdownOpen && (
+              <div
+                className="admin-diet-dropdown-menu"
+                onClick={(e) => e.stopPropagation()}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 700 }}>{item.name}</h3>
-                  <span style={{ fontWeight: 800, color: '#B77D56' }}>₹{item.price}</span>
-                </div>
-                <p style={{ margin: 0, fontSize: '0.78rem', color: '#756B66', flex: 1 }}>
-                  {item.description || 'Delicious freshly prepared recipe'}
-                </p>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.5rem' }}>
-                  <span
-                    style={{
-                      fontSize: '0.72rem',
-                      fontWeight: 700,
-                      color: item.is_available ? '#16A34A' : '#DC2626',
-                    }}
-                  >
-                    {item.is_available ? '● Available' : '● Out of Stock'}
-                  </span>
+                {dietTypeOptions.map((dt) => (
                   <button
+                    key={dt}
                     type="button"
-                    onClick={() => toggleAvailability(item)}
-                    style={{
-                      border: '1px solid #EAE1D8',
-                      background: item.is_available ? '#FEE2E2' : '#DCFCE7',
-                      color: item.is_available ? '#DC2626' : '#16A34A',
-                      padding: '4px 10px',
-                      borderRadius: '999px',
-                      fontSize: '0.72rem',
-                      fontWeight: 700,
-                      cursor: 'pointer',
+                    className={`admin-diet-dropdown-item ${selectedDietType === dt ? 'active' : ''}`}
+                    onClick={() => {
+                      setSelectedDietType(dt);
+                      setIsDietDropdownOpen(false);
                     }}
                   >
-                    {item.is_available ? 'Disable' : 'Enable'}
+                    <span>{dt === 'All' ? 'All Diet Types' : dt}</span>
+                    {selectedDietType === dt && <span className="admin-diet-check">✓</span>}
                   </button>
-                </div>
+                ))}
               </div>
-            ))}
+            )}
+          </div>
+        </div>
+
+
+
+        {/* Subtle Horizontal Divider */}
+        <div className="admin-menu-tabs-divider" />
+
+        {/* Content Area */}
+        {loading ? (
+          <div className="admin-menu-loading-box">
+            <p>Loading menu catalogue...</p>
+          </div>
+        ) : filteredItems.length === 0 ? (
+          /* ── Empty State ── */
+          <div className="admin-menu-empty-state">
+            <div className="admin-menu-empty-icon-box">
+              <img
+                src="/menu-empty.png"
+                alt="No items found"
+                style={{
+                  width: '46px',
+                  height: '46px',
+                  objectFit: 'contain',
+                  display: 'block',
+                }}
+              />
+            </div>
+            <h2 className="admin-menu-empty-title">No Items Found</h2>
+            <p className="admin-menu-empty-desc">
+              There are no dishes in this category yet. Add your first one to get started.
+            </p>
+            <button
+              type="button"
+              className="admin-menu-empty-btn"
+              onClick={() => setIsAddItemModalOpen(true)}
+            >
+              + Add Your First Item
+            </button>
+          </div>
+        ) : (
+          /* ── Responsive Menu Items Grid ── */
+          <div className="admin-menu-cards-grid">
+            {filteredItems.map((item) => {
+              const hasPortions = Boolean(item.half_price || item.quarter_price);
+              const currentPortion = hasPortions ? (selectedPortions[item.id] || 'Full') : 'Full';
+
+              const displayPrice = (() => {
+                if (hasPortions) {
+                  if (currentPortion === 'Half' && item.half_price) return parseFloat(item.half_price).toFixed(2);
+                  if (currentPortion === 'Quarter' && item.quarter_price) return parseFloat(item.quarter_price).toFixed(2);
+                }
+                return parseFloat(item.price).toFixed(2);
+              })();
+
+              const qty = getItemQuantity(item.id, currentPortion);
+              const foodImg = getFoodImage(item);
+
+              return (
+                <div key={item.id} className="admin-menu-food-card">
+                  {/* Food Image Container */}
+                  <div className="admin-menu-card-image-wrap">
+                    {foodImg ? (
+                      <img
+                        src={foodImg}
+                        alt={item.name}
+                        className="admin-menu-card-image"
+                        loading="lazy"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
+                    ) : (
+                      <div className="admin-menu-card-image-placeholder">
+                        <UtensilsCrossed size={38} color="#A88B7B" strokeWidth={1.8} />
+                      </div>
+                    )}
+
+                    {/* Top-Left Veg / Non-Veg Badge */}
+                    <div className="admin-menu-card-badge">
+                      <span className={`admin-badge-dot ${item.is_veg ? 'veg' : 'non-veg'}`}>●</span>
+                      <span>{item.is_veg ? 'Veg' : 'Non-Veg'}</span>
+                    </div>
+
+                    {/* Top-Right Edit & Delete Action Buttons */}
+                    <div className="admin-menu-card-actions">
+                      <button
+                        type="button"
+                        className="admin-menu-card-action-btn edit"
+                        onClick={() => setEditingItem(item)}
+                        title="Edit Item"
+                      >
+                        <Pencil size={14} color="#374151" strokeWidth={2.4} />
+                      </button>
+                      <button
+                        type="button"
+                        className="admin-menu-card-action-btn delete"
+                        onClick={() => handleDeleteItem(item)}
+                        title="Delete Item"
+                      >
+                        <Trash2 size={14} color="#DC2626" strokeWidth={2.4} />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Card Body */}
+                  <div className="admin-menu-card-body">
+                    <h3 className="admin-menu-card-name">{item.name}</h3>
+                    <div className="admin-menu-card-price">
+                      ₹ {displayPrice}
+                    </div>
+
+                    {/* Portion Badges: Rendered for multi-portion dishes */}
+                    {hasPortions && (
+                      <div className="admin-menu-card-portions">
+                        <button
+                          type="button"
+                          className={`admin-portion-pill ${currentPortion === 'Full' ? 'active' : ''}`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedPortions((prev) => ({ ...prev, [item.id]: 'Full' }));
+                          }}
+                        >
+                          Full
+                        </button>
+                        {item.half_price && (
+                          <button
+                            type="button"
+                            className={`admin-portion-pill ${currentPortion === 'Half' ? 'active' : ''}`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedPortions((prev) => ({ ...prev, [item.id]: 'Half' }));
+                            }}
+                          >
+                            Half
+                          </button>
+                        )}
+                        {item.quarter_price && (
+                          <button
+                            type="button"
+                            className={`admin-portion-pill ${currentPortion === 'Quarter' ? 'active' : ''}`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedPortions((prev) => ({ ...prev, [item.id]: 'Quarter' }));
+                            }}
+                          >
+                            Quarter
+                          </button>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Short Description (Only from Backend) */}
+                    {item.description ? (
+                      <p className="admin-menu-card-desc">{item.description}</p>
+                    ) : null}
+
+                    {/* Add Button or Quantity Selector */}
+                    <div className="admin-menu-card-action-wrap">
+                      {qty === 0 ? (
+                        <button
+                          type="button"
+                          className="admin-menu-card-add-btn"
+                          onClick={() => addToCart(item, currentPortion)}
+                        >
+                          Add
+                        </button>
+                      ) : (
+                        <div className="admin-menu-card-qty-selector">
+                          <button
+                            type="button"
+                            className="admin-menu-qty-btn minus"
+                            onClick={() => updateQuantity(item.id, currentPortion, -1)}
+                          >
+                            −
+                          </button>
+                          <span className="admin-menu-qty-val">{qty}</span>
+                          <button
+                            type="button"
+                            className="admin-menu-qty-btn plus"
+                            onClick={() => updateQuantity(item.id, currentPortion, 1)}
+                          >
+                            +
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )}
+
+        {/* Bottom Center "View your Order" Action */}
+        {totalOrderCount > 0 && (
+          <div className="admin-menu-bottom-order-bar">
+            <button
+              type="button"
+              className="admin-menu-view-order-btn"
+              onClick={() => navigate('/admin/orders')}
+            >
+              <span>View your Order</span>
+              <span>👀</span>
+            </button>
+          </div>
+        )}
+
       </div>
+
+
+      {/* ── Modals ── */}
+      <AddCategoryModal
+        isOpen={isAddCatModalOpen}
+        onClose={() => setIsAddCatModalOpen(false)}
+        onCategoryCreated={(newCat) => {
+          setCategories((prev) => [...prev, newCat]);
+          setActiveCategory(newCat.id);
+        }}
+      />
+
+      <EditCategoryModal
+        isOpen={!!editingCategory}
+        category={editingCategory}
+        onClose={() => setEditingCategory(null)}
+        onCategoryUpdated={handleCategoryUpdated}
+      />
+
+      <AddMenuItemModal
+        isOpen={isAddItemModalOpen}
+        onClose={() => setIsAddItemModalOpen(false)}
+        categories={categories}
+        onItemCreated={() => {
+          loadMenuData();
+        }}
+      />
+
+      <EditMenuItemModal
+        isOpen={!!editingItem}
+        item={editingItem}
+        categories={categories}
+        onClose={() => setEditingItem(null)}
+        onItemUpdated={() => {
+          loadMenuData();
+        }}
+      />
     </div>
   );
 };
 
 export default AdminMenuPage;
+
