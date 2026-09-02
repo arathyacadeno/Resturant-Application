@@ -96,7 +96,11 @@ export const AdminTableCard = ({
                     onEdit(table);
                   }}
                 >
-                  <Edit2 size={12} color="#555555" />
+                  <img
+                    src="/edit.png"
+                    alt="Edit"
+                    style={{ width: '14px', height: '14px', objectFit: 'contain' }}
+                  />
                 </button>
               )}
               {onDelete && (
@@ -109,7 +113,11 @@ export const AdminTableCard = ({
                     onDelete(table);
                   }}
                 >
-                  <X size={13} color="#E02424" strokeWidth={2.5} />
+                  <img
+                    src="/disable.png"
+                    alt="Delete"
+                    style={{ width: '14px', height: '14px', objectFit: 'contain' }}
+                  />
                 </button>
               )}
             </>

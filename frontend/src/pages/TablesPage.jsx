@@ -661,7 +661,7 @@ export const TablesPage = () => {
                 onClick={() => setSelectedOccupiedTable(null)}
                 aria-label="Close"
               >
-                &times;
+                <X size={16} strokeWidth={2.5} />
               </button>
             </div>
 

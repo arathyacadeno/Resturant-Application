@@ -1631,40 +1631,60 @@ h6 {
 
   .occupied-sheet-actions {
     display: flex !important;
-    gap: 10px !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 14px !important;
     width: 100% !important;
   }
 
   .btn-view-bill {
     flex: 1 !important;
-    height: 42px !important;
+    width: auto !important;
+    height: 48px !important;
     background: #FFFFFF !important;
-    border: 1.5px solid #350505 !important;
-    color: #350505 !important;
-    border-radius: 22px !important;
-    font-weight: 600 !important;
-    font-size: 14px !important;
+    border: 1.5px solid #2B0707 !important;
+    color: #2B0707 !important;
+    border-radius: 999px !important;
+    font-weight: 700 !important;
+    font-size: 15px !important;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
     cursor: pointer !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     transition: all 0.15s ease !important;
+    box-sizing: border-box !important;
+    outline: none !important;
+  }
+
+  .btn-view-bill:active {
+    background: #FDF5F2 !important;
+    transform: scale(0.98) !important;
   }
 
   .btn-view-order {
     flex: 1 !important;
-    height: 42px !important;
-    background: #350505 !important;
-    border: 1.5px solid #350505 !important;
+    width: auto !important;
+    height: 48px !important;
+    background: #2B0707 !important;
+    border: 1.5px solid #2B0707 !important;
     color: #FFFFFF !important;
-    border-radius: 22px !important;
-    font-weight: 600 !important;
-    font-size: 14px !important;
+    border-radius: 999px !important;
+    font-weight: 700 !important;
+    font-size: 15px !important;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
     cursor: pointer !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     transition: all 0.15s ease !important;
+    box-sizing: border-box !important;
+    outline: none !important;
+  }
+
+  .btn-view-order:active {
+    background: #1F0505 !important;
+    transform: scale(0.98) !important;
   }
 
   /* POS / Orders Page Mobile Styling */
