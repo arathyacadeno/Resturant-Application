@@ -2,10 +2,11 @@ import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { AdminSidebar } from './AdminSidebar';
+import { AdminProfileModal } from './AdminProfileModal';
 import '../../styles/admin.css';
 
 export const AdminLayout = () => {
-  const { user, loading } = useAuth();
+  const { user, loading, isProfileOpen, closeProfile } = useAuth();
 
   if (loading) {
     return null;
@@ -30,6 +31,12 @@ export const AdminLayout = () => {
       <main className="admin-portal-main">
         <Outlet />
       </main>
+
+      {/* Centered Admin Profile Modal */}
+      <AdminProfileModal
+        isOpen={isProfileOpen}
+        onClose={closeProfile}
+      />
     </div>
   );
 };

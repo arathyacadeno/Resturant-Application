@@ -1726,26 +1726,26 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1.5rem;
+  padding: 1.25rem;
   box-sizing: border-box;
 }
 
 .admin-add-modal-card {
   position: relative;
   width: 100%;
-  max-width: 390px;
+  max-width: 410px;
   background: #FFFFFF;
-  border-radius: 24px;
+  border-radius: 26px;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.2);
-  padding: 30px 28px 26px 28px;
+  padding: 28px 26px 24px 26px;
   box-sizing: border-box;
   animation: adminModalPopIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .admin-add-modal-close {
   position: absolute;
-  top: 20px;
-  right: 20px;
+  top: 18px;
+  right: 18px;
   background: transparent;
   border: none;
   cursor: pointer;
@@ -1763,22 +1763,22 @@
 
 .admin-add-modal-header {
   text-align: center;
-  margin-bottom: 22px;
+  margin-bottom: 18px;
 }
 
 .admin-add-modal-title {
   font-family: 'Inter', 'Outfit', sans-serif;
-  font-size: 20px;
+  font-size: 19px;
   font-weight: 800;
   color: #1F2937;
   text-align: center;
-  margin: 0 0 4px 0;
+  margin: 0 0 3px 0;
   line-height: 1.2;
 }
 
 .admin-add-modal-subtitle {
   font-family: 'Inter', sans-serif;
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 500;
   color: #6B7280;
   text-align: center;
@@ -1793,38 +1793,39 @@
   font-weight: 600;
   padding: 8px 12px;
   border-radius: 10px;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
   text-align: center;
 }
 
 .admin-add-modal-form {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
 }
 
 .admin-add-form-group {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
+  width: 100%;
 }
 
 .admin-add-form-label {
   font-family: 'Inter', sans-serif;
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 11.5px;
+  font-weight: 600;
   color: #374151;
   text-align: left;
 }
 
 .admin-add-form-input {
   width: 100%;
-  height: 44px;
+  height: 40px;
   border: 1px solid #D1D5DB;
-  border-radius: 12px;
-  padding: 0 14px;
+  border-radius: 11px;
+  padding: 0 13px;
   font-family: 'Inter', sans-serif;
-  font-size: 13.5px;
+  font-size: 13px;
   font-weight: 500;
   color: #111827;
   background: #FFFFFF;
@@ -1835,6 +1836,7 @@
 
 .admin-add-form-input::placeholder {
   color: #9CA3AF;
+  font-size: 12.5px;
   font-weight: 400;
 }
 
@@ -1843,52 +1845,218 @@
   box-shadow: 0 0 0 3px rgba(35, 7, 4, 0.08);
 }
 
-.admin-add-select-wrapper {
+.admin-custom-select-container {
   position: relative;
   width: 100%;
 }
 
-.admin-add-form-select {
+.admin-custom-select-trigger {
   width: 100%;
-  height: 44px;
+  height: 40px;
   border: 1px solid #D1D5DB;
-  border-radius: 12px;
-  padding: 0 36px 0 14px;
+  border-radius: 11px;
+  padding: 0 13px;
   font-family: 'Inter', sans-serif;
-  font-size: 13.5px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #111827;
+  background: #FFFFFF;
+  box-sizing: border-box;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.admin-custom-select-trigger.is-placeholder {
+  color: #9CA3AF;
+  font-size: 12.5px;
+  font-weight: 400;
+}
+
+.admin-custom-select-trigger.is-active,
+.admin-custom-select-trigger:focus {
+  border-color: #230704;
+  box-shadow: 0 0 0 3px rgba(35, 7, 4, 0.08);
+}
+
+.admin-custom-select-arrow {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  flex-shrink: 0;
+}
+
+.admin-custom-select-arrow.is-open {
+  transform: rotate(180deg);
+}
+
+/* Dropdown Menu directly below input */
+.admin-custom-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 0;
+  right: 0;
+  width: 100%;
+  background: #230704; /* Dark Maroon */
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
+  z-index: 1000;
+  padding: 5px;
+  box-sizing: border-box;
+  animation: adminDropdownFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes adminDropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.admin-custom-dropdown-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 150px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+.admin-custom-dropdown-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.admin-custom-dropdown-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+.admin-custom-dropdown-option {
+  padding: 8px 12px;
+  border-radius: 7px;
+  color: #E5E7EB;
+  font-family: 'Inter', sans-serif;
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.12s ease;
+  user-select: none;
+}
+
+.admin-custom-dropdown-option:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #FFFFFF;
+}
+
+.admin-custom-dropdown-option.selected {
+  background: rgba(255, 255, 255, 0.18);
+  color: #FFFFFF;
+  font-weight: 700;
+}
+
+/* + Add New Option trigger inside Dropdown Menu */
+.admin-custom-dropdown-add-btn {
+  padding: 9px 12px;
+  margin-top: 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  color: #FDE68A;
+  font-family: 'Inter', sans-serif;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.admin-custom-dropdown-add-btn:hover {
+  background: rgba(255, 255, 255, 0.14);
+  color: #FFFFFF;
+}
+
+/* ── Inline Add Rows Directly Under Dropdowns ── */
+.admin-inline-add-row {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  margin-top: 6px;
+  align-items: center;
+}
+
+.admin-inline-add-input {
+  flex: 1;
+  height: 40px;
+  border: 1px solid #D1D5DB;
+  border-radius: 11px;
+  padding: 0 13px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
   font-weight: 500;
   color: #111827;
   background: #FFFFFF;
   box-sizing: border-box;
   outline: none;
-  cursor: pointer;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.admin-add-form-select.placeholder-selected {
+.admin-inline-add-input::placeholder {
   color: #9CA3AF;
+  font-size: 12.5px;
   font-weight: 400;
 }
 
-.admin-add-form-select:focus {
+.admin-inline-add-input:focus {
   border-color: #230704;
   box-shadow: 0 0 0 3px rgba(35, 7, 4, 0.08);
 }
 
-.admin-add-select-chevron {
-  position: absolute;
-  right: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none;
+.admin-inline-add-btn {
+  height: 40px;
+  padding: 0 18px;
+  background: #230704;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 11px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(35, 7, 4, 0.2);
+  transition: all 0.15s ease;
+}
+
+.admin-inline-add-btn:hover {
+  background: #3A100B;
+  transform: translateY(-1px);
+}
+
+.admin-inline-add-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .admin-add-save-btn {
   width: 100%;
-  height: 48px;
+  height: 46px;
   background: #230704;
   color: #FFFFFF;
   border: none;
@@ -1915,182 +2083,222 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   CUSTOM DARK MAROON DROPDOWNS (Modals)
+   ADMIN PROFILE MODAL (Exact Reference Replica)
    ═══════════════════════════════════════════════════════════════ */
-.admin-custom-select-container {
+.admin-profile-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  box-sizing: border-box;
+}
+
+.admin-profile-modal-card {
   position: relative;
+  width: 100%;
+  max-width: 390px;
+  background: #FFFFFF;
+  border-radius: 26px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.2);
+  padding: 28px 24px 24px 24px;
+  box-sizing: border-box;
+  animation: adminModalPopIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.admin-profile-modal-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.admin-profile-modal-close:hover {
+  transform: scale(1.15);
+  opacity: 0.75;
+}
+
+.admin-profile-header-box {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 22px;
+  padding-right: 28px;
+}
+
+.admin-profile-avatar-wrapper {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #ECEEF2;
+  flex-shrink: 0;
+  border: 1.5px solid #E5E7EB;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-profile-avatar-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.admin-profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.admin-profile-name {
+  font-family: 'Inter', 'Outfit', sans-serif;
+  font-size: 17px;
+  font-weight: 800;
+  color: #111827;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.admin-profile-role {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: #6B7280;
+  margin: 0;
+}
+
+.admin-profile-alert {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 10px;
+  margin-bottom: 14px;
+}
+
+.admin-profile-alert.error {
+  background: #FEE2E2;
+  border: 1px solid #FCA5A5;
+  color: #DC2626;
+}
+
+.admin-profile-alert.success {
+  background: #DCFCE7;
+  border: 1px solid #86EFAC;
+  color: #15803D;
+}
+
+.admin-profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
   width: 100%;
 }
 
-.admin-custom-select-trigger {
+.admin-profile-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
   width: 100%;
-  height: 44px;
+}
+
+.admin-profile-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #374151;
+  text-align: left;
+}
+
+.admin-profile-input {
+  width: 100%;
+  height: 42px;
   border: 1px solid #D1D5DB;
-  border-radius: 12px;
-  padding: 0 14px;
+  border-radius: 11px;
+  padding: 0 13px;
   font-family: 'Inter', sans-serif;
   font-size: 13.5px;
   font-weight: 500;
   color: #111827;
   background: #FFFFFF;
   box-sizing: border-box;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  user-select: none;
+  outline: none;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.admin-custom-select-trigger.is-placeholder {
-  color: #9CA3AF;
-  font-weight: 400;
-}
-
-.admin-custom-select-trigger.is-active,
-.admin-custom-select-trigger:focus {
+.admin-profile-input:focus {
   border-color: #230704;
   box-shadow: 0 0 0 3px rgba(35, 7, 4, 0.08);
 }
 
-.admin-custom-select-arrow {
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  flex-shrink: 0;
-}
-
-.admin-custom-select-arrow.is-open {
-  transform: rotate(180deg);
-}
-
-/* Dropdown Menu directly below input */
-.admin-custom-dropdown-menu {
-  position: absolute;
-  top: calc(100% + 6px);
-  left: 0;
-  right: 0;
+.admin-profile-pwd-wrapper {
+  position: relative;
   width: 100%;
-  background: #230704; /* Dark Maroon */
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 14px;
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
-  z-index: 1000;
-  padding: 6px;
-  box-sizing: border-box;
-  animation: adminDropdownFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-@keyframes adminDropdownFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.admin-profile-input.pwd-input {
+  padding-right: 40px;
 }
 
-.admin-custom-dropdown-list {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  max-height: 160px;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
-}
-
-.admin-custom-dropdown-list::-webkit-scrollbar {
-  width: 4px;
-}
-
-.admin-custom-dropdown-list::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 4px;
-}
-
-.admin-custom-dropdown-option {
-  padding: 9px 12px;
-  border-radius: 8px;
-  color: #E5E7EB;
-  font-family: 'Inter', sans-serif;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  transition: all 0.12s ease;
-  user-select: none;
-}
-
-.admin-custom-dropdown-option:hover {
-  background: rgba(255, 255, 255, 0.12);
-  color: #FFFFFF;
-}
-
-.admin-custom-dropdown-option.selected {
-  background: rgba(255, 255, 255, 0.18);
-  color: #FFFFFF;
-  font-weight: 700;
-}
-
-/* + Add New Button */
-.admin-custom-dropdown-add-btn {
-  padding: 9px 12px;
-  margin-top: 4px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 0 0 8px 8px;
-  color: #FCD34D;
-  font-family: 'Inter', sans-serif;
-  font-size: 12.5px;
-  font-weight: 600;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  transition: all 0.12s ease;
-  user-select: none;
-}
-
-.admin-custom-dropdown-add-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: #FDE68A;
-}
-
-/* Inline Add Form */
-.admin-custom-dropdown-inline-add {
-  display: flex;
-  gap: 6px;
-  padding: 6px 4px 2px 4px;
-  margin-top: 4px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.admin-custom-dropdown-inline-add input {
-  flex: 1;
-  height: 32px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 6px;
-  color: #FFFFFF;
-  font-size: 12px;
-  padding: 0 8px;
-  outline: none;
-}
-
-.admin-custom-dropdown-inline-add input:focus {
-  border-color: #FCD34D;
-}
-
-.admin-custom-dropdown-inline-add button {
-  height: 32px;
-  padding: 0 12px;
-  background: #FCD34D;
-  color: #230704;
+.admin-profile-eye-btn {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
   border: none;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 700;
   cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6B7280;
+  transition: color 0.15s ease;
+}
+
+.admin-profile-eye-btn:hover {
+  color: #111827;
+}
+
+.admin-profile-save-btn {
+  width: 100%;
+  height: 46px;
+  background: #230704;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  cursor: pointer;
+  margin-top: 8px;
+  box-shadow: 0 4px 14px rgba(35, 7, 4, 0.22);
+  transition: all 0.15s ease;
+}
+
+.admin-profile-save-btn:hover {
+  background: #3A100B;
+  transform: translateY(-1px);
+}
+
+.admin-profile-save-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
 }

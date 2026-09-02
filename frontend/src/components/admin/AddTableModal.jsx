@@ -1,21 +1,31 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, ChevronDown, Plus, Check } from 'lucide-react';
+import { X, ChevronDown, Check, Plus } from 'lucide-react';
 import { tablesApi } from '../../api/tablesApi';
 
 /**
  * AddTableModal
  *
- * Exact replication of the reference design with custom Dark Maroon dropdowns:
- * - Centered compact white modal with large rounded corners (#FFFFFF, border-radius: 24px)
+ * Exact replication of the attached reference design:
+ * - Centered compact white modal with large rounded corners (#FFFFFF, border-radius: 26px)
  * - Blurred and dimmed dashboard background
  * - Top-right close icon (X)
  * - Centered Header:
  *    - Title: "Add New Table"
  *    - Subtitle: "Configure your dining space"
- * - Custom Dark Maroon Dropdowns with absolute positioning:
- *    - Seat Capacity: opens dark dropdown with capacity options + "+ Add new seats"
- *    - Dining Area: opens dark dropdown with area options + "+ Add new dining area"
- * - Full-width dark maroon "Add Table" button (#230704 / #2A0808)
+ * - Form Fields:
+ *    1. Table Number: Text input with placeholder "e.g. 13 or T-13"
+ *    2. Seat Capacity:
+ *       - Dropdown trigger showing selected capacity or "Select seat capacity"
+ *       - Dropdown option menu includes "+ Add new seats"
+ *       - When "+ Add new seats" is clicked, conditionally shows the custom Seat Capacity row:
+ *         Input placeholder "e.g. 4 Seats" + dark maroon "Add" button
+ *    3. Dining Area:
+ *       - Dropdown trigger showing selected area or "Select dining area"
+ *       - Dropdown option menu includes "+ Add new dining area"
+ *       - When "+ Add new dining area" is clicked, conditionally shows the custom Dining Area row:
+ *         Input placeholder "e.g. Indoor, AC, Outdoor" + dark maroon "Add" button
+ * - Full-width dark maroon "Add Table" button (#230704)
+ * - Independent states: showCustomSeatInput & showCustomDiningAreaInput
  */
 export const AddTableModal = ({ isOpen, onClose, onTableCreated }) => {
   const [tableNumber, setTableNumber] = useState('');
@@ -24,18 +34,48 @@ export const AddTableModal = ({ isOpen, onClose, onTableCreated }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  // Dropdown states
+  // Dropdown states (ONLY populated from Django backend)
   const [openDropdown, setOpenDropdown] = useState(null); // 'capacity' | 'area' | null
-  const [capacityOptions, setCapacityOptions] = useState(['2', '4', '6', '8', '10', '12']);
-  const [areaOptions, setAreaOptions] = useState(['Indoor', 'Outdoor', 'Terrace', 'Private Room']);
+  const [capacityOptions, setCapacityOptions] = useState([]);
+  const [areaOptions, setAreaOptions] = useState([]);
 
-  // Inline add state
-  const [showAddCustomCapacity, setShowAddCustomCapacity] = useState(false);
+  // Conditional custom input states (independent!)
+  const [showCustomSeatInput, setShowCustomSeatInput] = useState(false);
   const [customCapacityInput, setCustomCapacityInput] = useState('');
-  const [showAddCustomArea, setShowAddCustomArea] = useState(false);
+  const [addingCapacity, setAddingCapacity] = useState(false);
+
+  const [showCustomDiningAreaInput, setShowCustomDiningAreaInput] = useState(false);
   const [customAreaInput, setCustomAreaInput] = useState('');
+  const [addingArea, setAddingArea] = useState(false);
 
   const modalRef = useRef(null);
+
+  // Fetch options from Django Backend on open
+  useEffect(() => {
+    if (!isOpen) {
+      setOpenDropdown(null);
+      setShowCustomSeatInput(false);
+      setShowCustomDiningAreaInput(false);
+      setCustomCapacityInput('');
+      setCustomAreaInput('');
+      setError('');
+      return;
+    }
+
+    const loadOptions = async () => {
+      try {
+        const data = await tablesApi.getTableOptions();
+        if (data) {
+          setCapacityOptions(Array.isArray(data.capacities) ? data.capacities : []);
+          setAreaOptions(Array.isArray(data.sections) ? data.sections : []);
+        }
+      } catch (err) {
+        console.error('Failed to load table options from backend:', err);
+      }
+    };
+
+    loadOptions();
+  }, [isOpen]);
 
   // Close dropdown on click outside
   useEffect(() => {
@@ -54,34 +94,82 @@ export const AddTableModal = ({ isOpen, onClose, onTableCreated }) => {
 
   if (!isOpen) return null;
 
-  const handleAddNewCapacity = (e) => {
+  // Handle adding custom seat capacity
+  const handleAddCustomCapacity = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-    const val = customCapacityInput.trim();
-    if (val && !isNaN(val) && parseInt(val, 10) > 0) {
-      if (!capacityOptions.includes(val)) {
-        setCapacityOptions((prev) => [...prev, val].sort((a, b) => parseInt(a, 10) - parseInt(b, 10)));
+    const rawVal = customCapacityInput.trim();
+    if (!rawVal) return;
+
+    const cleanedDigits = rawVal.replace(/\D/g, '');
+    if (!cleanedDigits || parseInt(cleanedDigits, 10) <= 0) {
+      setError('Please enter a valid number of seats (e.g. 4 Seats or 14).');
+      return;
+    }
+
+    setAddingCapacity(true);
+    setError('');
+    try {
+      const res = await tablesApi.addTableOption('capacity', cleanedDigits);
+      if (res?.options?.capacities) {
+        setCapacityOptions(res.options.capacities);
+      } else if (!capacityOptions.includes(cleanedDigits)) {
+        setCapacityOptions((prev) =>
+          [...prev, cleanedDigits].sort((a, b) => parseInt(a, 10) - parseInt(b, 10))
+        );
       }
-      setCapacity(val);
+      setCapacity(cleanedDigits);
       setCustomCapacityInput('');
-      setShowAddCustomCapacity(false);
+      setShowCustomSeatInput(false);
       setOpenDropdown(null);
+    } catch (err) {
+      console.error('Failed to save custom capacity:', err);
+      if (!capacityOptions.includes(cleanedDigits)) {
+        setCapacityOptions((prev) =>
+          [...prev, cleanedDigits].sort((a, b) => parseInt(a, 10) - parseInt(b, 10))
+        );
+      }
+      setCapacity(cleanedDigits);
+      setCustomCapacityInput('');
+      setShowCustomSeatInput(false);
+      setOpenDropdown(null);
+    } finally {
+      setAddingCapacity(false);
     }
   };
 
-  const handleAddNewArea = (e) => {
+  // Handle adding custom dining area
+  const handleAddCustomArea = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-    const val = customAreaInput.trim();
-    if (val) {
-      const formatted = val.charAt(0).toUpperCase() + val.slice(1);
-      if (!areaOptions.includes(formatted)) {
-        setAreaOptions((prev) => [...prev, formatted]);
+    const rawVal = customAreaInput.trim();
+    if (!rawVal) return;
+
+    const formattedArea = rawVal.charAt(0).toUpperCase() + rawVal.slice(1);
+    setAddingArea(true);
+    setError('');
+    try {
+      const res = await tablesApi.addTableOption('section', formattedArea);
+      if (res?.options?.sections) {
+        setAreaOptions(res.options.sections);
+      } else if (!areaOptions.includes(formattedArea)) {
+        setAreaOptions((prev) => [...prev, formattedArea]);
       }
-      setDiningArea(formatted);
+      setDiningArea(formattedArea);
       setCustomAreaInput('');
-      setShowAddCustomArea(false);
+      setShowCustomDiningAreaInput(false);
       setOpenDropdown(null);
+    } catch (err) {
+      console.error('Failed to save custom dining area:', err);
+      if (!areaOptions.includes(formattedArea)) {
+        setAreaOptions((prev) => [...prev, formattedArea]);
+      }
+      setDiningArea(formattedArea);
+      setCustomAreaInput('');
+      setShowCustomDiningAreaInput(false);
+      setOpenDropdown(null);
+    } finally {
+      setAddingArea(false);
     }
   };
 
@@ -122,6 +210,8 @@ export const AddTableModal = ({ isOpen, onClose, onTableCreated }) => {
       setCapacity('');
       setDiningArea('');
       setError('');
+      setShowCustomSeatInput(false);
+      setShowCustomDiningAreaInput(false);
       setOpenDropdown(null);
       onClose();
 
@@ -153,7 +243,6 @@ export const AddTableModal = ({ isOpen, onClose, onTableCreated }) => {
         ref={modalRef}
         onClick={(e) => {
           e.stopPropagation();
-          // Clicking anywhere inside modal card that's not a dropdown trigger/menu closes dropdown
         }}
       >
         {/* Top-right close button */}
@@ -189,17 +278,17 @@ export const AddTableModal = ({ isOpen, onClose, onTableCreated }) => {
             />
           </div>
 
-          {/* 2. Seat Capacity (Custom Dropdown) */}
+          {/* 2. Seat Capacity (Dropdown + Conditional Inline Add Row) */}
           <div className="admin-add-form-group">
             <label className="admin-add-form-label">Seat Capacity</label>
+
+            {/* Dropdown Selector */}
             <div className="admin-custom-select-container">
-              {/* Trigger */}
               <div
                 className={`admin-custom-select-trigger ${openDropdown === 'capacity' ? 'is-active' : ''} ${!capacity ? 'is-placeholder' : ''}`}
                 onClick={(e) => {
                   e.stopPropagation();
                   setOpenDropdown((prev) => (prev === 'capacity' ? null : 'capacity'));
-                  setShowAddCustomCapacity(false);
                 }}
               >
                 <span>{capacity ? `${capacity} Seats` : 'Select seat capacity'}</span>
@@ -210,69 +299,83 @@ export const AddTableModal = ({ isOpen, onClose, onTableCreated }) => {
                 />
               </div>
 
-              {/* Dropdown Menu */}
+              {/* Absolute Dropdown Menu */}
               {openDropdown === 'capacity' && (
                 <div className="admin-custom-dropdown-menu" onClick={(e) => e.stopPropagation()}>
-                  <div className="admin-custom-dropdown-list">
-                    {capacityOptions.map((opt) => (
-                      <div
-                        key={opt}
-                        className={`admin-custom-dropdown-option ${capacity === opt ? 'selected' : ''}`}
-                        onClick={() => {
-                          setCapacity(opt);
-                          setOpenDropdown(null);
-                        }}
-                      >
-                        <span>{opt} Seats</span>
-                        {capacity === opt && <Check size={14} color="#FFFFFF" />}
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Add New Seats Option */}
-                  {showAddCustomCapacity ? (
-                    <div className="admin-custom-dropdown-inline-add">
-                      <input
-                        type="number"
-                        min="1"
-                        max="50"
-                        placeholder="Seats (e.g. 14)"
-                        value={customCapacityInput}
-                        onChange={(e) => setCustomCapacityInput(e.target.value)}
-                        autoFocus
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') handleAddNewCapacity(e);
-                        }}
-                      />
-                      <button type="button" onClick={handleAddNewCapacity}>
-                        Add
-                      </button>
-                    </div>
-                  ) : (
-                    <div
-                      className="admin-custom-dropdown-add-btn"
-                      onClick={() => setShowAddCustomCapacity(true)}
-                    >
-                      <Plus size={14} strokeWidth={2.5} />
-                      <span>Add new seats</span>
+                  {capacityOptions.length > 0 && (
+                    <div className="admin-custom-dropdown-list">
+                      {capacityOptions.map((opt) => (
+                        <div
+                          key={opt}
+                          className={`admin-custom-dropdown-option ${capacity === opt ? 'selected' : ''}`}
+                          onClick={() => {
+                            setCapacity(opt);
+                            setOpenDropdown(null);
+                          }}
+                        >
+                          <span>{opt} Seats</span>
+                          {capacity === opt && <Check size={14} color="#FFFFFF" />}
+                        </div>
+                      ))}
                     </div>
                   )}
+
+                  {/* Add New Seats trigger item inside dropdown */}
+                  <div
+                    className="admin-custom-dropdown-add-btn"
+                    style={{
+                      borderTop: capacityOptions.length > 0 ? '1px solid rgba(255, 255, 255, 0.12)' : 'none',
+                      marginTop: capacityOptions.length > 0 ? '4px' : '0',
+                    }}
+                    onClick={() => {
+                      setShowCustomSeatInput(true);
+                      setOpenDropdown(null);
+                    }}
+                  >
+                    <Plus size={14} strokeWidth={2.5} />
+                    <span>Add new seats</span>
+                  </div>
                 </div>
               )}
             </div>
+
+            {/* Conditionally Displayed Custom Seat Capacity Input Row */}
+            {showCustomSeatInput && (
+              <div className="admin-inline-add-row">
+                <input
+                  type="text"
+                  className="admin-inline-add-input"
+                  placeholder="e.g. 4 Seats"
+                  value={customCapacityInput}
+                  onChange={(e) => setCustomCapacityInput(e.target.value)}
+                  autoFocus
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') handleAddCustomCapacity(e);
+                  }}
+                />
+                <button
+                  type="button"
+                  className="admin-inline-add-btn"
+                  onClick={handleAddCustomCapacity}
+                  disabled={addingCapacity || !customCapacityInput.trim()}
+                >
+                  {addingCapacity ? '...' : 'Add'}
+                </button>
+              </div>
+            )}
           </div>
 
-          {/* 3. Dining Area (Custom Dropdown) */}
+          {/* 3. Dining Area (Dropdown + Conditional Inline Add Row) */}
           <div className="admin-add-form-group">
             <label className="admin-add-form-label">Dining Area</label>
+
+            {/* Dropdown Selector */}
             <div className="admin-custom-select-container">
-              {/* Trigger */}
               <div
                 className={`admin-custom-select-trigger ${openDropdown === 'area' ? 'is-active' : ''} ${!diningArea ? 'is-placeholder' : ''}`}
                 onClick={(e) => {
                   e.stopPropagation();
                   setOpenDropdown((prev) => (prev === 'area' ? null : 'area'));
-                  setShowAddCustomArea(false);
                 }}
               >
                 <span>{diningArea || 'Select dining area'}</span>
@@ -283,54 +386,70 @@ export const AddTableModal = ({ isOpen, onClose, onTableCreated }) => {
                 />
               </div>
 
-              {/* Dropdown Menu */}
+              {/* Absolute Dropdown Menu */}
               {openDropdown === 'area' && (
                 <div className="admin-custom-dropdown-menu" onClick={(e) => e.stopPropagation()}>
-                  <div className="admin-custom-dropdown-list">
-                    {areaOptions.map((opt) => (
-                      <div
-                        key={opt}
-                        className={`admin-custom-dropdown-option ${diningArea === opt ? 'selected' : ''}`}
-                        onClick={() => {
-                          setDiningArea(opt);
-                          setOpenDropdown(null);
-                        }}
-                      >
-                        <span>{opt}</span>
-                        {diningArea === opt && <Check size={14} color="#FFFFFF" />}
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Add New Area Option */}
-                  {showAddCustomArea ? (
-                    <div className="admin-custom-dropdown-inline-add">
-                      <input
-                        type="text"
-                        placeholder="Area name (e.g. Garden)"
-                        value={customAreaInput}
-                        onChange={(e) => setCustomAreaInput(e.target.value)}
-                        autoFocus
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') handleAddNewArea(e);
-                        }}
-                      />
-                      <button type="button" onClick={handleAddNewArea}>
-                        Add
-                      </button>
-                    </div>
-                  ) : (
-                    <div
-                      className="admin-custom-dropdown-add-btn"
-                      onClick={() => setShowAddCustomArea(true)}
-                    >
-                      <Plus size={14} strokeWidth={2.5} />
-                      <span>Add new dining area</span>
+                  {areaOptions.length > 0 && (
+                    <div className="admin-custom-dropdown-list">
+                      {areaOptions.map((opt) => (
+                        <div
+                          key={opt}
+                          className={`admin-custom-dropdown-option ${diningArea === opt ? 'selected' : ''}`}
+                          onClick={() => {
+                            setDiningArea(opt);
+                            setOpenDropdown(null);
+                          }}
+                        >
+                          <span>{opt}</span>
+                          {diningArea === opt && <Check size={14} color="#FFFFFF" />}
+                        </div>
+                      ))}
                     </div>
                   )}
+
+                  {/* Add New Dining Area trigger item inside dropdown */}
+                  <div
+                    className="admin-custom-dropdown-add-btn"
+                    style={{
+                      borderTop: areaOptions.length > 0 ? '1px solid rgba(255, 255, 255, 0.12)' : 'none',
+                      marginTop: areaOptions.length > 0 ? '4px' : '0',
+                    }}
+                    onClick={() => {
+                      setShowCustomDiningAreaInput(true);
+                      setOpenDropdown(null);
+                    }}
+                  >
+                    <Plus size={14} strokeWidth={2.5} />
+                    <span>Add new dining area</span>
+                  </div>
                 </div>
               )}
             </div>
+
+            {/* Conditionally Displayed Custom Dining Area Input Row */}
+            {showCustomDiningAreaInput && (
+              <div className="admin-inline-add-row">
+                <input
+                  type="text"
+                  className="admin-inline-add-input"
+                  placeholder="e.g. Indoor, AC, Outdoor"
+                  value={customAreaInput}
+                  onChange={(e) => setCustomAreaInput(e.target.value)}
+                  autoFocus
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') handleAddCustomArea(e);
+                  }}
+                />
+                <button
+                  type="button"
+                  className="admin-inline-add-btn"
+                  onClick={handleAddCustomArea}
+                  disabled={addingArea || !customAreaInput.trim()}
+                >
+                  {addingArea ? '...' : 'Add'}
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Full-width Add Table Button */}
@@ -339,7 +458,7 @@ export const AddTableModal = ({ isOpen, onClose, onTableCreated }) => {
             className="admin-add-save-btn"
             disabled={isSubmitting}
           >
-            {isSubmitting ? 'Adding...' : 'Add Table'}
+            {isSubmitting ? 'Adding Table...' : 'Add Table'}
           </button>
         </form>
       </div>

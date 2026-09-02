@@ -66,3 +66,20 @@ class Reservation(models.Model):
 
     def __str__(self):
         return f"Reservation for {self.guest_name} at Table {self.table.number} ({self.status})"
+
+
+class TableOption(models.Model):
+    OPTION_TYPES = [
+        ('capacity', 'Seat Capacity'),
+        ('section', 'Dining Area'),
+    ]
+    option_type = models.CharField(max_length=20, choices=OPTION_TYPES)
+    value = models.CharField(max_length=100)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('option_type', 'value')
+        ordering = ['created_at']
+
+    def __str__(self):
+        return f"{self.option_type}: {self.value}"

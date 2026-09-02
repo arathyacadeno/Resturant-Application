@@ -136,6 +136,27 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const updateProfile = async (profileData) => {
+    try {
+      const data = await authApi.updateProfile(profileData);
+      const updatedUser = data.user || data;
+      const fullUser = {
+        ...user,
+        ...updatedUser,
+        ...(profileData.password ? { savedPassword: profileData.password } : {}),
+      };
+      setUser(fullUser);
+      localStorage.setItem('user_info', JSON.stringify(fullUser));
+      if (profileData.password) {
+        localStorage.setItem('saved_pwd', profileData.password);
+      }
+      return data;
+    } catch (err) {
+      console.error('Failed to update profile via API:', err);
+      throw err;
+    }
+  };
+
   const logout = () => {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
@@ -146,7 +167,20 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, registerAdmin, fetchProfile, isProfileOpen, openProfile, closeProfile }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        login,
+        logout,
+        registerAdmin,
+        fetchProfile,
+        updateProfile,
+        isProfileOpen,
+        openProfile,
+        closeProfile,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

@@ -92,8 +92,22 @@ export const TablesPage = () => {
   const { setSelectedTable, setCustomerName, startNewOrderSession } = useOrder();
   const { user, openProfile } = useAuth();
 
-  const [tables, setTables] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [tables, setTables] = useState(() => {
+    try {
+      const cached = localStorage.getItem('staff_cached_tables');
+      return cached ? JSON.parse(cached) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [loading, setLoading] = useState(() => {
+    try {
+      const cached = localStorage.getItem('staff_cached_tables');
+      return !(cached && JSON.parse(cached).length > 0);
+    } catch {
+      return true;
+    }
+  });
   const [showAddModal, setShowAddModal] = useState(false);
 
   // Filter State: 'All', 'Indoor', 'Out door'
@@ -111,6 +125,9 @@ export const TablesPage = () => {
       const loaded = data.results || data;
       if (Array.isArray(loaded)) {
         setTables(loaded);
+        try {
+          localStorage.setItem('staff_cached_tables', JSON.stringify(loaded));
+        } catch {}
       }
     } catch (err) {
       console.error('Failed to load tables from database:', err);

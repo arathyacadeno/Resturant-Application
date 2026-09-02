@@ -13,6 +13,10 @@ export const authApi = {
     const response = await api.get('auth/profile/');
     return response.data;
   },
+  updateProfile: async (profileData) => {
+    const response = await api.patch('auth/profile/', profileData);
+    return response.data;
+  },
   getStaffList: async () => {
     const response = await api.get('auth/staff/');
     return response.data;

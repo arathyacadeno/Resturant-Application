@@ -49,12 +49,44 @@ class AdminRegisterView(generics.CreateAPIView):
 
 
 class ProfileView(APIView):
-    """GET /api/auth/profile/ — current user profile."""
+    """GET/PATCH /api/auth/profile/ — current user profile."""
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
         serializer = UserSerializer(request.user)
         return Response(serializer.data)
+
+    def patch(self, request):
+        user = request.user
+        username = request.data.get('username')
+        password = request.data.get('password')
+        first_name = request.data.get('first_name')
+        last_name = request.data.get('last_name')
+
+        if username:
+            username = username.strip()
+            if User.objects.filter(username__iexact=username).exclude(pk=user.pk).exists():
+                return Response({'error': 'Username already taken. Please choose another.'}, status=status.HTTP_400_BAD_REQUEST)
+            user.username = username
+
+        if first_name is not None:
+            user.first_name = first_name.strip()
+
+        if last_name is not None:
+            user.last_name = last_name.strip()
+
+        if password and str(password).strip():
+            pwd_clean = str(password).strip()
+            if len(pwd_clean) < 4:
+                return Response({'error': 'Password must be at least 4 characters long.'}, status=status.HTTP_400_BAD_REQUEST)
+            user.set_password(pwd_clean)
+
+        user.save()
+        serializer = UserSerializer(user)
+        return Response({
+            'message': 'Profile updated successfully',
+            'user': serializer.data
+        }, status=status.HTTP_200_OK)
 
 
 class StaffListView(generics.ListAPIView):

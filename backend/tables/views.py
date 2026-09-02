@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 
-from .models import DiningTable
+from .models import DiningTable, TableOption
 from .serializers import TableSerializer
 from accounts.permissions import IsAdmin, IsStaffOrAdmin, IsAnyStaff
 
@@ -14,7 +14,10 @@ class TableListCreateView(generics.ListCreateAPIView):
     serializer_class = TableSerializer
 
     def get_queryset(self):
-        qs = DiningTable.objects.filter(is_active=True)
+        qs = DiningTable.objects.filter(is_active=True).prefetch_related(
+            'orders',
+            'reservations'
+        )
         section = self.request.query_params.get('section')
         status_filter = self.request.query_params.get('status')
         if section:
@@ -152,4 +155,72 @@ class ReservationCancelView(APIView):
             })
         except Reservation.DoesNotExist:
             return Response({'error': 'Reservation not found'}, status=404)
+
+
+class TableOptionsView(APIView):
+    """
+    GET  /api/tables/options/ — Get all unique available capacities and dining sections
+    POST /api/tables/options/ — Add a new custom capacity or dining section
+    """
+    permission_classes = [IsStaffOrAdmin]
+
+    def get_options_data(self):
+        # 1. Capacities ONLY from backend TableOption and existing DB Tables
+        db_table_caps = [str(c) for c in DiningTable.objects.values_list('capacity', flat=True).distinct() if c]
+        custom_caps = list(TableOption.objects.filter(option_type='capacity').values_list('value', flat=True))
+        
+        all_caps_set = set(db_table_caps + custom_caps)
+        sorted_caps = sorted(all_caps_set, key=lambda x: int(x) if str(x).isdigit() else 999)
+
+        # 2. Sections / Dining Areas ONLY from backend TableOption and existing DB Tables
+        db_sections = [s.strip().title() for s in DiningTable.objects.values_list('section', flat=True).distinct() if s]
+        custom_sections = [s.strip().title() for s in TableOption.objects.filter(option_type='section').values_list('value', flat=True) if s]
+
+        seen_sections = set()
+        final_sections = []
+        for sec in custom_sections + db_sections:
+            if sec and sec.lower() not in seen_sections:
+                seen_sections.add(sec.lower())
+                final_sections.append(sec)
+
+        return {
+            'capacities': sorted_caps,
+            'sections': final_sections
+        }
+
+    def get(self, request):
+        return Response(self.get_options_data())
+
+    def post(self, request):
+        option_type = request.data.get('option_type') # 'capacity' or 'section'
+        value = str(request.data.get('value', '')).strip()
+
+        if not option_type or option_type not in ['capacity', 'section']:
+            return Response({'error': 'option_type must be either "capacity" or "section"'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not value:
+            return Response({'error': 'value cannot be empty'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Format value
+        if option_type == 'capacity':
+            cleaned_digits = ''.join(filter(str.isdigit, value))
+            if not cleaned_digits:
+                return Response({'error': 'Capacity must be a valid number'}, status=status.HTTP_400_BAD_REQUEST)
+            value = cleaned_digits
+        else:
+            value = value.title()
+
+        TableOption.objects.get_or_create(option_type=option_type, value=value)
+        return Response({
+            'message': 'Option saved successfully',
+            'added': value,
+            'options': self.get_options_data()
+        }, status=status.HTTP_201_CREATED)
+
+    def delete(self, request):
+        TableOption.objects.all().delete()
+        return Response({
+            'message': 'All custom options removed successfully',
+            'options': self.get_options_data()
+        })
 

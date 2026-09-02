@@ -42,4 +42,15 @@ export const tablesApi = {
     const response = await api.post(`tables/reservations/${reservationId}/cancel/`);
     return response.data;
   },
+  getTableOptions: async () => {
+    const response = await api.get('tables/options/');
+    return response.data;
+  },
+  addTableOption: async (optionType, value) => {
+    const response = await api.post('tables/options/', {
+      option_type: optionType,
+      value: value,
+    });
+    return response.data;
+  },
 };

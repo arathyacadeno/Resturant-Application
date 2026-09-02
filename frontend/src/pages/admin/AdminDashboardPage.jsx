@@ -9,6 +9,7 @@ import { AdminTableCard } from '../../components/admin/AdminTableCard';
 import { AddTableModal } from '../../components/admin/AddTableModal';
 import { EditTableModal } from '../../components/admin/EditTableModal';
 import { AdminBillModal } from '../../components/admin/AdminBillModal';
+import { UserAvatarPlaceholder } from '../../components/common/UserAvatarPlaceholder';
 import {
   Search,
   Bell,
@@ -25,11 +26,25 @@ export const AdminDashboardPage = () => {
   const { setSelectedTable } = useOrder();
   const navigate = useNavigate();
 
-  // Data States
-  const [tables, setTables] = useState([]);
+  // Data States (with instant cache for 0ms initial load)
+  const [tables, setTables] = useState(() => {
+    try {
+      const cached = localStorage.getItem('admin_cached_tables');
+      return cached ? JSON.parse(cached) : [];
+    } catch {
+      return [];
+    }
+  });
   const [activeOrders, setActiveOrders] = useState([]);
   const [summary, setSummary] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => {
+    try {
+      const cached = localStorage.getItem('admin_cached_tables');
+      return !(cached && JSON.parse(cached).length > 0);
+    } catch {
+      return true;
+    }
+  });
 
   // Filters & Search
   const [activeFilter, setActiveFilter] = useState('All'); // 'All', 'Indoor', 'Outdoor'
@@ -61,38 +76,42 @@ export const AdminDashboardPage = () => {
   };
 
   const loadDashboardData = async () => {
-    try {
-      const [tablesRes, ordersRes, summaryRes] = await Promise.allSettled([
-        tablesApi.getTables(),
-        ordersApi.getOrders(),
-        analyticsApi.getDashboardSummary(),
-      ]);
-
-      if (tablesRes.status === 'fulfilled') {
-        const loadedTables = tablesRes.value.results || tablesRes.value;
+    // 1. Fetch tables quickly and render immediately without blocking
+    tablesApi
+      .getTables()
+      .then((res) => {
+        const loadedTables = res.results || res;
         if (Array.isArray(loadedTables)) {
           setTables(loadedTables);
+          try {
+            localStorage.setItem('admin_cached_tables', JSON.stringify(loadedTables));
+          } catch {}
         }
-      }
+      })
+      .catch((err) => console.error('Failed to load tables:', err))
+      .finally(() => setLoading(false));
 
-      if (ordersRes.status === 'fulfilled') {
-        const loadedOrders = ordersRes.value.results || ordersRes.value;
+    // 2. Fetch orders concurrently
+    ordersApi
+      .getOrders()
+      .then((res) => {
+        const loadedOrders = res.results || res;
         if (Array.isArray(loadedOrders)) {
           const active = loadedOrders.filter(
             (o) => o.status !== 'billed' && o.status !== 'cancelled'
           );
           setActiveOrders(active);
         }
-      }
+      })
+      .catch((err) => console.error('Failed to load orders:', err));
 
-      if (summaryRes.status === 'fulfilled') {
-        setSummary(summaryRes.value);
-      }
-    } catch (err) {
-      console.error('Failed to load admin dashboard data:', err);
-    } finally {
-      setLoading(false);
-    }
+    // 3. Fetch summary concurrently
+    analyticsApi
+      .getDashboardSummary()
+      .then((res) => {
+        if (res) setSummary(res);
+      })
+      .catch((err) => console.error('Failed to load summary:', err));
   };
 
   useEffect(() => {
@@ -249,21 +268,19 @@ export const AdminDashboardPage = () => {
 
           {/* Admin Profile Avatar */}
           <div
-            className="admin-profile-circle"
+            className="admin-profile-circle-btn"
             onClick={openProfile}
             title="Admin Profile"
+            style={{ cursor: 'pointer', background: 'transparent', border: 'none', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
           >
             {user?.avatar ? (
-              <img src={user.avatar} alt="Admin" />
-            ) : (
               <img
-                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80"
+                src={user.avatar}
                 alt="Admin"
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = '/cart.png';
-                }}
+                style={{ width: '42px', height: '42px', borderRadius: '50%', objectFit: 'cover' }}
               />
+            ) : (
+              <UserAvatarPlaceholder size={42} />
             )}
           </div>
         </div>
