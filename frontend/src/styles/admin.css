@@ -3459,17 +3459,17 @@
 
 .admin-menu-card-add-btn {
   width: 100%;
-  height: 44px;
-  border-radius: 12px;
+  height: 36px;
+  border-radius: 10px;
   background: #A8714F;
   color: #FFFFFF;
   font-family: 'Inter', sans-serif;
-  font-size: 15px;
+  font-size: 13.5px;
   font-weight: 700;
   border: none;
   cursor: pointer;
   transition: all 0.15s ease;
-  box-shadow: 0 4px 14px rgba(168, 113, 79, 0.28);
+  box-shadow: 0 2px 8px rgba(168, 113, 79, 0.22);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3478,18 +3478,19 @@
 .admin-menu-card-add-btn:hover {
   background: #966141;
   transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(168, 113, 79, 0.3);
 }
 
 .admin-menu-card-qty-selector {
   width: 100%;
-  height: 44px;
-  border-radius: 12px;
+  height: 36px;
+  border-radius: 10px;
   background: #F7DFCC;
   border: 1.5px solid #C49E82;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 3.5px 4px;
+  padding: 2.5px 3px;
   box-sizing: border-box;
   gap: 0;
 }
@@ -3499,15 +3500,15 @@
   height: 100%;
   background: #FFFFFF;
   border: none;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
   color: #111827;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  border-radius: 7px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
   transition: background 0.15s ease, transform 0.1s ease;
 }
 
@@ -3516,12 +3517,12 @@
 }
 
 .admin-menu-qty-btn:active {
-  transform: scale(0.97);
+  transform: scale(0.96);
 }
 
 .admin-menu-qty-val {
   font-family: 'Inter', sans-serif;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 700;
   color: #111827;
   flex: 1;
@@ -3532,19 +3533,47 @@
 
 
 
-/* ── Bottom Center "View your Order" Action ── */
+/* ── Floating Fixed & Header "View your Order" Actions (Visible immediately without scrolling) ── */
+.admin-menu-btn-header-view-order {
+  height: 38px;
+  padding: 0 20px;
+  border-radius: 9999px;
+  background: #200604;
+  color: #FFFFFF;
+  border: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 3px 12px rgba(32, 6, 4, 0.25);
+  transition: all 0.15s ease;
+  animation: adminModalPopIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.admin-menu-btn-header-view-order:hover {
+  background: #3A100B;
+  transform: translateY(-1px);
+}
+
 .admin-menu-bottom-order-bar {
+  position: fixed;
+  bottom: 28px;
+  left: calc(50% + 110px);
+  transform: translateX(-50%);
+  z-index: 999;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 42px;
-  margin-bottom: 8px;
-  padding-top: 8px;
+  animation: adminModalPopIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .admin-menu-view-order-btn {
-  height: 48px;
-  padding: 0 38px;
+  height: 50px;
+  padding: 0 34px;
   border-radius: 9999px;
   background: #200604;
   color: #FFFFFF;
@@ -3556,26 +3585,15 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  box-shadow: 0 4px 16px rgba(32, 6, 4, 0.28);
+  gap: 10px;
+  box-shadow: 0 8px 30px rgba(32, 6, 4, 0.45);
   transition: all 0.15s ease;
 }
 
 .admin-menu-view-order-btn:hover {
   background: #3A100B;
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(32, 6, 4, 0.36);
-}
-
-
-.admin-menu-order-count-badge {
-  background: #F9BA96;
-  color: #200604;
-  border-radius: 9999px;
-  padding: 2px 8px;
-  font-size: 12px;
-  font-weight: 800;
-  margin-left: 6px;
+  box-shadow: 0 12px 36px rgba(32, 6, 4, 0.55);
 }
 
 /* ═════════════════════════════════════════════════════════════════════
@@ -4646,4 +4664,4 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
-
+

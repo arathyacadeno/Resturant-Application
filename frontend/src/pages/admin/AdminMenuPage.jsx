@@ -578,7 +578,7 @@ export const AdminMenuPage = () => {
           </div>
         )}
 
-        {/* Bottom Center "View your Order" Action */}
+        {/* Floating Fixed "View your Order" Action (Visible immediately without scrolling) */}
         {totalOrderCount > 0 && (
           <div className="admin-menu-bottom-order-bar">
             <button
