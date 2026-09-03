@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { X, ChevronDown, Check, Plus } from 'lucide-react';
 import { authApi } from '../../api/authApi';
 
-const DEFAULT_ROLES = ['Staff 1', 'Staff 2', 'Chef', 'Manager', 'Cashier', 'Admin'];
+const CORE_ROLES = ['Staff', 'Chef', 'Admin'];
 
 export const AddStaffModal = ({ isOpen, onClose, onStaffCreated }) => {
   const getTodayFormatted = () => {
@@ -18,13 +18,13 @@ export const AddStaffModal = ({ isOpen, onClose, onStaffCreated }) => {
     username: '',
     password: '',
     role: 'staff',
-    role_title: 'Staff 1',
+    role_title: 'Staff',
     email: '',
     phone: '',
     joining_date: getTodayFormatted(),
   });
 
-  const [roleOptions, setRoleOptions] = useState(DEFAULT_ROLES);
+  const [roleOptions, setRoleOptions] = useState(CORE_ROLES);
   const [openDropdown, setOpenDropdown] = useState(false);
   const [showCustomRoleInput, setShowCustomRoleInput] = useState(false);
   const [customRoleInput, setCustomRoleInput] = useState('');
@@ -42,7 +42,7 @@ export const AddStaffModal = ({ isOpen, onClose, onStaffCreated }) => {
         username: '',
         password: '',
         role: 'staff',
-        role_title: 'Staff 1',
+        role_title: 'Staff',
         email: '',
         phone: '',
         joining_date: getTodayFormatted(),
@@ -58,7 +58,7 @@ export const AddStaffModal = ({ isOpen, onClose, onStaffCreated }) => {
           const list = res.results || res;
           if (Array.isArray(list)) {
             const fetchedNames = list.map((r) => r.name);
-            const merged = Array.from(new Set([...DEFAULT_ROLES, ...fetchedNames]));
+            const merged = Array.from(new Set([...CORE_ROLES, ...fetchedNames]));
             setRoleOptions(merged);
           }
         } catch (err) {
@@ -69,28 +69,14 @@ export const AddStaffModal = ({ isOpen, onClose, onStaffCreated }) => {
     }
   }, [isOpen]);
 
-  // Click outside to close dropdown
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (modalRef.current && !modalRef.current.contains(e.target)) {
-        setOpenDropdown(false);
-      }
-    };
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isOpen]);
-
   if (!isOpen) return null;
 
   const handleSelectRole = (selectedTitle) => {
     let baseRole = 'staff';
     const lower = selectedTitle.toLowerCase();
-    if (lower.includes('admin') || lower.includes('manager')) baseRole = 'admin';
-    else if (lower.includes('chef') || lower.includes('kitchen') || lower.includes('cook')) baseRole = 'kitchen';
+    if (lower === 'admin') baseRole = 'admin';
+    else if (lower === 'chef' || lower === 'kitchen' || lower.includes('cook')) baseRole = 'kitchen';
+    else baseRole = 'staff';
 
     setFormData((prev) => ({
       ...prev,

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { X, Eye, EyeOff, ChevronDown, Check, Plus } from 'lucide-react';
 import { authApi } from '../../api/authApi';
 
-const DEFAULT_ROLES = ['Staff 1', 'Staff 2', 'Chef', 'Manager', 'Cashier', 'Admin'];
+const CORE_ROLES = ['Staff', 'Chef', 'Admin'];
 
 export const EditStaffModal = ({ isOpen, staff, onClose, onStaffUpdated }) => {
   const [formData, setFormData] = useState({
@@ -10,12 +10,12 @@ export const EditStaffModal = ({ isOpen, staff, onClose, onStaffUpdated }) => {
     username: '',
     password: '',
     role: 'staff',
-    role_title: 'Staff 1',
+    role_title: 'Staff',
     email: '',
     phone: '',
   });
 
-  const [roleOptions, setRoleOptions] = useState(DEFAULT_ROLES);
+  const [roleOptions, setRoleOptions] = useState(CORE_ROLES);
   const [openDropdown, setOpenDropdown] = useState(false);
   const [showCustomRoleInput, setShowCustomRoleInput] = useState(false);
   const [customRoleInput, setCustomRoleInput] = useState('');
@@ -29,16 +29,14 @@ export const EditStaffModal = ({ isOpen, staff, onClose, onStaffUpdated }) => {
   useEffect(() => {
     if (staff && isOpen) {
       // Determine role title
-      let initialRoleTitle = 'Staff 1';
+      let initialRoleTitle = 'Staff';
       if (staff.custom_role_data?.name) {
         initialRoleTitle = staff.custom_role_data.name;
       } else {
         const r = (staff.role || '').toLowerCase();
         if (r === 'admin') initialRoleTitle = 'Admin';
         else if (r === 'kitchen') initialRoleTitle = 'Chef';
-        else if (r === 'manager') initialRoleTitle = 'Manager';
-        else if (r === 'cashier') initialRoleTitle = 'Cashier';
-        else if (r === 'staff') initialRoleTitle = 'Staff 1';
+        else initialRoleTitle = 'Staff';
       }
 
       setFormData({
@@ -62,7 +60,7 @@ export const EditStaffModal = ({ isOpen, staff, onClose, onStaffUpdated }) => {
           const list = res.results || res;
           if (Array.isArray(list)) {
             const fetchedNames = list.map((r) => r.name);
-            const merged = Array.from(new Set([...DEFAULT_ROLES, ...fetchedNames, initialRoleTitle]));
+            const merged = Array.from(new Set([...CORE_ROLES, ...fetchedNames, initialRoleTitle]));
             setRoleOptions(merged);
           }
         } catch (err) {
@@ -93,8 +91,9 @@ export const EditStaffModal = ({ isOpen, staff, onClose, onStaffUpdated }) => {
   const handleSelectRole = (selectedTitle) => {
     let baseRole = 'staff';
     const lower = selectedTitle.toLowerCase();
-    if (lower.includes('admin') || lower.includes('manager')) baseRole = 'admin';
-    else if (lower.includes('chef') || lower.includes('kitchen') || lower.includes('cook')) baseRole = 'kitchen';
+    if (lower === 'admin') baseRole = 'admin';
+    else if (lower === 'chef' || lower === 'kitchen' || lower.includes('cook')) baseRole = 'kitchen';
+    else baseRole = 'staff';
 
     setFormData((prev) => ({
       ...prev,
