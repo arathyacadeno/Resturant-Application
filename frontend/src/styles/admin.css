@@ -1203,6 +1203,33 @@
   cursor: not-allowed;
   transform: none;
 }
+
+/* Bottom Footer */
+.admin-signup-footer {
+  margin-top: 22px;
+  font-size: 13px;
+  text-align: center;
+  font-family: 'Inter', sans-serif;
+}
+
+.admin-footer-text {
+  color: #6B7280;
+  font-weight: 400;
+}
+
+.admin-footer-link {
+  color: #2A160F;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.15s ease, text-decoration 0.15s ease;
+  margin-left: 4px;
+}
+
+.admin-footer-link:hover {
+  color: #C8956D;
+  text-decoration: underline;
+}
+
 /* ═══════════════════════════════════════════════════════════════
    ADMIN BILL PRINT & SETTLE MODAL (Exact Reference Replica)
    ═══════════════════════════════════════════════════════════════ */

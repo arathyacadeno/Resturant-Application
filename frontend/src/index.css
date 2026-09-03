@@ -2815,10 +2815,12 @@ h6 {
   }
 
   .mobile-billing-btn.disabled,
-  .mobile-billing-btn:disabled {
-    background: #350505 !important;
-    opacity: 0.9 !important;
-    cursor: not-allowed !important;
+  .mobile-billing-btn:disabled,
+  .mobile-billing-btn.preparing {
+    background: #858585 !important;
+    color: #FFFFFF !important;
+    opacity: 1 !important;
+    cursor: default !important;
   }
 
   /* Bill Sheet Overlay & Modal */

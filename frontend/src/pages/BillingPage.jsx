@@ -384,7 +384,7 @@ export const BillingPage = () => {
                       </button>
                     ) : (
                       <button
-                        className={`mobile-billing-btn ${!isKitchen ? 'disabled' : ''}`}
+                        className={`mobile-billing-btn ${!isKitchen ? 'disabled' : ''} preparing`}
                         disabled={!isKitchen}
                         onClick={isKitchen ? () => handleMarkReady(ord.id) : undefined}
                         title={isKitchen ? "Click when kitchen order is ready" : "Order is being prepared in the kitchen (Only kitchen can mark ready)"}
