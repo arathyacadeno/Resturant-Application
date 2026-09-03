@@ -360,7 +360,7 @@
 
 .admin-stat-item {
   background: #FFFFFF;
-  border-radius: 7px;
+  border-radius: 12px;
   padding: 0.9rem 0.95rem;
   border: 1px solid rgba(0, 0, 0, 0.04);
   box-shadow: 0 4px 14px rgba(70, 40, 25, 0.04);
@@ -5654,15 +5654,22 @@
 }
 
 .admin-orders-metrics-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
   width: 100%;
+}
+
+.admin-orders-metrics-grid .admin-stat-item {
+  width: 240px;
+  min-width:100px;
+  max-width: 280px;
+  min-height: 122px;
 }
 
 .admin-orders-overview-card {
   background: #FFFFFF;
-  border-radius: 24px;
+  border-radius: 10px;
   padding: 28px 32px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
   min-height: 460px;

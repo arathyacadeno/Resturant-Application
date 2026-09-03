@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ordersApi } from '../../api/ordersApi';
 import { useAuth } from '../../context/AuthContext';
-import { 
-  Search, 
-  Bell, 
-  Armchair, 
-  CheckSquare, 
-  User, 
-  IndianRupee, 
-  FileText, 
+import {
+  Search,
+  Bell,
+  Armchair,
+  CheckSquare,
+  User,
+  IndianRupee,
+  FileText,
   Eye
 } from 'lucide-react';
 import { UserAvatarPlaceholder } from '../../components/common/UserAvatarPlaceholder';
@@ -56,10 +56,10 @@ export const AdminOrdersPage = () => {
 
   // Calculate Metric Stats
   const totalOrdersCount = orders.length;
-  const completedOrdersCount = orders.filter((o) => 
+  const completedOrdersCount = orders.filter((o) =>
     ['billed', 'completed', 'served'].includes(o.status?.toLowerCase())
   ).length;
-  const canceledOrdersCount = orders.filter((o) => 
+  const canceledOrdersCount = orders.filter((o) =>
     ['cancelled', 'canceled'].includes(o.status?.toLowerCase())
   ).length;
   const totalRevenue = orders
@@ -104,51 +104,43 @@ export const AdminOrdersPage = () => {
       ═══════════════════════════════════════════════════════════════ */}
       <div className="admin-orders-metrics-grid">
         {/* 1. Total Orders */}
-        <div className="admin-stat-card admin-stat-card--purple">
-          <div className="admin-stat-top">
-            <div className="admin-stat-icon-wrap admin-stat-icon-wrap--purple">
-              <img src="/order-card.svg" alt="Total Orders" style={{ width: '16px', height: '16px', objectFit: 'contain' }} />
-            </div>
+        <div className="admin-stat-item accent-purple">
+          <div className="admin-stat-icon-box purple">
+            <img src="/order-card.svg" alt="Total Orders" style={{ width: '16px', height: '16px', objectFit: 'contain' }} />
           </div>
-          <div className="admin-stat-value">{totalOrdersCount}</div>
-          <div className="admin-stat-title admin-stat-title--purple">Total Orders</div>
-          <div className="admin-stat-desc">All tables in the restaurant</div>
+          <div className="admin-stat-num">{totalOrdersCount}</div>
+          <div className="admin-stat-label purple">Total Orders</div>
+          <div className="admin-stat-sub">All tables in the restaurant</div>
         </div>
 
         {/* 2. Completed Orders */}
-        <div className="admin-stat-card admin-stat-card--green">
-          <div className="admin-stat-top">
-            <div className="admin-stat-icon-wrap admin-stat-icon-wrap--green">
-              <img src="/order-card1.svg" alt="Completed Orders" style={{ width: '16px', height: '16px', objectFit: 'contain' }} />
-            </div>
+        <div className="admin-stat-item accent-green">
+          <div className="admin-stat-icon-box green">
+            <img src="/order-card1.svg" alt="Completed Orders" style={{ width: '16px', height: '16px', objectFit: 'contain' }} />
           </div>
-          <div className="admin-stat-value">{completedOrdersCount}</div>
-          <div className="admin-stat-title admin-stat-title--green">Completed Orders</div>
-          <div className="admin-stat-desc">Ready for guests</div>
+          <div className="admin-stat-num">{completedOrdersCount}</div>
+          <div className="admin-stat-label green">Completed Orders</div>
+          <div className="admin-stat-sub">Ready for guests</div>
         </div>
 
         {/* 3. Canceled Orders */}
-        <div className="admin-stat-card admin-stat-card--red">
-          <div className="admin-stat-top">
-            <div className="admin-stat-icon-wrap admin-stat-icon-wrap--red">
-              <img src="/order-card3.svg" alt="Canceled Orders" style={{ width: '16px', height: '16px', objectFit: 'contain' }} />
-            </div>
+        <div className="admin-stat-item accent-red">
+          <div className="admin-stat-icon-box red">
+            <img src="/order-card3.svg" alt="Canceled Orders" style={{ width: '16px', height: '16px', objectFit: 'contain' }} />
           </div>
-          <div className="admin-stat-value">{canceledOrdersCount}</div>
-          <div className="admin-stat-title admin-stat-title--red">Canceled Orders</div>
-          <div className="admin-stat-desc">Currently in use</div>
+          <div className="admin-stat-num">{canceledOrdersCount}</div>
+          <div className="admin-stat-label red">Canceled Orders</div>
+          <div className="admin-stat-sub">Currently in use</div>
         </div>
 
         {/* 4. Total Revenue */}
-        <div className="admin-stat-card admin-stat-card--blue">
-          <div className="admin-stat-top">
-            <div className="admin-stat-icon-wrap admin-stat-icon-wrap--blue">
-              <img src="/order-card4.svg" alt="Total Revenue" style={{ width: '16px', height: '16px', objectFit: 'contain' }} />
-            </div>
+        <div className="admin-stat-item accent-blue">
+          <div className="admin-stat-icon-box blue">
+            <img src="/order-card4.svg" alt="Total Revenue" style={{ width: '16px', height: '16px', objectFit: 'contain' }} />
           </div>
-          <div className="admin-stat-value">₹ {Math.round(totalRevenue)}</div>
-          <div className="admin-stat-title admin-stat-title--blue">Total Revenue</div>
-          <div className="admin-stat-desc">Total sales today</div>
+          <div className="admin-stat-num">₹ {Math.round(totalRevenue)}</div>
+          <div className="admin-stat-label blue">Total Revenue</div>
+          <div className="admin-stat-sub">Total sales today</div>
         </div>
       </div>
 
@@ -207,9 +199,9 @@ export const AdminOrdersPage = () => {
                   const total = parseFloat(ord.total_amount || ord.total || ord.subtotal || 0);
                   const dateStr = ord.created_at
                     ? new Date(ord.created_at).toLocaleString([], {
-                        dateStyle: 'short',
-                        timeStyle: 'short',
-                      })
+                      dateStyle: 'short',
+                      timeStyle: 'short',
+                    })
                     : '—';
 
                   return (
