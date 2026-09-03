@@ -8,6 +8,8 @@ import { AddCategoryModal } from '../../components/admin/AddCategoryModal';
 import { EditCategoryModal } from '../../components/admin/EditCategoryModal';
 import { EditMenuItemModal } from '../../components/admin/EditMenuItemModal';
 import { AdminParcelModal } from '../../components/admin/AdminParcelModal';
+import { AdminParcelOrderModal } from '../../components/admin/AdminParcelOrderModal';
+import { AdminBillModal } from '../../components/admin/AdminBillModal';
 import { Search, Bell, Pencil, Trash2, UtensilsCrossed, ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -55,6 +57,8 @@ export const AdminMenuPage = () => {
   const [isAddItemModalOpen, setIsAddItemModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [isParcelModalOpen, setIsParcelModalOpen] = useState(false);
+  const [isOrderViewModalOpen, setIsOrderViewModalOpen] = useState(false);
+  const [billModalOrder, setBillModalOrder] = useState(null);
 
 
   const loadMenuData = async () => {
@@ -584,7 +588,7 @@ export const AdminMenuPage = () => {
             <button
               type="button"
               className="admin-menu-view-order-btn"
-              onClick={() => navigate('/admin/orders')}
+              onClick={() => setIsOrderViewModalOpen(true)}
             >
               <span>View your Order</span>
               <span>👀</span>
@@ -634,8 +638,38 @@ export const AdminMenuPage = () => {
       <AdminParcelModal
         isOpen={isParcelModalOpen}
         onClose={() => setIsParcelModalOpen(false)}
+        onViewBill={(order) => {
+          setIsParcelModalOpen(false);
+          setBillModalOrder(order);
+        }}
         onOrderCreated={() => {
           loadMenuData();
+        }}
+      />
+
+      {/* Bill & Settlement Modal */}
+      <AdminBillModal
+        isOpen={!!billModalOrder}
+        table={null}
+        order={billModalOrder}
+        onClose={() => {
+          setBillModalOrder(null);
+          setIsParcelModalOpen(true);
+        }}
+        onBillSettled={() => {
+          setBillModalOrder(null);
+          setIsParcelModalOpen(true);
+          loadMenuData();
+        }}
+      />
+
+      {/* Parcel Order (View Order) Modal matching user reference */}
+      <AdminParcelOrderModal
+        isOpen={isOrderViewModalOpen}
+        onClose={() => setIsOrderViewModalOpen(false)}
+        onOrderPlaced={() => {
+          loadMenuData();
+          setIsOrderViewModalOpen(false);
         }}
       />
     </div>

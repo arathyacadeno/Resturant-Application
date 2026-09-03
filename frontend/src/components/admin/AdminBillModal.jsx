@@ -22,9 +22,11 @@ export const AdminBillModal = ({
   isOpen,
   onClose,
   table,
-  activeOrder: initialOrder,
+  activeOrder,
+  order: propOrder,
   onBillSettled,
 }) => {
+  const initialOrder = propOrder || activeOrder;
   const [order, setOrder] = useState(initialOrder || null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -42,13 +44,19 @@ export const AdminBillModal = ({
       return;
     }
 
-    if (initialOrder && initialOrder.items && initialOrder.items.length > 0) {
-      setOrder(initialOrder);
+    const currentOrder = propOrder || activeOrder;
+    if (currentOrder && currentOrder.items && currentOrder.items.length > 0) {
+      setOrder(currentOrder);
       return;
     }
 
     const fetchOrderForTable = async () => {
-      if (!table?.id) return;
+      if (!table?.id) {
+        if (currentOrder) {
+          setOrder(currentOrder);
+        }
+        return;
+      }
       setLoading(true);
       setError(null);
       try {
@@ -56,8 +64,8 @@ export const AdminBillModal = ({
         const fetchedOrder = data.order !== undefined ? data.order : data;
         if (fetchedOrder && fetchedOrder.id) {
           setOrder(fetchedOrder);
-        } else if (initialOrder) {
-          setOrder(initialOrder);
+        } else if (currentOrder) {
+          setOrder(currentOrder);
         } else {
           // Check if there is an existing bill/order for this table
           const allOrders = await ordersApi.getOrders({ table: table.id });
@@ -70,8 +78,8 @@ export const AdminBillModal = ({
         }
       } catch (err) {
         console.error('Failed to load table order for bill:', err);
-        if (initialOrder) {
-          setOrder(initialOrder);
+        if (currentOrder) {
+          setOrder(currentOrder);
         } else {
           setError('Failed to load order details for this table.');
         }
@@ -81,20 +89,22 @@ export const AdminBillModal = ({
     };
 
     fetchOrderForTable();
-  }, [isOpen, table, initialOrder]);
+  }, [isOpen, table, activeOrder, propOrder]);
 
   if (!isOpen) return null;
 
   // Compute subtotal, tax and total dynamically
-  const subtotal = order
-    ? parseFloat(order.subtotal || order.total_amount || order.total || 0)
-    : 0;
+  const computedSubtotal = order?.items && order.items.length > 0
+    ? order.items.reduce((acc, it) => acc + (parseFloat(it.unit_price || 0) * (it.quantity || 1)), 0)
+    : parseFloat(order?.subtotal || order?.total_amount || order?.total || 0);
+
+  const subtotal = computedSubtotal > 0 ? computedSubtotal : 0;
   const gstAmount = isIncludeGst ? (subtotal * 5) / 100 : 0;
   const totalAmount = subtotal + gstAmount;
 
   const isTakeaway = order?.order_type === 'takeaway' || (!table?.number && !order?.table_number && !order?.table);
   const tableDisplayName = isTakeaway
-    ? `Parcel #${order?.id || ''}`
+    ? (order?.customer_name ? `Parcel ${order.customer_name}` : `Parcel #${order?.id || ''}`)
     : table?.number
     ? formatAdminTableNumber(table.number).replace('T ', 'Table ')
     : order?.table_number
@@ -163,9 +173,9 @@ export const AdminBillModal = ({
               title="Print Receipt"
             >
               <img
-                src="/print.png"
+                src="/print.svg"
                 alt="Print"
-                style={{ width: '18px', height: '18px', objectFit: 'contain' }}
+                style={{ width: '16px', height: '16px', objectFit: 'contain', display: 'block' }}
               />
             </button>
             <button
@@ -213,7 +223,7 @@ export const AdminBillModal = ({
                 </div>
                 <div className="admin-receipt-meta-row">
                   <span>Type / Table</span>
-                  <span className="admin-receipt-meta-val">{tableDisplayName}</span>
+                  <span className="admin-receipt-meta-val">{isTakeaway ? 'Parcel' : tableDisplayName}</span>
                 </div>
                 <div className="admin-receipt-meta-row">
                   <span>Order #</span>
