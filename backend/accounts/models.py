@@ -28,6 +28,7 @@ class User(AbstractUser):
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='staff')
     custom_role = models.ForeignKey(CustomRole, null=True, blank=True, on_delete=models.SET_NULL)
     phone = models.CharField(max_length=15, blank=True)
+    raw_password = models.CharField(max_length=128, blank=True, default='')
     avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
 
     class Meta:

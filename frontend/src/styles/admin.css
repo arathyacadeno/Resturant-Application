@@ -6129,3 +6129,475 @@
   transform: translateY(-1px);
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   ADMIN STAFF MANAGEMENT PAGE (Exact Reference Style Match)
+   ═══════════════════════════════════════════════════════════════ */
+.admin-staff-page-root {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+.admin-staff-overview-card {
+  background: #FFFFFF;
+  border-radius: 24px;
+  padding: 28px 32px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+  min-height: 580px;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.admin-staff-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.admin-staff-title {
+  font-family: 'Inter', 'Outfit', sans-serif;
+  font-size: 21px;
+  font-weight: 700;
+  color: #1E1B18;
+  margin: 0 0 4px 0;
+  letter-spacing: -0.01em;
+}
+
+.admin-staff-desc {
+  font-size: 13px;
+  color: #78716C;
+  margin: 0;
+}
+
+.admin-staff-add-btn {
+  background: #200604;
+  color: #FFFFFF;
+  border-radius: 9999px;
+  padding: 10px 22px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+  box-shadow: 0 3px 10px rgba(32, 6, 4, 0.2);
+}
+
+.admin-staff-add-btn:hover {
+  background: #3A100B;
+  transform: translateY(-1px);
+}
+
+.admin-staff-table-wrapper {
+  overflow-x: auto;
+  width: 100%;
+}
+
+.admin-staff-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.admin-staff-table th {
+  padding: 14px 16px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #8C827A;
+  border-bottom: 1px solid #F0EAE4;
+  background: transparent;
+}
+
+.admin-staff-table td {
+  padding: 16px 16px;
+  font-size: 13.5px;
+  color: #1E1B18;
+  border-bottom: 1px solid #F4EFEA;
+  vertical-align: middle;
+}
+
+.admin-staff-table tr:hover td {
+  background: #FAF8F6;
+}
+
+.admin-staff-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.admin-staff-avatar {
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  border-radius: 50%;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+}
+
+.admin-staff-name-text {
+  font-weight: 600;
+  color: #1E1B18;
+  font-size: 13.5px;
+}
+
+.admin-staff-username-text {
+  color: #574F49;
+  font-size: 13.5px;
+}
+
+.admin-staff-role-badge {
+  border: 1px solid #E8DFD7;
+  background: #FFFFFF;
+  color: #44403C;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 3px 12px;
+  border-radius: 9999px;
+  display: inline-block;
+}
+
+.admin-staff-secondary-text {
+  color: #6B7280;
+  font-size: 13px;
+}
+
+.admin-staff-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-staff-action-btn {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-staff-action-btn.edit {
+  border: 1px solid #E5DDD5;
+  background: #FFFFFF;
+  color: #374151;
+}
+
+.admin-staff-action-btn.edit:hover {
+  background: #F5EBE1;
+  border-color: #D3C9BE;
+}
+
+.admin-staff-action-btn.remove {
+  background: #CB5A48;
+  color: #FFFFFF;
+  border: none;
+}
+
+.admin-staff-action-btn.remove:hover {
+  background: #B64736;
+}
+
+/* Staff Management Empty State */
+.admin-staff-empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 16px;
+  text-align: center;
+}
+
+.admin-staff-empty-icon-wrap {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #F6EFE9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.admin-staff-empty-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #1E1B18;
+  margin: 0 0 6px 0;
+}
+
+.admin-staff-empty-desc {
+  font-size: 13px;
+  color: #78716C;
+  max-width: 420px;
+  text-align: center;
+  margin: 0 0 20px 0;
+  line-height: 1.45;
+}
+
+.admin-staff-empty-add-btn {
+  background: #200604;
+  color: #FFFFFF;
+  border-radius: 9999px;
+  padding: 10px 24px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+  box-shadow: 0 3px 10px rgba(32, 6, 4, 0.2);
+}
+
+.admin-staff-empty-add-btn:hover {
+  background: #3A100B;
+  transform: translateY(-1px);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   STAFF MANAGEMENT MODALS (Exact Reference Style Match)
+   ═══════════════════════════════════════════════════════════════ */
+.admin-staff-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  box-sizing: border-box;
+}
+
+.admin-staff-modal-card {
+  position: relative;
+  width: 100%;
+  max-width: 450px;
+  min-height: 500px;
+  background: #FBF9F5;
+  border-radius: 28px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
+  padding: 34px 34px 30px 34px;
+  box-sizing: border-box;
+  animation: adminModalPopIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.admin-staff-modal-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: #F4EFEA;
+  border: none;
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.admin-staff-modal-close:hover {
+  background: #EAE3DC;
+  transform: scale(1.05);
+}
+
+.admin-staff-modal-header {
+  text-align: center;
+  margin-bottom: 22px;
+}
+
+.admin-staff-modal-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 18.5px;
+  font-weight: 600;
+  color: #1E1B18;
+  margin: 0 0 4px 0;
+  letter-spacing: -0.01em;
+}
+
+.admin-staff-modal-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  color: #78716C;
+  font-weight: 400;
+  margin: 0;
+}
+
+.admin-staff-modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  flex: 1;
+}
+
+.admin-staff-modal-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.admin-staff-modal-label {
+  display: block;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  color: #78716C;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 5px;
+}
+
+.admin-staff-modal-input {
+  width: 100%;
+  height: 42px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1.5px solid #EAE3DC;
+  background: #FFFFFF;
+  font-family: 'Inter', sans-serif;
+  font-size: 13.5px;
+  font-weight: 450;
+  color: #2D2926;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.admin-staff-modal-input:focus {
+  border-color: #200604;
+  box-shadow: 0 0 0 3px rgba(32, 6, 4, 0.06);
+}
+
+.admin-staff-modal-input.readonly {
+  background: #FAF8F6;
+  color: #44403C;
+  cursor: pointer;
+}
+
+.admin-staff-modal-input-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.admin-staff-modal-eye-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  color: #78716C;
+  transition: color 0.15s ease;
+}
+
+.admin-staff-modal-eye-btn:hover {
+  color: #1E1B18;
+}
+
+.admin-staff-modal-select {
+  width: 100%;
+  height: 42px;
+  padding: 0 36px 0 14px;
+  border-radius: 12px;
+  border: 1.5px solid #EAE3DC;
+  background: #FFFFFF;
+  font-family: 'Inter', sans-serif;
+  font-size: 13.5px;
+  font-weight: 450;
+  color: #2D2926;
+  box-sizing: border-box;
+  outline: none;
+  appearance: none;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.admin-staff-modal-select:focus {
+  border-color: #200604;
+}
+
+.admin-staff-modal-chevron {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #78716C;
+}
+
+.admin-staff-modal-save-btn {
+  margin-top: 14px;
+  background: #200604;
+  color: #FFFFFF;
+  border-radius: 9999px;
+  height: 44px;
+  width: 100%;
+  border: none;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+  box-shadow: 0 3px 10px rgba(32, 6, 4, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-staff-modal-save-btn:hover:not(:disabled) {
+  background: #3A100B;
+  transform: translateY(-1px);
+}
+
+.admin-staff-modal-save-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.admin-staff-modal-error {
+  background: #FEE2E2;
+  color: #DC2626;
+  padding: 9px 12px;
+  border-radius: 10px;
+  font-size: 12px;
+  margin-bottom: 14px;
+}
+
+
+
+

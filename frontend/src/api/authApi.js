@@ -21,8 +21,16 @@ export const authApi = {
     const response = await api.get('auth/staff/');
     return response.data;
   },
+  getStaffUsers: async () => {
+    const response = await api.get('auth/staff/');
+    return response.data;
+  },
   createStaff: async (staffData) => {
     const response = await api.post('auth/register/', staffData);
+    return response.data;
+  },
+  updateStaff: async (id, staffData) => {
+    const response = await api.patch(`auth/staff/${id}/`, staffData);
     return response.data;
   },
   deleteStaff: async (id) => {
