@@ -37,6 +37,14 @@ export const authApi = {
     const response = await api.delete(`auth/staff/${id}/`);
     return response.data;
   },
+  getRoles: async () => {
+    const response = await api.get('auth/roles/');
+    return response.data;
+  },
+  createRole: async (roleData) => {
+    const response = await api.post('auth/roles/', roleData);
+    return response.data;
+  },
   getSettings: async () => {
     const response = await api.get('auth/settings/');
     return response.data;

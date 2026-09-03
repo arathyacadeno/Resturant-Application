@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { X, Eye, EyeOff, ChevronDown } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { X, Eye, EyeOff, ChevronDown, Check, Plus } from 'lucide-react';
 import { authApi } from '../../api/authApi';
+
+const DEFAULT_ROLES = ['Staff 1', 'Staff 2', 'Chef', 'Manager', 'Cashier', 'Admin'];
 
 export const EditStaffModal = ({ isOpen, staff, onClose, onStaffUpdated }) => {
   const [formData, setFormData] = useState({
@@ -13,12 +15,19 @@ export const EditStaffModal = ({ isOpen, staff, onClose, onStaffUpdated }) => {
     phone: '',
   });
 
+  const [roleOptions, setRoleOptions] = useState(DEFAULT_ROLES);
+  const [openDropdown, setOpenDropdown] = useState(false);
+  const [showCustomRoleInput, setShowCustomRoleInput] = useState(false);
+  const [customRoleInput, setCustomRoleInput] = useState('');
+  const [addingRole, setAddingRole] = useState(false);
+
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const modalRef = useRef(null);
 
   useEffect(() => {
-    if (staff) {
+    if (staff && isOpen) {
       // Determine role title
       let initialRoleTitle = 'Staff 1';
       if (staff.custom_role_data?.name) {
@@ -42,24 +51,94 @@ export const EditStaffModal = ({ isOpen, staff, onClose, onStaffUpdated }) => {
         phone: staff.phone || '',
       });
       setShowPassword(false);
+      setOpenDropdown(false);
+      setShowCustomRoleInput(false);
+      setCustomRoleInput('');
       setError('');
+
+      const fetchRoles = async () => {
+        try {
+          const res = await authApi.getRoles();
+          const list = res.results || res;
+          if (Array.isArray(list)) {
+            const fetchedNames = list.map((r) => r.name);
+            const merged = Array.from(new Set([...DEFAULT_ROLES, ...fetchedNames, initialRoleTitle]));
+            setRoleOptions(merged);
+          }
+        } catch (err) {
+          console.error('Failed to load custom roles:', err);
+        }
+      };
+      fetchRoles();
     }
-  }, [staff]);
+  }, [staff, isOpen]);
+
+  // Click outside to close dropdown
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (modalRef.current && !modalRef.current.contains(e.target)) {
+        setOpenDropdown(false);
+      }
+    };
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
 
   if (!isOpen || !staff) return null;
 
-  const handleRoleChange = (selectedTitle) => {
+  const handleSelectRole = (selectedTitle) => {
     let baseRole = 'staff';
-    if (selectedTitle === 'Admin') baseRole = 'admin';
-    else if (selectedTitle === 'Chef') baseRole = 'kitchen';
-    else if (selectedTitle === 'Manager') baseRole = 'admin';
-    else if (selectedTitle === 'Cashier') baseRole = 'staff';
+    const lower = selectedTitle.toLowerCase();
+    if (lower.includes('admin') || lower.includes('manager')) baseRole = 'admin';
+    else if (lower.includes('chef') || lower.includes('kitchen') || lower.includes('cook')) baseRole = 'kitchen';
 
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       role_title: selectedTitle,
       role: baseRole,
-    });
+    }));
+    setOpenDropdown(false);
+  };
+
+  const handleAddCustomRole = async (e) => {
+    e?.preventDefault();
+    e?.stopPropagation();
+    const rawVal = customRoleInput.trim();
+    if (!rawVal) return;
+
+    const formattedRole = rawVal.charAt(0).toUpperCase() + rawVal.slice(1);
+    setAddingRole(true);
+    setError('');
+
+    try {
+      let baseAccess = 'staff';
+      const lower = formattedRole.toLowerCase();
+      if (lower.includes('chef') || lower.includes('cook') || lower.includes('kitchen')) {
+        baseAccess = 'kitchen';
+      }
+
+      await authApi.createRole({ name: formattedRole, base_access: baseAccess });
+      if (!roleOptions.includes(formattedRole)) {
+        setRoleOptions((prev) => [...prev, formattedRole]);
+      }
+      handleSelectRole(formattedRole);
+      setCustomRoleInput('');
+      setShowCustomRoleInput(false);
+    } catch (err) {
+      console.error('Failed to create role in backend:', err);
+      if (!roleOptions.includes(formattedRole)) {
+        setRoleOptions((prev) => [...prev, formattedRole]);
+      }
+      handleSelectRole(formattedRole);
+      setCustomRoleInput('');
+      setShowCustomRoleInput(false);
+    } finally {
+      setAddingRole(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -106,8 +185,12 @@ export const EditStaffModal = ({ isOpen, staff, onClose, onStaffUpdated }) => {
   return (
     <div className="admin-staff-modal-overlay" onClick={onClose}>
       <div 
+        ref={modalRef}
         className="admin-staff-modal-card" 
-        onClick={(e) => e.stopPropagation()}
+        onClick={(e) => {
+          e.stopPropagation();
+          setOpenDropdown(false);
+        }}
       >
         {/* Top-Right Circular Close Button */}
         <button 
@@ -191,29 +274,87 @@ export const EditStaffModal = ({ isOpen, staff, onClose, onStaffUpdated }) => {
             </div>
           </div>
 
-          {/* Row 3: Role Dropdown */}
+          {/* Row 3: Role Custom Dropdown (+ Add new role) */}
           <div>
             <label className="admin-staff-modal-label">
               Role
             </label>
-            <div className="admin-staff-modal-input-wrap">
-              <select
-                value={formData.role_title}
-                onChange={(e) => handleRoleChange(e.target.value)}
-                className="admin-staff-modal-select"
+            <div className="admin-custom-select-container">
+              <div
+                className={`admin-custom-select-trigger ${openDropdown ? 'is-active' : ''}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setOpenDropdown((prev) => !prev);
+                }}
+                style={{ height: '42px', borderRadius: '12px', borderColor: '#EAE3DC' }}
               >
-                <option value="Staff 1">Staff 1</option>
-                <option value="Staff 2">Staff 2</option>
-                <option value="Chef">Chef</option>
-                <option value="Manager">Manager</option>
-                <option value="Cashier">Cashier</option>
-                <option value="Admin">Admin</option>
-              </select>
-              <ChevronDown 
-                size={15} 
-                className="admin-staff-modal-chevron"
-              />
+                <span style={{ fontSize: '13.5px', fontWeight: 500, color: '#2D2926' }}>
+                  {formData.role_title || 'Select Role'}
+                </span>
+                <ChevronDown 
+                  size={15} 
+                  color="#78716C" 
+                  className={`admin-custom-select-arrow ${openDropdown ? 'is-open' : ''}`}
+                />
+              </div>
+
+              {/* Dropdown Menu */}
+              {openDropdown && (
+                <div className="admin-custom-dropdown-menu" onClick={(e) => e.stopPropagation()}>
+                  <div className="admin-custom-dropdown-list">
+                    {roleOptions.map((opt) => (
+                      <div
+                        key={opt}
+                        className={`admin-custom-dropdown-option ${formData.role_title === opt ? 'selected' : ''}`}
+                        onClick={() => handleSelectRole(opt)}
+                      >
+                        <span>{opt}</span>
+                        {formData.role_title === opt && <Check size={14} color="#FFFFFF" />}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* + Add new role option */}
+                  <div
+                    className="admin-custom-dropdown-add-btn"
+                    onClick={() => {
+                      setShowCustomRoleInput(true);
+                      setOpenDropdown(false);
+                    }}
+                  >
+                    <Plus size={14} strokeWidth={2.5} />
+                    <span>Add new role</span>
+                  </div>
+                </div>
+              )}
             </div>
+
+            {/* Conditionally Displayed Inline Custom Role Row */}
+            {showCustomRoleInput && (
+              <div className="admin-inline-add-row" style={{ marginTop: '8px' }}>
+                <input
+                  type="text"
+                  className="admin-inline-add-input"
+                  placeholder="e.g. Supervisor, Bartender, Waiter"
+                  value={customRoleInput}
+                  onChange={(e) => setCustomRoleInput(e.target.value)}
+                  autoFocus
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') handleAddCustomRole(e);
+                  }}
+                  style={{ height: '40px', borderRadius: '10px' }}
+                />
+                <button
+                  type="button"
+                  className="admin-inline-add-btn"
+                  onClick={handleAddCustomRole}
+                  disabled={addingRole || !customRoleInput.trim()}
+                  style={{ height: '40px', borderRadius: '10px' }}
+                >
+                  {addingRole ? '...' : 'Add'}
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Row 4: Email & Phone */}
