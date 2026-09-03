@@ -1,16 +1,28 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ordersApi } from '../../api/ordersApi';
-import { Search, Printer, Package, Plus } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
+import { 
+  Search, 
+  Bell, 
+  Armchair, 
+  CheckSquare, 
+  User, 
+  IndianRupee, 
+  FileText, 
+  Eye
+} from 'lucide-react';
+import { UserAvatarPlaceholder } from '../../components/common/UserAvatarPlaceholder';
 import { AdminBillModal } from '../../components/admin/AdminBillModal';
-import { AdminParcelModal } from '../../components/admin/AdminParcelModal';
 
 export const AdminOrdersPage = () => {
+  const navigate = useNavigate();
+  const { user, openProfile } = useAuth();
+
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filterStatus, setFilterStatus] = useState('all');
   const [search, setSearch] = useState('');
   const [selectedBillOrder, setSelectedBillOrder] = useState(null);
-  const [isParcelModalOpen, setIsParcelModalOpen] = useState(false);
 
   const loadOrders = async () => {
     setLoading(true);
@@ -31,210 +43,206 @@ export const AdminOrdersPage = () => {
     loadOrders();
   }, []);
 
+  // Filtered orders based on search query
   const filteredOrders = orders.filter((o) => {
-    const isTakeaway = o.order_type === 'takeaway' || (!o.table && !o.table_number);
-    let matchesStatus = true;
-    if (filterStatus === 'parcel') {
-      matchesStatus = isTakeaway;
-    } else if (filterStatus === 'dine_in') {
-      matchesStatus = !isTakeaway;
-    } else if (filterStatus !== 'all') {
-      matchesStatus = o.status === filterStatus;
-    }
-
-    const matchesSearch =
-      !search ||
-      String(o.id).includes(search) ||
-      String(o.table_number || '').includes(search) ||
-      (o.customer_name || '').toLowerCase().includes(search.toLowerCase()) ||
-      (isTakeaway && 'parcel takeaway'.includes(search.toLowerCase()));
-    return matchesStatus && matchesSearch;
+    if (!search.trim()) return true;
+    const q = search.toLowerCase();
+    const idMatch = String(o.id).includes(q);
+    const tableMatch = String(o.table_number || o.table || '').toLowerCase().includes(q);
+    const nameMatch = (o.customer_name || '').toLowerCase().includes(q);
+    const typeMatch = (o.order_type || '').toLowerCase().includes(q);
+    return idMatch || tableMatch || nameMatch || typeMatch;
   });
 
+  // Calculate Metric Stats
+  const totalOrdersCount = orders.length;
+  const completedOrdersCount = orders.filter((o) => 
+    ['billed', 'completed', 'served'].includes(o.status?.toLowerCase())
+  ).length;
+  const canceledOrdersCount = orders.filter((o) => 
+    ['cancelled', 'canceled'].includes(o.status?.toLowerCase())
+  ).length;
+  const totalRevenue = orders
+    .filter((o) => ['billed', 'completed'].includes(o.status?.toLowerCase()) || o.is_paid)
+    .reduce((sum, o) => sum + parseFloat(o.total_amount || o.total || o.subtotal || 0), 0);
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', width: '100%' }}>
-      {/* ── Top Header Row ── */}
-      <div className="admin-top-header">
-        <div className="admin-top-greeting">
-          <h1>Orders & Billing</h1>
-          <p>Real-time live feed of floor orders, billing statuses, and print receipts.</p>
+    <div className="admin-orders-page-root">
+      {/* ═══════════════════════════════════════════════════════════════
+          TOP HEADER ROW: Search Pill + Bell + Avatar
+      ═══════════════════════════════════════════════════════════════ */}
+      <div className="admin-menu-top-header">
+        <div className="admin-search-pill" style={{ flex: 1 }}>
+          <input
+            type="text"
+            placeholder="Search......"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <button type="button" className="admin-search-icon-btn" title="Search">
+            <Search size={20} color="#FFFFFF" strokeWidth={2.5} />
+          </button>
         </div>
 
-        <div className="admin-top-actions">
-          {/* Search Bar */}
-          <div className="admin-search-pill">
-            <input
-              type="text"
-              placeholder="Search orders, tables..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-            <button type="button" className="admin-search-icon-btn" title="Search">
-              <Search size={18} color="#FFFFFF" strokeWidth={2.5} />
+        {/* Notification Bell */}
+        <div className="admin-bell-circle" title="Notifications">
+          <Bell size={18} fill="#EAB308" color="#CA8A04" />
+        </div>
+
+        {/* Admin Profile Avatar */}
+        <div
+          className="admin-profile-circle-btn"
+          onClick={openProfile}
+          title="Admin Profile"
+        >
+          <UserAvatarPlaceholder user={user} size={42} />
+        </div>
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════
+          4 METRIC STATS CARDS GRID (Exact Reference Style)
+      ═══════════════════════════════════════════════════════════════ */}
+      <div className="admin-orders-metrics-grid">
+        {/* 1. Total Orders */}
+        <div className="admin-stat-card admin-stat-card--purple">
+          <div className="admin-stat-top">
+            <div className="admin-stat-icon-wrap admin-stat-icon-wrap--purple">
+              <img src="/order-card.svg" alt="Total Orders" style={{ width: '16px', height: '16px', objectFit: 'contain' }} />
+            </div>
+          </div>
+          <div className="admin-stat-value">{totalOrdersCount}</div>
+          <div className="admin-stat-title admin-stat-title--purple">Total Orders</div>
+          <div className="admin-stat-desc">All tables in the restaurant</div>
+        </div>
+
+        {/* 2. Completed Orders */}
+        <div className="admin-stat-card admin-stat-card--green">
+          <div className="admin-stat-top">
+            <div className="admin-stat-icon-wrap admin-stat-icon-wrap--green">
+              <img src="/order-card1.svg" alt="Completed Orders" style={{ width: '16px', height: '16px', objectFit: 'contain' }} />
+            </div>
+          </div>
+          <div className="admin-stat-value">{completedOrdersCount}</div>
+          <div className="admin-stat-title admin-stat-title--green">Completed Orders</div>
+          <div className="admin-stat-desc">Ready for guests</div>
+        </div>
+
+        {/* 3. Canceled Orders */}
+        <div className="admin-stat-card admin-stat-card--red">
+          <div className="admin-stat-top">
+            <div className="admin-stat-icon-wrap admin-stat-icon-wrap--red">
+              <img src="/order-card3.svg" alt="Canceled Orders" style={{ width: '16px', height: '16px', objectFit: 'contain' }} />
+            </div>
+          </div>
+          <div className="admin-stat-value">{canceledOrdersCount}</div>
+          <div className="admin-stat-title admin-stat-title--red">Canceled Orders</div>
+          <div className="admin-stat-desc">Currently in use</div>
+        </div>
+
+        {/* 4. Total Revenue */}
+        <div className="admin-stat-card admin-stat-card--blue">
+          <div className="admin-stat-top">
+            <div className="admin-stat-icon-wrap admin-stat-icon-wrap--blue">
+              <img src="/order-card4.svg" alt="Total Revenue" style={{ width: '16px', height: '16px', objectFit: 'contain' }} />
+            </div>
+          </div>
+          <div className="admin-stat-value">₹ {Math.round(totalRevenue)}</div>
+          <div className="admin-stat-title admin-stat-title--blue">Total Revenue</div>
+          <div className="admin-stat-desc">Total sales today</div>
+        </div>
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════
+          MAIN OVERVIEW CARD: Empty State or Orders Table
+      ═══════════════════════════════════════════════════════════════ */}
+      <div className="admin-orders-overview-card">
+        <div className="admin-orders-overview-header">
+          <h2 className="admin-orders-overview-title">Menu Catalogue Overview</h2>
+          <p className="admin-orders-overview-desc">
+            Manage your menu items, categories, pricing, and availability
+          </p>
+        </div>
+
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: '4rem 1rem', color: '#78716C' }}>
+            <p>Loading orders...</p>
+          </div>
+        ) : filteredOrders.length === 0 ? (
+          /* Empty State Matching Screenshot */
+          <div className="admin-orders-empty-state">
+            <div className="admin-orders-empty-icon-wrap">
+              <FileText size={26} color="#9C8E84" />
+            </div>
+            <h3 className="admin-orders-empty-title">No Orders Yet</h3>
+            <p className="admin-orders-empty-desc">
+              There are no active or previous orders recorded. New incoming orders will appear here in real-time.
+            </p>
+            <button
+              type="button"
+              className="admin-orders-empty-create-btn"
+              onClick={() => navigate('/admin/menu')}
+            >
+              + Create Order
             </button>
           </div>
-
-          {/* Parcel Orders Button */}
-          <button
-            type="button"
-            className="admin-menu-btn-parcel-orders"
-            onClick={() => setIsParcelModalOpen(true)}
-            style={{
-              height: '42px',
-              padding: '0 20px',
-              borderRadius: '9999px',
-              backgroundColor: '#200604',
-              color: '#FFFFFF',
-              border: 'none',
-              fontWeight: 600,
-              fontSize: '13.5px',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '8px',
-              cursor: 'pointer',
-              boxShadow: '0 2px 8px rgba(32, 6, 4, 0.2)'
-            }}
-          >
-            <Package size={16} />
-            <span>Parcel Orders</span>
-          </button>
-        </div>
-      </div>
-
-      {/* ── Filter Tabs ── */}
-      <div className="admin-filter-pill-container" style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '4px' }}>
-        {[
-          { key: 'all', label: 'All Orders' },
-          { key: 'parcel', label: '📦 Parcel Orders' },
-          { key: 'dine_in', label: '🍽️ Dine-In' },
-          { key: 'pending', label: 'Pending' },
-          { key: 'preparing', label: 'Preparing' },
-          { key: 'ready', label: 'Ready' },
-          { key: 'billed', label: 'Billed' },
-          { key: 'cancelled', label: 'Cancelled' },
-        ].map((st) => (
-          <button
-            key={st.key}
-            type="button"
-            className={`admin-filter-pill-btn ${filterStatus === st.key ? 'active' : ''}`}
-            onClick={() => setFilterStatus(st.key)}
-            style={{
-              padding: '6px 18px',
-              borderRadius: '999px',
-              border: 'none',
-              fontSize: '0.85rem',
-              fontWeight: 700,
-              cursor: 'pointer',
-              backgroundColor: filterStatus === st.key ? '#2A160F' : '#FFFFFF',
-              color: filterStatus === st.key ? '#FFFFFF' : '#6B5E55',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
-              transition: 'all 0.15s ease',
-              whiteSpace: 'nowrap'
-            }}
-          >
-            {st.label}
-          </button>
-        ))}
-      </div>
-
-      {/* ── Orders Table Card ── */}
-      <div style={{ backgroundColor: '#FFFFFF', borderRadius: '20px', border: '1px solid #EAE1D8', overflow: 'hidden', boxShadow: '0 4px 16px rgba(0,0,0,0.04)' }}>
-        {loading ? (
-          <div style={{ textAlign: 'center', padding: '3rem', color: '#756B66' }}>Loading orders...</div>
-        ) : filteredOrders.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '3rem', color: '#756B66' }}>No orders found.</div>
         ) : (
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+          /* Orders Table */
+          <div className="admin-orders-table-wrapper">
+            <table className="admin-orders-table">
               <thead>
-                <tr style={{ borderBottom: '1px solid #EAE1D8', color: '#756B66', fontSize: '0.85rem' }}>
-                  <th style={{ padding: '0.75rem 1rem' }}>Order ID</th>
-                  <th style={{ padding: '0.75rem 1rem' }}>Type / Table</th>
-                  <th style={{ padding: '0.75rem 1rem' }}>Items</th>
-                  <th style={{ padding: '0.75rem 1rem' }}>Amount</th>
-                  <th style={{ padding: '0.75rem 1rem' }}>Status</th>
-                  <th style={{ padding: '0.75rem 1rem' }}>Time</th>
-                  <th style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>Action</th>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Type / Table</th>
+                  <th>Customer</th>
+                  <th>Items</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                  <th>Date & Time</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredOrders.map((ord) => {
-                  const isTakeaway = ord.order_type === 'takeaway' || (!ord.table_number && !ord.table);
+                  const isTakeaway = ord.order_type === 'takeaway' || (!ord.table && !ord.table_number);
+                  const total = parseFloat(ord.total_amount || ord.total || ord.subtotal || 0);
+                  const dateStr = ord.created_at
+                    ? new Date(ord.created_at).toLocaleString([], {
+                        dateStyle: 'short',
+                        timeStyle: 'short',
+                      })
+                    : '—';
+
                   return (
-                    <tr key={ord.id} style={{ borderBottom: '1px solid #F4EAE0', fontSize: '0.9rem' }}>
-                      <td style={{ padding: '0.85rem 1rem', fontWeight: 700 }}>#{ord.id}</td>
-                      <td style={{ padding: '0.85rem 1rem', fontWeight: 600 }}>
+                    <tr key={ord.id}>
+                      <td style={{ fontWeight: 700 }}>#{ord.id}</td>
+                      <td>
                         {isTakeaway ? (
-                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#9C5147', backgroundColor: '#FDF4F3', padding: '3px 8px', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 700 }}>
-                            <Package size={12} />
-                            <span>Parcel</span>
-                          </span>
+                          <span style={{ color: '#D97706', fontWeight: 600 }}>📦 Parcel</span>
                         ) : (
-                          <span>Table {ord.table_number || ord.table}</span>
+                          <span style={{ color: '#2563EB', fontWeight: 600 }}>
+                            🍽️ Table {ord.table_number || ord.table}
+                          </span>
                         )}
                       </td>
-                      <td style={{ padding: '0.85rem 1rem', color: '#6B5E55' }}>
-                        <div>{ord.items?.length || 0} items</div>
-                        {(ord.kitchen_notes || ord.notes) && (
-                          <div style={{ fontSize: '0.75rem', color: '#D97706', marginTop: '2px', fontWeight: 600 }}>
-                            📝 {ord.kitchen_notes || ord.notes}
-                          </div>
-                        )}
-                      </td>
-                      <td style={{ padding: '0.85rem 1rem', fontWeight: 800 }}>₹{ord.total_amount || 0}</td>
-                      <td style={{ padding: '0.85rem 1rem' }}>
+                      <td>{ord.customer_name || 'Walk-in Guest'}</td>
+                      <td>{ord.items?.length || 0} items</td>
+                      <td style={{ fontWeight: 700 }}>₹{total.toFixed(2)}</td>
+                      <td>
                         <span
-                          style={{
-                            padding: '3px 10px',
-                            borderRadius: '999px',
-                            fontSize: '0.75rem',
-                            fontWeight: 700,
-                            backgroundColor:
-                              ord.status === 'billed'
-                                ? '#DCFCE7'
-                                : ord.status === 'preparing'
-                                ? '#FEF3C7'
-                                : ord.status === 'ready'
-                                ? '#DBEAFE'
-                                : '#FEE2E2',
-                            color:
-                              ord.status === 'billed'
-                                ? '#16A34A'
-                                : ord.status === 'preparing'
-                                ? '#D97706'
-                                : ord.status === 'ready'
-                                ? '#2563EB'
-                                : '#DC2626',
-                          }}
+                          className={`admin-active-parcel-status-badge status-${ord.status}`}
                         >
                           {ord.status}
                         </span>
                       </td>
-                      <td style={{ padding: '0.85rem 1rem', color: '#8C827A', fontSize: '0.8rem' }}>
-                        {new Date(ord.created_at || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </td>
-                      <td style={{ padding: '0.85rem 1rem', textAlign: 'center' }}>
+                      <td style={{ color: '#78716C', fontSize: '12.5px' }}>{dateStr}</td>
+                      <td>
                         <button
                           type="button"
+                          className="admin-orders-view-btn"
                           onClick={() => setSelectedBillOrder(ord)}
-                          style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '6px',
-                            padding: '5px 12px',
-                            borderRadius: '8px',
-                            border: '1.5px solid #171717',
-                            backgroundColor: '#FFFFFF',
-                            color: '#171717',
-                            fontSize: '0.8rem',
-                            fontWeight: 700,
-                            cursor: 'pointer',
-                            transition: 'all 0.15s ease'
-                          }}
-                          title="Print / View Bill"
                         >
-                          <Printer size={13} color="#B87F00" strokeWidth={2.2} />
-                          <span>Print Bill</span>
+                          <Eye size={13} style={{ marginRight: '4px', verticalAlign: 'middle' }} />
+                          View
                         </button>
                       </td>
                     </tr>
@@ -246,26 +254,19 @@ export const AdminOrdersPage = () => {
         )}
       </div>
 
-      {/* Bill Print & Settle Modal */}
-      <AdminBillModal
-        isOpen={Boolean(selectedBillOrder)}
-        table={{ id: selectedBillOrder?.table, number: selectedBillOrder?.table_number }}
-        activeOrder={selectedBillOrder}
-        onClose={() => setSelectedBillOrder(null)}
-        onBillSettled={() => {
-          setSelectedBillOrder(null);
-          loadOrders();
-        }}
-      />
-
-      {/* Parcel Orders Modal */}
-      <AdminParcelModal
-        isOpen={isParcelModalOpen}
-        onClose={() => setIsParcelModalOpen(false)}
-        onOrderCreated={() => {
-          loadOrders();
-        }}
-      />
+      {/* Bill & Settlement Modal when viewing an order */}
+      {selectedBillOrder && (
+        <AdminBillModal
+          isOpen={!!selectedBillOrder}
+          table={null}
+          order={selectedBillOrder}
+          onClose={() => setSelectedBillOrder(null)}
+          onBillSettled={() => {
+            setSelectedBillOrder(null);
+            loadOrders();
+          }}
+        />
+      )}
     </div>
   );
 };

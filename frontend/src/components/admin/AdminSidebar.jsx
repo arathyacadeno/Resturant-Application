@@ -75,26 +75,16 @@ export const AdminSidebar = () => {
               to="/admin/orders" 
               className={({ isActive }) => `admin-portal-nav-link ${isActive ? 'active' : ''}`}
             >
-              <Receipt size={21} strokeWidth={1.8} />
-              <span>Order History</span>
-            </NavLink>
-          </li>
-
-          {/* Staffs */}
-          <li>
-            <NavLink 
-              to="/admin/staffs" 
-              className={({ isActive }) => `admin-portal-nav-link ${isActive ? 'active' : ''}`}
-            >
-              <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <rect width="18" height="14" x="3" y="6" rx="2" />
-                <path d="M9 2v4" />
-                <path d="M15 2v4" />
-                <circle cx="8" cy="13" r="2" />
-                <path d="M13 11h4" />
-                <path d="M13 15h3" />
-              </svg>
-              <span>Staffs</span>
+              {({ isActive }) => (
+                <>
+                  <img 
+                    src={isActive ? "/sidebar3-active.svg" : "/sidebar3.svg"} 
+                    alt="Order History" 
+                    className="admin-portal-nav-img"
+                  />
+                  <span>Order History</span>
+                </>
+              )}
             </NavLink>
           </li>
 
@@ -104,12 +94,35 @@ export const AdminSidebar = () => {
               to="/admin/kitchen" 
               className={({ isActive }) => `admin-portal-nav-link ${isActive ? 'active' : ''}`}
             >
-              <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <path d="m15 2 6 6-9 9-6-6Z" />
-                <path d="M9 14l-4 4-2-2 4-4" />
-                <path d="M3 21l3-3" />
-              </svg>
-              <span>Kitchen Screen</span>
+              {({ isActive }) => (
+                <>
+                  <img 
+                    src={isActive ? "/sidebar4-active.svg" : "/sidebar4.svg"} 
+                    alt="Kitchen Screen" 
+                    className="admin-portal-nav-img"
+                  />
+                  <span>Kitchen Screen</span>
+                </>
+              )}
+            </NavLink>
+          </li>
+
+          {/* Staffs */}
+          <li>
+            <NavLink 
+              to="/admin/staffs" 
+              className={({ isActive }) => `admin-portal-nav-link ${isActive ? 'active' : ''}`}
+            >
+              {({ isActive }) => (
+                <>
+                  <img 
+                    src={isActive ? "/sidebar5-active.svg" : "/sidebar5.svg"} 
+                    alt="Staffs" 
+                    className="admin-portal-nav-img"
+                  />
+                  <span>Staffs</span>
+                </>
+              )}
             </NavLink>
           </li>
 
@@ -119,8 +132,16 @@ export const AdminSidebar = () => {
               to="/admin/settings" 
               className={({ isActive }) => `admin-portal-nav-link ${isActive ? 'active' : ''}`}
             >
-              <Settings size={21} strokeWidth={1.8} />
-              <span>Settings</span>
+              {({ isActive }) => (
+                <>
+                  <img 
+                    src={isActive ? "/sidebar6-active.svg" : "/sidebar6.svg"} 
+                    alt="Settings" 
+                    className="admin-portal-nav-img"
+                  />
+                  <span>Settings</span>
+                </>
+              )}
             </NavLink>
           </li>
         </ul>

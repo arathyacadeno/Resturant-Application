@@ -22,6 +22,7 @@ import { AdminDashboardPage } from './pages/admin/AdminDashboardPage';
 import { AdminOrdersPage } from './pages/admin/AdminOrdersPage';
 import { AdminMenuPage } from './pages/admin/AdminMenuPage';
 import { AdminStaffsPage } from './pages/admin/AdminStaffsPage';
+import { AdminKitchenPage } from './pages/admin/AdminKitchenPage';
 import { AdminAggregatorsPage } from './pages/admin/AdminAggregatorsPage';
 import { AdminSettingsPage } from './pages/admin/AdminSettingsPage';
 
@@ -68,7 +69,7 @@ function App() {
               <Route path="orders" element={<AdminOrdersPage />} />
               <Route path="menu" element={<AdminMenuPage />} />
               <Route path="staffs" element={<AdminStaffsPage />} />
-              <Route path="kitchen" element={<KitchenPage />} />
+              <Route path="kitchen" element={<AdminKitchenPage />} />
               <Route path="swiggy-zomato" element={<AdminAggregatorsPage />} />
               <Route path="settings" element={<AdminSettingsPage />} />
             </Route>
