@@ -7,6 +7,7 @@ import { AddMenuItemModal } from '../../components/admin/AddMenuItemModal';
 import { AddCategoryModal } from '../../components/admin/AddCategoryModal';
 import { EditCategoryModal } from '../../components/admin/EditCategoryModal';
 import { EditMenuItemModal } from '../../components/admin/EditMenuItemModal';
+import { AdminParcelModal } from '../../components/admin/AdminParcelModal';
 import { Search, Bell, Pencil, Trash2, UtensilsCrossed, ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -53,6 +54,7 @@ export const AdminMenuPage = () => {
   const [editingCategory, setEditingCategory] = useState(null);
   const [isAddItemModalOpen, setIsAddItemModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
+  const [isParcelModalOpen, setIsParcelModalOpen] = useState(false);
 
 
   const loadMenuData = async () => {
@@ -260,6 +262,13 @@ export const AdminMenuPage = () => {
           </div>
 
           <div className="admin-menu-header-actions">
+            <button
+              type="button"
+              className="admin-menu-btn-parcel-orders"
+              onClick={() => setIsParcelModalOpen(true)}
+            >
+              Parcel Orders
+            </button>
             <button
               type="button"
               className="admin-menu-btn-add-category"
@@ -618,6 +627,14 @@ export const AdminMenuPage = () => {
         categories={categories}
         onClose={() => setEditingItem(null)}
         onItemUpdated={() => {
+          loadMenuData();
+        }}
+      />
+
+      <AdminParcelModal
+        isOpen={isParcelModalOpen}
+        onClose={() => setIsParcelModalOpen(false)}
+        onOrderCreated={() => {
           loadMenuData();
         }}
       />

@@ -4,18 +4,20 @@ import { X } from 'lucide-react';
 
 /**
  * EditCategoryModal
- * Modal for editing existing menu category name/description
+ * Styled to exact perfection matching reference design:
+ * - Rounded white card (border-radius: 28px)
+ * - Centered "Edit Category" header & "Organize your menu into sections" subtitle
+ * - "Category Name" input with rounded rectangle border
+ * - Dark full-width "Save" button
  */
 export const EditCategoryModal = ({ isOpen, category, onClose, onCategoryUpdated }) => {
   const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
     if (category) {
       setName(category.name || '');
-      setDescription(category.description || '');
       setError('');
     }
   }, [category, isOpen]);
@@ -34,7 +36,6 @@ export const EditCategoryModal = ({ isOpen, category, onClose, onCategoryUpdated
     try {
       const updatedCategory = await menuApi.updateCategory(category.id, {
         name: name.trim(),
-        description: description.trim(),
       });
       if (onCategoryUpdated) onCategoryUpdated(updatedCategory);
       onClose();
@@ -51,85 +52,61 @@ export const EditCategoryModal = ({ isOpen, category, onClose, onCategoryUpdated
   };
 
   return (
-    <div className="admin-profile-modal-overlay" onClick={onClose}>
+    <div className="admin-category-modal-overlay" onClick={onClose}>
       <div
-        className="admin-profile-modal-card"
-        style={{ maxWidth: '420px' }}
+        className="admin-category-modal-card"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close button */}
         <button
           type="button"
-          className="admin-profile-modal-close-btn"
+          className="admin-category-modal-close"
           onClick={onClose}
           aria-label="Close"
         >
-          <X size={18} color="#4B5563" />
+          <X size={18} strokeWidth={2.2} />
         </button>
 
-        <div style={{ marginBottom: '20px' }}>
-          <h2 style={{ margin: '0 0 6px 0', fontSize: '20px', fontWeight: 800, color: '#111827' }}>
-            Edit Category
-          </h2>
-          <p style={{ margin: 0, fontSize: '13px', color: '#6B7280' }}>
-            Update category name and details
+        {/* Centered Header */}
+        <div className="admin-category-modal-header">
+          <h2 className="admin-category-modal-title">Edit Category</h2>
+          <p className="admin-category-modal-subtitle">
+            Organize your menu into sections
           </p>
         </div>
 
         {error && (
-          <div
-            style={{
-              background: '#FEE2E2',
-              color: '#DC2626',
-              padding: '10px 14px',
-              borderRadius: '10px',
-              fontSize: '13px',
-              fontWeight: 600,
-              marginBottom: '16px',
-            }}
-          >
+          <div className="admin-category-modal-error">
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <div>
-            <label style={{ display: 'block', fontSize: '12.5px', fontWeight: 700, color: '#374151', marginBottom: '6px' }}>
-              Category Name *
-            </label>
+        <form onSubmit={handleSubmit} className="admin-category-form">
+          <div className="admin-category-form-group">
+            <label className="admin-category-label">Category Name</label>
             <input
               type="text"
-              placeholder="e.g. Starters, Main Course, Desserts"
               value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="admin-profile-input"
+              onChange={(e) => {
+                setName(e.target.value);
+                if (error) setError('');
+              }}
+              className="admin-category-input"
               autoFocus
-            />
-          </div>
-
-          <div>
-            <label style={{ display: 'block', fontSize: '12.5px', fontWeight: 700, color: '#374151', marginBottom: '6px' }}>
-              Description (Optional)
-            </label>
-            <textarea
-              placeholder="Brief description of the category..."
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="admin-profile-input"
-              style={{ minHeight: '70px', padding: '10px 14px', resize: 'vertical' }}
             />
           </div>
 
           <button
             type="submit"
-            className="admin-profile-save-btn"
+            className="admin-category-save-btn"
             disabled={loading}
-            style={{ marginTop: '8px' }}
           >
-            {loading ? 'Saving...' : 'Save Changes'}
+            {loading ? 'Saving...' : 'Save'}
           </button>
         </form>
       </div>
     </div>
   );
 };
+
+export default EditCategoryModal;

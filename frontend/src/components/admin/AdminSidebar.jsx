@@ -3,9 +3,6 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { 
   LayoutGrid, 
   Receipt, 
-  UtensilsCrossed, 
-  Users, 
-  BarChart2, 
   Settings 
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
@@ -48,11 +45,7 @@ export const AdminSidebar = () => {
               to="/admin/dashboard" 
               className={({ isActive }) => `admin-portal-nav-link ${isActive ? 'active' : ''}`}
             >
-              <img 
-                src="/sidebar1.png" 
-                alt="Dashboard" 
-                className="admin-portal-nav-img"
-              />
+              <LayoutGrid size={21} strokeWidth={2.2} />
               <span>Dashboard</span>
             </NavLink>
           </li>
@@ -63,12 +56,16 @@ export const AdminSidebar = () => {
               to="/admin/menu" 
               className={({ isActive }) => `admin-portal-nav-link ${isActive ? 'active' : ''}`}
             >
-              <img 
-                src="/sidebar2.png" 
-                alt="Menu Catalogue" 
-                className="admin-portal-nav-img"
-              />
-              <span>Menu Catalogue</span>
+              {({ isActive }) => (
+                <>
+                  <img 
+                    src={isActive ? "/sidebar2-active.png" : "/sidebar2.png"} 
+                    alt="Menu Catalogue" 
+                    className="admin-portal-nav-img"
+                  />
+                  <span>Menu Catalogue</span>
+                </>
+              )}
             </NavLink>
           </li>
 
@@ -89,19 +86,30 @@ export const AdminSidebar = () => {
               to="/admin/staffs" 
               className={({ isActive }) => `admin-portal-nav-link ${isActive ? 'active' : ''}`}
             >
-              <Users size={21} strokeWidth={1.8} />
+              <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <rect width="18" height="14" x="3" y="6" rx="2" />
+                <path d="M9 2v4" />
+                <path d="M15 2v4" />
+                <circle cx="8" cy="13" r="2" />
+                <path d="M13 11h4" />
+                <path d="M13 15h3" />
+              </svg>
               <span>Staffs</span>
             </NavLink>
           </li>
 
-          {/* Swiggy & Zomato */}
+          {/* Kitchen Screen */}
           <li>
             <NavLink 
-              to="/admin/swiggy-zomato" 
+              to="/admin/kitchen" 
               className={({ isActive }) => `admin-portal-nav-link ${isActive ? 'active' : ''}`}
             >
-              <BarChart2 size={21} strokeWidth={1.8} />
-              <span>Swiggy & Zomato</span>
+              <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m15 2 6 6-9 9-6-6Z" />
+                <path d="M9 14l-4 4-2-2 4-4" />
+                <path d="M3 21l3-3" />
+              </svg>
+              <span>Kitchen Screen</span>
             </NavLink>
           </li>
 

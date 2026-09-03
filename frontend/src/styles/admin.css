@@ -105,24 +105,24 @@
 .admin-portal-nav-link {
   display: flex;
   align-items: center;
-  gap: 0.95rem;
-  height: 48px;
-  padding: 0 1.15rem;
+  gap: 14px;
+  height: 50px;
+  padding: 0 20px;
   border-radius: 9999px;
-  color: #4B5563;
+  color: #554D46;
   text-decoration: none;
   font-family: 'Inter', sans-serif;
-  font-size: 0.96rem;
+  font-size: 0.98rem;
   font-weight: 500;
-  letter-spacing: 0.025em;
+  letter-spacing: 0.01em;
   transition: all 0.15s ease;
   position: relative;
   box-sizing: border-box;
 }
 
 .admin-portal-nav-link:hover:not(.active) {
-  background: rgba(0, 0, 0, 0.04);
-  color: #111827;
+  background: rgba(32, 6, 4, 0.05);
+  color: #200604;
 }
 
 .admin-portal-nav-link.active {
@@ -130,7 +130,12 @@
   color: #F9BA96 !important;
   font-weight: 600 !important;
   border-radius: 9999px !important;
-  box-shadow: -4px 0 0 0 #F9A878, 0 6px 18px rgba(32, 6, 4, 0.28) !important;
+  box-shadow: -4px 0 0 0 #F9BA96, 0 4px 14px rgba(32, 6, 4, 0.22) !important;
+}
+
+.admin-portal-nav-link.active span {
+  color: #F9BA96 !important;
+  font-weight: 600 !important;
 }
 
 .admin-portal-nav-img {
@@ -150,10 +155,6 @@
 
 .admin-portal-nav-link.active .admin-portal-nav-img {
   filter: none !important;
-}
-
-.admin-portal-nav-link.active .admin-portal-nav-img[src*="sidebar2"] {
-  filter: invert(80%) sepia(25%) saturate(1100%) hue-rotate(330deg) brightness(102%) contrast(98%) !important;
 }
 
 .admin-portal-nav-link svg {
@@ -560,6 +561,41 @@
   color: #FFFFFF;
   font-weight: 700;
   box-shadow: 0 2px 6px rgba(45, 8, 6, 0.2);
+}
+
+/* Parcel Orders Button in Dashboard Overview */
+.admin-parcel-orders-pill-btn {
+  background: #2D0806;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 35px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(45, 8, 6, 0.2);
+  transition: all 0.15s ease;
+  position: relative;
+}
+
+.admin-parcel-orders-pill-btn:hover {
+  background: #4A100D;
+  transform: translateY(-1px);
+}
+
+.admin-parcel-badge {
+  background: #E54B4B;
+  color: #FFFFFF;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 999px;
+  margin-left: 2px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 /* + Add New Table Button */
@@ -2870,6 +2906,29 @@
   transform: translateY(-1px);
 }
 
+.admin-menu-btn-parcel-orders {
+  height: 38px;
+  padding: 0 22px;
+  border-radius: 9999px;
+  background: #200604;
+  color: #FFFFFF;
+  border: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 12px rgba(32, 6, 4, 0.25);
+  transition: all 0.15s ease;
+}
+
+.admin-menu-btn-parcel-orders:hover {
+  background: #3A100B;
+  transform: translateY(-1px);
+}
+
 .admin-menu-btn-add-item {
   height: 38px;
   padding: 0 22px;
@@ -3518,3 +3577,1073 @@
   font-weight: 800;
   margin-left: 6px;
 }
+
+/* ═════════════════════════════════════════════════════════════════════
+   ADMIN PARCEL ORDERS MODAL
+═════════════════════════════════════════════════════════════════════ */
+.admin-parcel-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(18, 12, 10, 0.72);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: adminModalFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.admin-parcel-modal-content {
+  background: #FFFFFF;
+  border-radius: 24px;
+  width: 100%;
+  max-width: 980px;
+  height: 85vh;
+  max-height: 760px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+  border: 1px solid #EAE1D8;
+  animation: adminModalZoomIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.admin-parcel-modal-header {
+  padding: 18px 24px;
+  border-bottom: 1px solid #EAE1D8;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #FAFAF8;
+}
+
+.admin-parcel-modal-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.admin-parcel-header-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #200604 0%, #4A100D 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(32, 6, 4, 0.25);
+}
+
+.admin-parcel-modal-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #1A1A1A;
+  margin: 0;
+}
+
+.admin-parcel-modal-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.82rem;
+  color: #756B66;
+  margin: 2px 0 0 0;
+}
+
+.admin-parcel-modal-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-parcel-refresh-btn,
+.admin-parcel-close-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid #E5E0DA;
+  background: #FFFFFF;
+  color: #554D46;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.admin-parcel-refresh-btn:hover,
+.admin-parcel-close-btn:hover {
+  background: #F4EAE0;
+  color: #200604;
+  border-color: #D8CFC8;
+}
+
+/* ── Tabs Row ── */
+.admin-parcel-tabs-row {
+  padding: 10px 24px;
+  background: #F6F3EF;
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid #EAE1D8;
+}
+
+.admin-parcel-tab-btn {
+  height: 36px;
+  padding: 0 16px;
+  border-radius: 999px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.84rem;
+  font-weight: 700;
+  border: none;
+  background: #FFFFFF;
+  color: #756B66;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.15s ease;
+}
+
+.admin-parcel-tab-btn:hover {
+  background: #EFECE7;
+  color: #200604;
+}
+
+.admin-parcel-tab-btn.active {
+  background: #200604;
+  color: #FFFFFF;
+  box-shadow: 0 2px 8px rgba(32, 6, 4, 0.25);
+}
+
+.admin-parcel-tab-badge {
+  background: #E54B4B;
+  color: #FFFFFF;
+  border-radius: 999px;
+  padding: 1px 6px;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.admin-parcel-tab-badge.secondary {
+  background: #E0D7CE;
+  color: #554D46;
+}
+
+/* ── Tab Body: Active Parcels & History ── */
+.admin-parcel-tab-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px;
+  background: #FCFBFA;
+}
+
+.admin-parcel-empty-state {
+  padding: 4rem 2rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: #756B66;
+}
+
+.admin-parcel-empty-icon-wrap {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: #F6EDE8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+
+.admin-parcel-empty-state h3 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #200604;
+  margin: 0;
+}
+
+.admin-parcel-empty-state p {
+  font-size: 0.88rem;
+  color: #8C827A;
+  max-width: 380px;
+  margin: 0;
+}
+
+.admin-parcel-primary-btn {
+  height: 40px;
+  padding: 0 22px;
+  border-radius: 999px;
+  background: #200604;
+  color: #FFFFFF;
+  border: none;
+  font-weight: 700;
+  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(32, 6, 4, 0.25);
+  margin-top: 8px;
+  transition: all 0.15s ease;
+}
+
+.admin-parcel-primary-btn:hover {
+  background: #3A100B;
+  transform: translateY(-1px);
+}
+
+/* ── Active Parcel Cards Grid ── */
+.admin-parcel-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.admin-parcel-card {
+  background: #FFFFFF;
+  border: 1.5px solid #EAE1D8;
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: all 0.15s ease;
+}
+
+.admin-parcel-card:hover {
+  border-color: #D8C5B6;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.07);
+}
+
+.admin-parcel-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.admin-parcel-card-order-id {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: #1A1A1A;
+}
+
+.admin-parcel-status-tag {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.admin-parcel-status-tag.pending {
+  background: #FEF3C7;
+  color: #D97706;
+}
+
+.admin-parcel-status-tag.preparing {
+  background: #FEF9C3;
+  color: #CA8A04;
+}
+
+.admin-parcel-status-tag.ready {
+  background: #DBEAFE;
+  color: #2563EB;
+}
+
+.admin-parcel-status-tag.billed {
+  background: #DCFCE7;
+  color: #16A34A;
+}
+
+.admin-parcel-status-tag.cancelled {
+  background: #FEE2E2;
+  color: #DC2626;
+}
+
+.admin-parcel-customer-info {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.8rem;
+  color: #6B5E55;
+  margin-top: 4px;
+}
+
+.admin-parcel-customer-info .dot-sep {
+  color: #C2B8AE;
+}
+
+.admin-parcel-card-time {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  color: #8C827A;
+  background: #F6F3EF;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.admin-parcel-card-items {
+  background: #FAFAF8;
+  border: 1px solid #F0E9E2;
+  border-radius: 10px;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.admin-parcel-item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  color: #333333;
+}
+
+.admin-parcel-item-qty {
+  font-weight: 700;
+  color: #200604;
+  min-width: 24px;
+}
+
+.admin-parcel-item-name {
+  flex: 1;
+  color: #4A4A4A;
+}
+
+.admin-parcel-item-name .portion-tag {
+  color: #8C827A;
+  font-size: 0.75rem;
+}
+
+.admin-parcel-item-price {
+  font-weight: 700;
+  color: #1A1A1A;
+}
+
+.admin-parcel-notes-box {
+  background: #FFFBEB;
+  border: 1px dashed #FDE68A;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 0.78rem;
+  color: #92400E;
+}
+
+.admin-parcel-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 8px;
+  border-top: 1px dashed #EAE1D8;
+}
+
+.admin-parcel-amount-wrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-parcel-amount-wrap .label {
+  font-size: 0.7rem;
+  color: #8C827A;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.admin-parcel-amount-wrap .value {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #200604;
+}
+
+.admin-parcel-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.admin-parcel-btn-action {
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.15s ease;
+}
+
+.admin-parcel-btn-action.preparing {
+  background: #FEF3C7;
+  color: #B45309;
+}
+
+.admin-parcel-btn-action.preparing:hover {
+  background: #FDE68A;
+}
+
+.admin-parcel-btn-action.ready {
+  background: #DBEAFE;
+  color: #1D4ED8;
+}
+
+.admin-parcel-btn-action.ready:hover {
+  background: #BFDBFE;
+}
+
+.admin-parcel-btn-action.print {
+  background: #200604;
+  color: #FFFFFF;
+}
+
+.admin-parcel-btn-action.print:hover {
+  background: #3A100B;
+}
+
+/* ── TAB 2: CREATE NEW PARCEL ORDER LAYOUT ── */
+.admin-parcel-new-order-layout {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  gap: 18px;
+  flex: 1;
+  height: 100%;
+  overflow: hidden;
+  padding: 16px 20px;
+  background: #FCFBFA;
+}
+
+.admin-parcel-menu-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow: hidden;
+  height: 100%;
+}
+
+.admin-parcel-menu-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.admin-parcel-search-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #FFFFFF;
+  border: 1.5px solid #EAE1D8;
+  border-radius: 999px;
+  padding: 6px 14px;
+}
+
+.admin-parcel-search-input-wrap input {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  width: 100%;
+  color: #1A1A1A;
+}
+
+.admin-parcel-cat-pills {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.admin-parcel-cat-pill {
+  height: 28px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border: 1px solid #EAE1D8;
+  background: #FFFFFF;
+  color: #756B66;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.admin-parcel-cat-pill:hover {
+  border-color: #200604;
+  color: #200604;
+}
+
+.admin-parcel-cat-pill.active {
+  background: #200604;
+  color: #FFFFFF;
+  border-color: #200604;
+}
+
+.admin-parcel-items-grid {
+  flex: 1;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 10px;
+  padding-right: 4px;
+}
+
+.admin-parcel-menu-card {
+  background: #FFFFFF;
+  border: 1px solid #EAE1D8;
+  border-radius: 12px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+}
+
+.admin-parcel-menu-card-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.admin-parcel-item-title {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #1A1A1A;
+  margin: 2px 0 4px 0;
+  line-height: 1.2;
+}
+
+.admin-parcel-item-price-tag {
+  font-size: 0.86rem;
+  font-weight: 800;
+  color: #200604;
+}
+
+.admin-parcel-item-thumb {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.admin-parcel-portions-row {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.admin-parcel-portion-chip {
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid #EAE1D8;
+  background: #F9FAFB;
+  color: #554D46;
+  cursor: pointer;
+}
+
+.admin-parcel-portion-chip.active {
+  background: #200604;
+  color: #FFFFFF;
+  border-color: #200604;
+}
+
+.admin-parcel-add-btn {
+  height: 30px;
+  width: 100%;
+  border-radius: 8px;
+  background: #F6F3EF;
+  border: 1px solid #EAE1D8;
+  color: #200604;
+  font-weight: 700;
+  font-size: 0.78rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  transition: all 0.15s ease;
+}
+
+.admin-parcel-add-btn:hover {
+  background: #200604;
+  color: #FFFFFF;
+  border-color: #200604;
+}
+
+/* ── Right Column: Cart & Customer Pane ── */
+.admin-parcel-cart-pane {
+  background: #FFFFFF;
+  border: 1.5px solid #EAE1D8;
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow: hidden;
+  height: 100%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.admin-parcel-cart-heading {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #200604;
+  margin: 0;
+}
+
+.admin-parcel-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.admin-parcel-form-group label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #756B66;
+  text-transform: uppercase;
+}
+
+.admin-parcel-form-group input {
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid #D8CFC8;
+  padding: 0 10px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.82rem;
+  background: #FAFAF8;
+  outline: none;
+}
+
+.admin-parcel-form-group input:focus {
+  border-color: #200604;
+  background: #FFFFFF;
+}
+
+.admin-parcel-cart-items-box {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #FAFAF8;
+  border: 1px solid #EAE1D8;
+  border-radius: 10px;
+  overflow: hidden;
+  min-height: 120px;
+}
+
+.admin-parcel-cart-items-header {
+  padding: 6px 10px;
+  background: #F0E9E2;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #554D46;
+}
+
+.admin-parcel-cart-clear-btn {
+  background: none;
+  border: none;
+  color: #DC2626;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.admin-parcel-cart-empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  text-align: center;
+  color: #8C827A;
+  font-size: 0.82rem;
+}
+
+.admin-parcel-cart-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.admin-parcel-cart-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 5px 0;
+  border-bottom: 1px solid #F0E9E2;
+  font-size: 0.82rem;
+}
+
+.admin-parcel-cart-row-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-parcel-cart-row-info .title {
+  font-weight: 700;
+  color: #1A1A1A;
+}
+
+.admin-parcel-cart-row-info .sub {
+  font-size: 0.72rem;
+  color: #756B66;
+}
+
+.admin-parcel-cart-counter {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #FFFFFF;
+  border: 1px solid #D8CFC8;
+  border-radius: 6px;
+  padding: 1px 4px;
+}
+
+.admin-parcel-cart-counter button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  color: #554D46;
+}
+
+.admin-parcel-cart-counter span {
+  font-size: 0.8rem;
+  font-weight: 700;
+  min-width: 16px;
+  text-align: center;
+}
+
+.admin-parcel-cart-item-total {
+  font-weight: 800;
+  color: #200604;
+  min-width: 44px;
+  text-align: right;
+}
+
+.admin-parcel-cart-del-btn {
+  border: none;
+  background: none;
+  color: #DC2626;
+  cursor: pointer;
+  padding: 2px;
+}
+
+.admin-parcel-cart-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #EAE1D8;
+}
+
+.admin-parcel-summary-line.total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #200604;
+}
+
+.admin-parcel-cart-btn-stack {
+  display: flex;
+  gap: 8px;
+}
+
+.admin-parcel-submit-btn {
+  flex: 1;
+  height: 38px;
+  border-radius: 999px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.admin-parcel-submit-btn.primary {
+  background: #200604;
+  color: #FFFFFF;
+  box-shadow: 0 2px 8px rgba(32, 6, 4, 0.25);
+}
+
+.admin-parcel-submit-btn.primary:hover:not(:disabled) {
+  background: #3A100B;
+}
+
+.admin-parcel-submit-btn.secondary {
+  background: #FFFFFF;
+  color: #200604;
+  border: 1.5px solid #200604;
+}
+
+.admin-parcel-submit-btn.secondary:hover:not(:disabled) {
+  background: #F9F7F5;
+}
+
+.admin-parcel-submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── TAB 3: HISTORY TABLE ── */
+.admin-parcel-history-table-wrap {
+  overflow-x: auto;
+  background: #FFFFFF;
+  border: 1px solid #EAE1D8;
+  border-radius: 12px;
+}
+
+.admin-parcel-history-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.85rem;
+}
+
+.admin-parcel-history-table th {
+  padding: 10px 14px;
+  background: #F6F3EF;
+  color: #6B5E55;
+  font-weight: 700;
+  font-size: 0.78rem;
+  border-bottom: 1px solid #EAE1D8;
+}
+
+.admin-parcel-history-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid #F0E9E2;
+}
+
+.admin-parcel-history-print-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid #D8CFC8;
+  background: #FFFFFF;
+  color: #200604;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.admin-parcel-history-print-btn:hover {
+  background: #200604;
+  color: #FFFFFF;
+  border-color: #200604;
+}
+
+@keyframes adminModalFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes adminModalZoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ═════════════════════════════════════════════════════════════════════
+   ADD / EDIT CATEGORY MODAL (Exact Reference Style Replica)
+═════════════════════════════════════════════════════════════════════ */
+.admin-category-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(18, 12, 10, 0.6);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  box-sizing: border-box;
+  animation: adminModalFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.admin-category-modal-card {
+  position: relative;
+  width: 100%;
+  max-width: 410px;
+  background: #FFFFFF;
+  border-radius: 26px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+  padding: 32px 28px 28px 28px;
+  box-sizing: border-box;
+  animation: adminModalPopIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.admin-category-modal-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6B7280;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.admin-category-modal-close:hover {
+  transform: scale(1.1);
+  opacity: 0.7;
+}
+
+.admin-category-modal-header {
+  text-align: center;
+  margin-bottom: 22px;
+}
+
+.admin-category-modal-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 21px;
+  font-weight: 800;
+  color: #200604;
+  margin: 0 0 6px 0;
+}
+
+.admin-category-modal-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  margin: 0;
+}
+
+.admin-category-modal-error {
+  background: #FEE2E2;
+  color: #DC2626;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 14px;
+  text-align: center;
+}
+
+.admin-category-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-category-form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-category-label {
+  display: block;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+  text-align: left;
+}
+
+.admin-category-input {
+  width: 100%;
+  height: 48px;
+  border-radius: 14px;
+  border: 1.5px solid #D8D2CB;
+  background: #FFFFFF;
+  padding: 0 16px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: #111827;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.admin-category-input:focus {
+  border-color: #200604;
+  box-shadow: 0 0 0 3px rgba(32, 6, 4, 0.08);
+}
+
+.admin-category-save-btn {
+  width: 100%;
+  height: 48px;
+  border-radius: 14px;
+  background: #200604;
+  color: #FFFFFF;
+  font-family: 'Inter', sans-serif;
+  font-size: 14.5px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  margin-top: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 12px rgba(32, 6, 4, 0.25);
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.admin-category-save-btn:hover:not(:disabled) {
+  background: #3A100B;
+  transform: translateY(-1px);
+}
+
+.admin-category-save-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+

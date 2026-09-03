@@ -92,11 +92,14 @@ export const AdminBillModal = ({
   const gstAmount = isIncludeGst ? (subtotal * 5) / 100 : 0;
   const totalAmount = subtotal + gstAmount;
 
-  const tableDisplayName = table?.number
+  const isTakeaway = order?.order_type === 'takeaway' || (!table?.number && !order?.table_number && !order?.table);
+  const tableDisplayName = isTakeaway
+    ? `Parcel #${order?.id || ''}`
+    : table?.number
     ? formatAdminTableNumber(table.number).replace('T ', 'Table ')
     : order?.table_number
     ? `Table ${String(order.table_number).replace(/\D/g, '')}`
-    : 'Table 3';
+    : 'Dining Order';
 
   const orderDateStr = order?.created_at
     ? new Date(order.created_at).toLocaleDateString('en-GB')
