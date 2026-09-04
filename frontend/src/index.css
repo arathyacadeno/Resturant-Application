@@ -6367,8 +6367,8 @@ h6 {
 
 .admin-menu-title {
   font-family: 'Inter', 'Outfit', sans-serif;
-  font-size: 24px;
-  font-weight: 800;
+  font-size: 22px;
+  font-weight: 600;
   color: #111827;
   margin: 0 0 6px 0;
   letter-spacing: -0.3px;
@@ -6442,6 +6442,7 @@ h6 {
   gap: 16px;
   margin-bottom: 20px;
   flex-wrap: wrap;
+  margin-top: 20px;
 }
 
 /* ── Category Tabs Row ── */
