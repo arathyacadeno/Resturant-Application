@@ -249,7 +249,7 @@
 .admin-top-greeting p {
   font-family: "Poppins", sans-serif;
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 400;
   line-height: 1.4;
   color: #4f4f4f;
   margin-top: 4px;
@@ -368,7 +368,7 @@
   flex-direction: column;
   justify-content: space-between;
   min-height: 122px;
-  width: 180px;
+  width: 100%;
   box-sizing: border-box;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
@@ -683,7 +683,7 @@
   transform: translateY(-1px);
 }
 
-/* ── 5-Column Table Grid & Table Cards ── */
+/* ── 5-Column Table Grid & Table Cards (Exact Reference: 5 Cards Per Row) ── */
 .admin-table-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);

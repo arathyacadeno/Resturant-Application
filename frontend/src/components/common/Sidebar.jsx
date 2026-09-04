@@ -61,7 +61,7 @@ export const Sidebar = () => {
               {({ isActive }) => (
                 <>
                   <img 
-                    src={isActive ? "/sidebar2-active.png" : "/sidebar2.png"} 
+                    src={isActive ? "/sidebar2-active.svg" : "/sidebar2.svg"} 
                     alt="Menu Catalogue" 
                     className="admin-nav-icon"
                     style={{ width: '20px', height: '20px', objectFit: 'contain' }}

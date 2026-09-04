@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, ChevronDown, Check, Plus } from 'lucide-react';
+import { X, ChevronDown, Check, Plus, Eye, EyeOff } from 'lucide-react';
 import { authApi } from '../../api/authApi';
+import { validateEmail, validatePhone } from '../../utils/validation';
 
 const CORE_ROLES = ['Staff', 'Chef', 'Admin'];
 
@@ -30,6 +31,7 @@ export const AddStaffModal = ({ isOpen, onClose, onStaffCreated }) => {
   const [customRoleInput, setCustomRoleInput] = useState('');
   const [addingRole, setAddingRole] = useState(false);
 
+  const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const modalRef = useRef(null);
@@ -50,6 +52,7 @@ export const AddStaffModal = ({ isOpen, onClose, onStaffCreated }) => {
       setOpenDropdown(false);
       setShowCustomRoleInput(false);
       setCustomRoleInput('');
+      setShowPassword(false);
       setError('');
 
       const fetchRoles = async () => {
@@ -123,6 +126,12 @@ export const AddStaffModal = ({ isOpen, onClose, onStaffCreated }) => {
     }
   };
 
+  const handlePhoneChange = (e) => {
+    // Only allow numbers and limit to max 10 digits
+    const cleanDigits = e.target.value.replace(/\D/g, '').slice(0, 10);
+    setFormData((prev) => ({ ...prev, phone: cleanDigits }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -132,14 +141,32 @@ export const AddStaffModal = ({ isOpen, onClose, onStaffCreated }) => {
       return;
     }
 
+    const emailVal = formData.email.trim();
+    if (emailVal) {
+      const emailCheck = validateEmail(emailVal);
+      if (!emailCheck.isValid) {
+        setError(emailCheck.error);
+        return;
+      }
+    }
+
+    const phoneVal = formData.phone.trim();
+    if (phoneVal) {
+      const phoneCheck = validatePhone(phoneVal);
+      if (!phoneCheck.isValid) {
+        setError(phoneCheck.error);
+        return;
+      }
+    }
+
     setSubmitting(true);
     try {
       await authApi.createStaff({
         username: formData.username.trim(),
         password: formData.password,
         first_name: formData.first_name.trim(),
-        email: formData.email.trim(),
-        phone: formData.phone.trim(),
+        email: emailVal,
+        phone: phoneVal,
         role: formData.role,
       });
 
@@ -149,10 +176,23 @@ export const AddStaffModal = ({ isOpen, onClose, onStaffCreated }) => {
       onClose();
     } catch (err) {
       console.error('Failed to create staff:', err);
-      const msg = err.response?.data?.username?.[0] || 
-                  err.response?.data?.detail || 
-                  err.response?.data?.error || 
-                  'Failed to create staff member.';
+      const data = err.response?.data;
+      let msg = 'Failed to create staff member.';
+      if (typeof data === 'string') {
+        msg = data;
+      } else if (data && typeof data === 'object') {
+        const firstKey = Object.keys(data)[0];
+        const val = data[firstKey];
+        if (Array.isArray(val) && val.length > 0) {
+          msg = val[0];
+        } else if (typeof val === 'string') {
+          msg = val;
+        } else if (data.detail) {
+          msg = data.detail;
+        } else if (data.error) {
+          msg = data.error;
+        }
+      }
       setError(msg);
     } finally {
       setSubmitting(false);
@@ -231,12 +271,22 @@ export const AddStaffModal = ({ isOpen, onClose, onStaffCreated }) => {
             </label>
             <div className="admin-staff-modal-input-wrap">
               <input
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 required
+                placeholder="Enter password"
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 className="admin-staff-modal-input"
+                style={{ paddingRight: '40px' }}
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="admin-staff-modal-eye-btn"
+                title={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
             </div>
           </div>
 
@@ -331,6 +381,7 @@ export const AddStaffModal = ({ isOpen, onClose, onStaffCreated }) => {
               </label>
               <input
                 type="email"
+                placeholder="e.g. name@domain.com"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 className="admin-staff-modal-input"
@@ -342,9 +393,11 @@ export const AddStaffModal = ({ isOpen, onClose, onStaffCreated }) => {
                 Phone
               </label>
               <input
-                type="text"
+                type="tel"
+                maxLength={10}
+                placeholder="10-digit number"
                 value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                onChange={handlePhoneChange}
                 className="admin-staff-modal-input"
               />
             </div>

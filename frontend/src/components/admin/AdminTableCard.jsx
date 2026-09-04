@@ -134,7 +134,7 @@ export const AdminTableCard = ({
               }}
             >
               <img
-                src="/print.png"
+                src="/print.svg"
                 alt="Print"
                 style={{ width: '16px', height: '16px', objectFit: 'contain' }}
               />

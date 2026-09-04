@@ -9,7 +9,6 @@ import { AdminTableCard } from '../../components/admin/AdminTableCard';
 import { AddTableModal } from '../../components/admin/AddTableModal';
 import { EditTableModal } from '../../components/admin/EditTableModal';
 import { AdminBillModal } from '../../components/admin/AdminBillModal';
-import { AdminParcelModal } from '../../components/admin/AdminParcelModal';
 import { UserAvatarPlaceholder } from '../../components/common/UserAvatarPlaceholder';
 import {
   Search,
@@ -19,8 +18,7 @@ import {
   CheckSquare,
   User,
   Receipt,
-  TrendingUp,
-  Package
+  TrendingUp
 } from 'lucide-react';
 
 export const AdminDashboardPage = () => {
@@ -54,7 +52,6 @@ export const AdminDashboardPage = () => {
 
   // Modals
   const [showAddModal, setShowAddModal] = useState(false);
-  const [showParcelModal, setShowParcelModal] = useState(false);
   const [editingTable, setEditingTable] = useState(null);
   const [billModalTable, setBillModalTable] = useState(null);
   const [billModalOrder, setBillModalOrder] = useState(null);
@@ -163,9 +160,6 @@ export const AdminDashboardPage = () => {
   const availableCount = tables.filter((t) => (t.status || '').toLowerCase() === 'available').length;
   const occupiedCount = tables.filter((t) => (t.status || '').toLowerCase() === 'occupied').length;
   const billingCount = tables.filter((t) => (t.status || '').toLowerCase() === 'billing').length;
-  const activeParcelCount = activeOrders.filter(
-    (o) => o.order_type === 'takeaway' || (!o.table && !o.table_number)
-  ).length;
 
   const todaySales = summary?.today_revenue
     ? parseFloat(summary.today_revenue).toLocaleString('en-IN', { maximumFractionDigits: 0 })
@@ -385,19 +379,6 @@ export const AdminDashboardPage = () => {
                 ))}
               </div>
 
-              {/* Parcel Orders Button */}
-              <button
-                type="button"
-                className="admin-parcel-orders-pill-btn"
-                onClick={() => setShowParcelModal(true)}
-              >
-                <Package size={15} strokeWidth={2.2} />
-                <span>Parcel Orders</span>
-                {activeParcelCount > 0 && (
-                  <span className="admin-parcel-badge">{activeParcelCount}</span>
-                )}
-              </button>
-
               {/* + Add New Table Button */}
               <button
                 type="button"
@@ -488,14 +469,6 @@ export const AdminDashboardPage = () => {
           setBillModalOrder(null);
         }}
         onBillSettled={() => {
-          loadDashboardData();
-        }}
-      />
-
-      <AdminParcelModal
-        isOpen={showParcelModal}
-        onClose={() => setShowParcelModal(false)}
-        onOrderCreated={() => {
           loadDashboardData();
         }}
       />

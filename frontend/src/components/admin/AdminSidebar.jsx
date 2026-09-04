@@ -59,7 +59,7 @@ export const AdminSidebar = () => {
               {({ isActive }) => (
                 <>
                   <img 
-                    src={isActive ? "/sidebar2-active.png" : "/sidebar2.png"} 
+                    src={isActive ? "/sidebar2-active.svg" : "/sidebar2.svg"} 
                     alt="Menu Catalogue" 
                     className="admin-portal-nav-img"
                   />

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Eye, EyeOff, ChevronDown, Check, Plus } from 'lucide-react';
 import { authApi } from '../../api/authApi';
+import { validateEmail, validatePhone } from '../../utils/validation';
 
 const CORE_ROLES = ['Staff', 'Chef', 'Admin'];
 
@@ -140,6 +141,12 @@ export const EditStaffModal = ({ isOpen, staff, onClose, onStaffUpdated }) => {
     }
   };
 
+  const handlePhoneChange = (e) => {
+    // Only allow numbers and limit to max 10 digits
+    const cleanDigits = e.target.value.replace(/\D/g, '').slice(0, 10);
+    setFormData((prev) => ({ ...prev, phone: cleanDigits }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -149,13 +156,31 @@ export const EditStaffModal = ({ isOpen, staff, onClose, onStaffUpdated }) => {
       return;
     }
 
+    const emailVal = formData.email.trim();
+    if (emailVal) {
+      const emailCheck = validateEmail(emailVal);
+      if (!emailCheck.isValid) {
+        setError(emailCheck.error);
+        return;
+      }
+    }
+
+    const phoneVal = formData.phone.trim();
+    if (phoneVal) {
+      const phoneCheck = validatePhone(phoneVal);
+      if (!phoneCheck.isValid) {
+        setError(phoneCheck.error);
+        return;
+      }
+    }
+
     setSubmitting(true);
     try {
       const payload = {
         first_name: formData.first_name.trim(),
         username: formData.username.trim(),
-        email: formData.email.trim(),
-        phone: formData.phone.trim(),
+        email: emailVal,
+        phone: phoneVal,
         role: formData.role,
       };
 
@@ -171,10 +196,23 @@ export const EditStaffModal = ({ isOpen, staff, onClose, onStaffUpdated }) => {
       onClose();
     } catch (err) {
       console.error('Failed to update staff:', err);
-      const msg = err.response?.data?.username?.[0] || 
-                  err.response?.data?.detail || 
-                  err.response?.data?.error || 
-                  'Failed to update staff member.';
+      const data = err.response?.data;
+      let msg = 'Failed to update staff member.';
+      if (typeof data === 'string') {
+        msg = data;
+      } else if (data && typeof data === 'object') {
+        const firstKey = Object.keys(data)[0];
+        const val = data[firstKey];
+        if (Array.isArray(val) && val.length > 0) {
+          msg = val[0];
+        } else if (typeof val === 'string') {
+          msg = val;
+        } else if (data.detail) {
+          msg = data.detail;
+        } else if (data.error) {
+          msg = data.error;
+        }
+      }
       setError(msg);
     } finally {
       setSubmitting(false);
@@ -376,10 +414,11 @@ export const EditStaffModal = ({ isOpen, staff, onClose, onStaffUpdated }) => {
                 Phone
               </label>
               <input
-                type="text"
-                placeholder="8547189033"
+                type="tel"
+                maxLength={10}
+                placeholder="10-digit number"
                 value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                onChange={handlePhoneChange}
                 className="admin-staff-modal-input"
               />
             </div>

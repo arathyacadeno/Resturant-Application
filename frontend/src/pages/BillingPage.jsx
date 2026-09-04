@@ -727,13 +727,18 @@ export const BillingPage = () => {
                   : (selectedBillOrder.order_type || 'Takeaway')}
               </div>
               <div className="bill-sheet-header-actions">
-                <div
+                <button
+                  type="button"
                   className="bill-sheet-print-btn"
                   onClick={() => window.print()}
                   title="Print Bill"
                 >
-                  <Printer size={18} color="#B87F00" strokeWidth={2} />
-                </div>
+                  <img
+                    src="/print.svg"
+                    alt="Print"
+                    className="bill-sheet-print-icon"
+                  />
+                </button>
 
                 <button
                   className="bill-sheet-close-btn"
