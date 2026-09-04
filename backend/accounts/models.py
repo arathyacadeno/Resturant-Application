@@ -46,6 +46,13 @@ class RestaurantSettings(models.Model):
     gstin = models.CharField(max_length=50, default='32ABCDE1234F1Z5', blank=True)
     footer = models.CharField(max_length=200, default='Thank you for visiting T Clock Resto Cafe! 🌴', blank=True)
 
+    # Bill Settings
+    currency_symbol = models.CharField(max_length=10, default='₹', blank=True)
+    invoice_prefix = models.CharField(max_length=20, default='TC-', blank=True)
+    tax_rate = models.DecimalField(max_digits=5, decimal_places=2, default=5.00)
+    service_charge = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)
+    footer_greeting = models.TextField(default='Thank you for dining with us! Please visit again.', blank=True)
+
     def save(self, *args, **kwargs):
         self.pk = 1
         super().save(*args, **kwargs)

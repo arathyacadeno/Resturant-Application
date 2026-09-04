@@ -149,4 +149,8 @@ class CustomTokenSerializer(TokenObtainPairSerializer):
 class RestaurantSettingsSerializer(serializers.ModelSerializer):
     class Meta:
         model = __import__('accounts.models', fromlist=['RestaurantSettings']).RestaurantSettings
-        fields = ['name', 'tagline', 'address', 'phone', 'gstin', 'footer']
+        fields = [
+            'name', 'tagline', 'address', 'phone', 'gstin', 'footer',
+            'currency_symbol', 'invoice_prefix', 'tax_rate', 'service_charge',
+            'footer_greeting'
+        ]

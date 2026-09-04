@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useOrder } from '../../context/OrderContext';
 import { ordersApi } from '../../api/ordersApi';
 import { X } from 'lucide-react';
@@ -7,10 +7,12 @@ import { X } from 'lucide-react';
  * AdminParcelOrderModal
  * Exact replica of the reference design for "View your Order 👀" in Admin Dashboard / Menu.
  * - Warm cream/beige background (#F4EFEA) with 28px rounded corners
+ * - Header with "Parcel Order" and Order number #16
  * - Customer Name field
  * - Live item list with stepper, price, and remove X
  * - Subtotal and Total box with dashed line and 5% GST
  * - "Notes for the Kitchen" textarea
+ * - Floating "Order Sent to Kitchen 🔥" confirmation badge
  * - "Add Item" and "Place Order" buttons
  */
 export const AdminParcelOrderModal = ({
@@ -31,6 +33,21 @@ export const AdminParcelOrderModal = ({
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [orderSeq, setOrderSeq] = useState(16);
+  const [orderSuccess, setOrderSuccess] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      setOrderSuccess(false);
+      setError('');
+      ordersApi.getOrders().then((res) => {
+        const list = res.results || res;
+        if (Array.isArray(list)) {
+          setOrderSeq(list.length + 1);
+        }
+      }).catch(() => {});
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -74,9 +91,14 @@ export const AdminParcelOrderModal = ({
       };
 
       const createdOrder = await ordersApi.createOrder(payload);
-      clearCart();
-      if (onOrderPlaced) onOrderPlaced(createdOrder);
-      onClose();
+      setOrderSuccess(true);
+
+      setTimeout(() => {
+        clearCart();
+        if (onOrderPlaced) onOrderPlaced(createdOrder);
+        onClose();
+        setOrderSuccess(false);
+      }, 1600);
     } catch (err) {
       console.error('Failed to place parcel order:', err);
       setError(
@@ -98,14 +120,17 @@ export const AdminParcelOrderModal = ({
         {/* Top Header */}
         <div className="admin-order-view-header">
           <h2 className="admin-order-view-title">Parcel Order</h2>
-          <button
-            type="button"
-            className="admin-order-view-close-btn"
-            onClick={onClose}
-            aria-label="Close"
-          >
-            <X size={15} strokeWidth={2.2} />
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <span className="admin-order-view-num">#{orderSeq}</span>
+            <button
+              type="button"
+              className="admin-order-view-close-btn"
+              onClick={onClose}
+              aria-label="Close"
+            >
+              <X size={15} strokeWidth={2.2} />
+            </button>
+          </div>
         </div>
 
         {error && (
@@ -227,6 +252,13 @@ export const AdminParcelOrderModal = ({
             placeholder="Any concerns? e.g. less spicy, no sugar in tea, nut allergy..."
           />
         </div>
+
+        {/* Floating Confirmation Pill: Order Sent to Kitchen 🔥 */}
+        {orderSuccess && (
+          <div className="admin-order-sent-badge">
+            <span>Order Sent to Kitchen 🔥</span>
+          </div>
+        )}
 
         {/* Bottom Actions: Add Item & Place Order */}
         <div className="admin-order-view-actions-row">
