@@ -33,6 +33,7 @@ export const AdminSettingsPage = () => {
     invoicePrefix: 'TC-',
     taxRate: 5,
     serviceCharge: 0,
+    packingCharge: 0,
     footerGreeting: 'Thank you for dining with us! Please visit again.',
   });
 
@@ -62,6 +63,7 @@ export const AdminSettingsPage = () => {
           invoicePrefix: data.invoice_prefix ?? 'TC-',
           taxRate: data.tax_rate != null ? Number(data.tax_rate) : 0,
           serviceCharge: data.service_charge != null ? Number(data.service_charge) : 0,
+          packingCharge: data.packing_charge != null ? Number(data.packing_charge) : 0,
           footerGreeting: data.footer_greeting || data.footer || '',
           logo: null,
         });
@@ -119,6 +121,7 @@ export const AdminSettingsPage = () => {
         invoice_prefix: formData.invoicePrefix,
         tax_rate: formData.taxRate,
         service_charge: formData.serviceCharge,
+        packing_charge: formData.packingCharge,
         footer_greeting: formData.footerGreeting,
       };
 
@@ -136,6 +139,7 @@ export const AdminSettingsPage = () => {
           invoicePrefix: res.invoice_prefix ?? prev.invoicePrefix,
           taxRate: res.tax_rate != null ? Number(res.tax_rate) : prev.taxRate,
           serviceCharge: res.service_charge != null ? Number(res.service_charge) : prev.serviceCharge,
+          packingCharge: res.packing_charge != null ? Number(res.packing_charge) : prev.packingCharge,
           footerGreeting: res.footer_greeting ?? prev.footerGreeting,
         }));
       }
@@ -158,7 +162,8 @@ export const AdminSettingsPage = () => {
   const subtotal = 800.0;
   const taxAmount = (subtotal * (parseFloat(formData.taxRate) || 0)) / 100;
   const serviceChargeAmount = (subtotal * (parseFloat(formData.serviceCharge) || 0)) / 100;
-  const grandTotal = subtotal + taxAmount + serviceChargeAmount;
+  const packingChargeAmount = (subtotal * (parseFloat(formData.packingCharge) || 0)) / 100;
+  const grandTotal = subtotal + taxAmount + serviceChargeAmount + packingChargeAmount;
 
   return (
     <div className="admin-settings-page-root">
@@ -369,19 +374,8 @@ export const AdminSettingsPage = () => {
               ) : (
                 <>
                   {/* Bill Settings Tab Content (Exact Reference Replica) */}
-                  {/* Row 1: Currency Symbol & Invoice Number Prefix */}
+                  {/* Row 1: Invoice Number Prefix & Service Charge (%) */}
                   <div className="admin-settings-grid-2">
-                    <div className="admin-settings-field">
-                      <label className="admin-settings-label">Currency Symbol</label>
-                      <input
-                        type="text"
-                        className="admin-settings-input"
-                        value={formData.currencySymbol}
-                        onChange={(e) => handleChange('currencySymbol', e.target.value)}
-                        placeholder="₹"
-                      />
-                    </div>
-
                     <div className="admin-settings-field">
                       <label className="admin-settings-label">Invoice Number Prefix</label>
                       <input
@@ -392,9 +386,23 @@ export const AdminSettingsPage = () => {
                         placeholder="TC-"
                       />
                     </div>
+
+                    <div className="admin-settings-field">
+                      <label className="admin-settings-label">Service Charge (%)</label>
+                      <input
+                        type="number"
+                        className="admin-settings-input"
+                        value={formData.serviceCharge}
+                        onChange={(e) => handleChange('serviceCharge', e.target.value)}
+                        placeholder="0"
+                        min="0"
+                        max="100"
+                        step="0.1"
+                      />
+                    </div>
                   </div>
 
-                  {/* Row 2: GST / Tax Rate (%) & Service Charge (%) */}
+                  {/* Row 2: GST / Tax Rate (%) & Packing Charge (%) */}
                   <div className="admin-settings-grid-2">
                     <div className="admin-settings-field">
                       <label className="admin-settings-label">GST / Tax Rate (%)</label>
@@ -412,12 +420,12 @@ export const AdminSettingsPage = () => {
                     </div>
 
                     <div className="admin-settings-field">
-                      <label className="admin-settings-label">Service Charge (%)</label>
+                      <label className="admin-settings-label">Packing Charge (%)</label>
                       <input
                         type="number"
                         className="admin-settings-input"
-                        value={formData.serviceCharge}
-                        onChange={(e) => handleChange('serviceCharge', e.target.value)}
+                        value={formData.packingCharge}
+                        onChange={(e) => handleChange('packingCharge', e.target.value)}
                         placeholder="0"
                         min="0"
                         max="100"
@@ -478,7 +486,7 @@ export const AdminSettingsPage = () => {
               </div>
               <div className="admin-receipt-meta-row">
                 <span>Order #</span>
-                <span>{formData.invoicePrefix || 'TC-'}16</span>
+                <span>{formData.invoicePrefix ? `${formData.invoicePrefix}16` : '16'}</span>
               </div>
 
               <div className="admin-receipt-divider" />
@@ -506,6 +514,12 @@ export const AdminSettingsPage = () => {
                   <div className="admin-receipt-summary-row">
                     <span>Service Charge ({formData.serviceCharge}%)</span>
                     <span>{formData.currencySymbol || '₹'}{serviceChargeAmount.toFixed(2)}</span>
+                  </div>
+                )}
+                {parseFloat(formData.packingCharge) > 0 && (
+                  <div className="admin-receipt-summary-row">
+                    <span>Packing Charge ({formData.packingCharge}%)</span>
+                    <span>{formData.currencySymbol || '₹'}{packingChargeAmount.toFixed(2)}</span>
                   </div>
                 )}
               </div>

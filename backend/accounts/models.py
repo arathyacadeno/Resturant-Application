@@ -51,6 +51,7 @@ class RestaurantSettings(models.Model):
     invoice_prefix = models.CharField(max_length=20, default='TC-', blank=True)
     tax_rate = models.DecimalField(max_digits=5, decimal_places=2, default=5.00)
     service_charge = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)
+    packing_charge = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)
     footer_greeting = models.TextField(default='Thank you for dining with us! Please visit again.', blank=True)
 
     def save(self, *args, **kwargs):

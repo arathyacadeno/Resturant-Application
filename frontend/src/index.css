@@ -2043,6 +2043,36 @@ h6 {
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
   }
 
+  .order-sheet-order-id {
+    font-family: 'Space Mono', 'Courier New', monospace !important;
+    font-size: 16.5px !important;
+    font-weight: 700 !important;
+    color: #4A443F !important;
+    letter-spacing: -0.02em !important;
+  }
+
+  .order-sheet-sent-badge {
+    position: absolute !important;
+    bottom: 84px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    background: #200604 !important;
+    color: #FFFFFF !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 13.5px !important;
+    font-weight: 700 !important;
+    padding: 8px 22px !important;
+    border-radius: 999px !important;
+    box-shadow: 0 8px 26px rgba(32, 6, 4, 0.45) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    z-index: 20000 !important;
+    white-space: nowrap !important;
+    animation: adminOrderSentPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+  }
+
   .order-sheet-close,
   .table-sheet-close,
   .reserved-sheet-close,

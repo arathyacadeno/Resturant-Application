@@ -152,5 +152,5 @@ class RestaurantSettingsSerializer(serializers.ModelSerializer):
         fields = [
             'name', 'tagline', 'address', 'phone', 'gstin', 'footer',
             'currency_symbol', 'invoice_prefix', 'tax_rate', 'service_charge',
-            'footer_greeting'
+            'packing_charge', 'footer_greeting'
         ]

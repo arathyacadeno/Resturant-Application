@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { menuApi } from '../api/menuApi';
 import { tablesApi } from '../api/tablesApi';
+import { ordersApi } from '../api/ordersApi';
 import { useOrder } from '../context/OrderContext';
 import { useAuth } from '../context/AuthContext';
 import MenuItemCard from '../components/pos/MenuItemCard';
@@ -43,6 +44,18 @@ export const POSPage = () => {
   const [showTablePicker, setShowTablePicker] = useState(false);
   const [showViewOrderButton, setShowViewOrderButton] = useState(true);
   const [placedOrderSnapshot, setPlacedOrderSnapshot] = useState(null);
+  const [orderSeq, setOrderSeq] = useState(16);
+
+  useEffect(() => {
+    if (showMobileCart) {
+      ordersApi.getOrders().then((res) => {
+        const list = res.results || res;
+        if (Array.isArray(list)) {
+          setOrderSeq(list.length + 1);
+        }
+      }).catch(() => {});
+    }
+  }, [showMobileCart]);
 
   // Lock body scroll when any modal/sheet is active
   useEffect(() => {
@@ -798,13 +811,18 @@ export const POSPage = () => {
               {/* Header */}
               <div className="order-sheet-header">
                 <h2 className="order-sheet-title">Your Order</h2>
-                <button
-                  className="order-sheet-close"
-                  onClick={() => setShowMobileCart(false)}
-                  aria-label="Close"
-                >
-                  <X size={16} strokeWidth={2.5} />
-                </button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <span className="order-sheet-order-id">
+                    #{activeTableOrder?.id || orderSeq || '16'}
+                  </span>
+                  <button
+                    className="order-sheet-close"
+                    onClick={() => setShowMobileCart(false)}
+                    aria-label="Close"
+                  >
+                    <X size={16} strokeWidth={2.5} />
+                  </button>
+                </div>
               </div>
 
               {/* Table Info Pill Container */}
@@ -968,6 +986,13 @@ export const POSPage = () => {
                   />
                 </div>
               </div>
+
+              {/* Floating Order Sent to Kitchen 🔥 Pill */}
+              {orderSuccess && (
+                <div className="order-sheet-sent-badge">
+                  <span>{orderSuccess}</span>
+                </div>
+              )}
 
               {/* Bottom Action Buttons */}
               <div className="order-sheet-actions">
