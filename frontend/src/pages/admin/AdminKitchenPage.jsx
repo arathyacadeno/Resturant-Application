@@ -3,7 +3,6 @@ import { kitchenApi } from '../../api/kitchenApi';
 import { useAuth } from '../../context/AuthContext';
 import { 
   Search, 
-  Bell, 
   ClipboardList, 
   RefreshCw, 
   Check, 
@@ -119,7 +118,7 @@ export const AdminKitchenPage = () => {
 
         {/* Notification Bell */}
         <div className="admin-bell-circle" title="Notifications">
-          <Bell size={18} fill="#EAB308" color="#CA8A04" />
+          <img src="/Bell.svg" alt="Notifications" style={{ width: '20px', height: '20px', objectFit: 'contain' }} />
         </div>
 
         {/* Admin Profile Avatar */}

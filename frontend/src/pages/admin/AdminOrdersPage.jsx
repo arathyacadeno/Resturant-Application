@@ -4,7 +4,6 @@ import { ordersApi } from '../../api/ordersApi';
 import { useAuth } from '../../context/AuthContext';
 import {
   Search,
-  Bell,
   Armchair,
   CheckSquare,
   User,
@@ -86,7 +85,7 @@ export const AdminOrdersPage = () => {
 
         {/* Notification Bell */}
         <div className="admin-bell-circle" title="Notifications">
-          <Bell size={18} fill="#EAB308" color="#CA8A04" />
+          <img src="/Bell.svg" alt="Notifications" style={{ width: '20px', height: '20px', objectFit: 'contain' }} />
         </div>
 
         {/* Admin Profile Avatar */}
@@ -126,7 +125,7 @@ export const AdminOrdersPage = () => {
         {/* 3. Canceled Orders */}
         <div className="admin-stat-item accent-red">
           <div className="admin-stat-icon-box red">
-            <img src="/order-card3.svg" alt="Canceled Orders" style={{ width: '16px', height: '16px', objectFit: 'contain' }} />
+            <img src="/ordercardcancel.svg" alt="Canceled Orders" style={{ width: '16px', height: '16px', objectFit: 'contain' }} />
           </div>
           <div className="admin-stat-num">{canceledOrdersCount}</div>
           <div className="admin-stat-label red">Canceled Orders</div>

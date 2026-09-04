@@ -12,7 +12,6 @@ import { AdminBillModal } from '../../components/admin/AdminBillModal';
 import { UserAvatarPlaceholder } from '../../components/common/UserAvatarPlaceholder';
 import {
   Search,
-  Bell,
   Plus,
   Grid,
   CheckSquare,
@@ -85,7 +84,7 @@ export const AdminDashboardPage = () => {
           setTables(loadedTables);
           try {
             localStorage.setItem('admin_cached_tables', JSON.stringify(loadedTables));
-          } catch {}
+          } catch { }
         }
       })
       .catch((err) => console.error('Failed to load tables:', err))
@@ -263,7 +262,7 @@ export const AdminDashboardPage = () => {
 
           {/* Notification Bell */}
           <div className="admin-bell-circle" title="Notifications">
-            <Bell size={18} fill="#EAB308" color="#CA8A04" />
+            <img src="/Bell.svg" alt="Notifications" style={{ width: '20px', height: '20px', objectFit: 'contain' }} />
           </div>
 
           {/* Admin Profile Avatar */}

@@ -3,11 +3,41 @@ import React from 'react';
 /**
  * UserAvatarPlaceholder
  *
- * Exact visual replica of the minimalist outline avatar placeholder:
- * - Circular light-gray background with crisp white outer ring and soft shadow
- * - Connected contoured outline head and shoulders silhouette
+ * Clean circular white button matching admin theme with centered user outline icon
+ * or user's custom avatar picture.
  */
-export const UserAvatarPlaceholder = ({ size = 42, className = '', style = {} }) => {
+export const UserAvatarPlaceholder = ({ user = null, size = 44, className = '', style = {} }) => {
+  if (user?.avatar) {
+    return (
+      <div
+        className={`user-avatar-placeholder ${className}`}
+        style={{
+          width: size,
+          height: size,
+          minWidth: size,
+          minHeight: size,
+          borderRadius: '50%',
+          overflow: 'hidden',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: 'pointer',
+          flexShrink: 0,
+          background: '#FFFFFF',
+          boxSizing: 'border-box',
+          ...style,
+        }}
+      >
+        <img
+          src={user.avatar}
+          alt={user.username || 'Admin'}
+          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+        />
+      </div>
+    );
+  }
+
   return (
     <div
       className={`user-avatar-placeholder ${className}`}
@@ -17,9 +47,8 @@ export const UserAvatarPlaceholder = ({ size = 42, className = '', style = {} })
         minWidth: size,
         minHeight: size,
         borderRadius: '50%',
-        background: 'linear-gradient(180deg, #F3F4F6 0%, #E5E7EB 100%)',
-        border: '2px solid #FFFFFF',
-        boxShadow: '0 3px 10px rgba(0, 0, 0, 0.08)',
+        background: '#FFFFFF',
+        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -27,36 +56,22 @@ export const UserAvatarPlaceholder = ({ size = 42, className = '', style = {} })
         overflow: 'hidden',
         position: 'relative',
         flexShrink: 0,
+        cursor: 'pointer',
         ...style,
       }}
     >
       <svg
-        width={Math.round(size * 0.74)}
-        height={Math.round(size * 0.74)}
-        viewBox="0 0 64 64"
+        width={Math.round(size * 0.52)}
+        height={Math.round(size * 0.52)}
+        viewBox="0 0 24 24"
         fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        style={{
-          display: 'block',
-          transform: 'translateY(1px)',
-        }}
+        stroke="#6B7280"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       >
-        {/* Head outline */}
-        <path
-          d="M24 25C22.2 20.8 24.2 13.5 32 13.5C39.8 13.5 41.8 20.8 40 25C38.8 30.5 35 33.5 32 33.5C29 33.5 25.2 30.5 24 25Z"
-          stroke="#374151"
-          strokeWidth="2.2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        {/* Shoulders outline */}
-        <path
-          d="M17 48.5C19.5 42.5 24.8 39 28.8 37.2M35.2 37.2C39.2 39 44.5 42.5 47 48.5"
-          stroke="#374151"
-          strokeWidth="2.2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
+        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+        <circle cx="12" cy="7" r="4" />
       </svg>
     </div>
   );

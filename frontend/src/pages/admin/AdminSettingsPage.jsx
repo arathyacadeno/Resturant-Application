@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Bell, Upload, Check, AlertCircle } from 'lucide-react';
+import { Search, Upload, Check, AlertCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { authApi } from '../../api/authApi';
 import { UserAvatarPlaceholder } from '../../components/common/UserAvatarPlaceholder';
@@ -185,7 +185,7 @@ export const AdminSettingsPage = () => {
 
         {/* Notification Bell */}
         <div className="admin-bell-circle" title="Notifications">
-          <Bell size={18} fill="#EAB308" color="#CA8A04" />
+          <img src="/Bell.svg" alt="Notifications" style={{ width: '20px', height: '20px', objectFit: 'contain' }} />
         </div>
 
         {/* Admin Profile Avatar */}

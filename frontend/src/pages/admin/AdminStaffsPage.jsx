@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { authApi } from '../../api/authApi';
 import { useAuth } from '../../context/AuthContext';
-import { Search, Bell, Plus, Edit2, Trash2 } from 'lucide-react';
+import { Search, Plus, Edit2, Trash2 } from 'lucide-react';
 import { UserAvatarPlaceholder } from '../../components/common/UserAvatarPlaceholder';
 import { AddStaffModal } from '../../components/admin/AddStaffModal';
 import { EditStaffModal } from '../../components/admin/EditStaffModal';
@@ -136,7 +136,7 @@ export const AdminStaffsPage = () => {
 
         {/* Notification Bell */}
         <div className="admin-bell-circle" title="Notifications">
-          <Bell size={18} fill="#EAB308" color="#CA8A04" />
+          <img src="/Bell.svg" alt="Notifications" style={{ width: '20px', height: '20px', objectFit: 'contain' }} />
         </div>
 
         {/* Admin Profile Avatar */}

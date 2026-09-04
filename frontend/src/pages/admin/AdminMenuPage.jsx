@@ -10,7 +10,7 @@ import { EditMenuItemModal } from '../../components/admin/EditMenuItemModal';
 import { AdminParcelModal } from '../../components/admin/AdminParcelModal';
 import { AdminParcelOrderModal } from '../../components/admin/AdminParcelOrderModal';
 import { AdminBillModal } from '../../components/admin/AdminBillModal';
-import { Search, Bell, Pencil, Trash2, UtensilsCrossed, ChevronDown } from 'lucide-react';
+import { Search, Pencil, Trash2, UtensilsCrossed, ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 /**
@@ -232,7 +232,7 @@ export const AdminMenuPage = () => {
 
         {/* Notification Bell */}
         <div className="admin-bell-circle" title="Notifications">
-          <Bell size={18} fill="#EAB308" color="#CA8A04" />
+          <img src="/Bell.svg" alt="Notifications" style={{ width: '20px', height: '20px', objectFit: 'contain' }} />
         </div>
 
         {/* Admin Profile Avatar */}

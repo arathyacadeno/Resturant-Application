@@ -11,7 +11,6 @@ import { AddTableModal } from '../components/admin/AddTableModal';
 import { EditTableModal } from '../components/admin/EditTableModal';
 import { 
   Search, 
-  Bell, 
   Plus, 
   RefreshCw, 
   Grid, 
@@ -196,7 +195,7 @@ export const DashboardPage = () => {
 
             {/* Notification Bell in soft peach circle */}
             <div className="admin-bell-btn" title="Notifications">
-              <Bell size={18} fill="#EAB308" color="#CA8A04" />
+              <img src="/Bell.svg" alt="Notifications" style={{ width: '20px', height: '20px', objectFit: 'contain' }} />
             </div>
 
             {/* Admin Profile Avatar */}
