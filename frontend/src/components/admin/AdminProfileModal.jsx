@@ -7,18 +7,17 @@ import { UserAvatarPlaceholder } from '../common/UserAvatarPlaceholder';
 /**
  * AdminProfileModal
  *
- * Exact replication of the Admin Profile Modal reference design:
- * - Centered compact white modal with large rounded corners (#FFFFFF, border-radius: 26px)
+ * Exact 1:1 visual match to the reference design:
+ * - Slender vertical card with 26px rounded corners (#FFFFFF, max-width: 310px)
  * - Blurred and dimmed dashboard background
  * - Top-right close icon (X)
  * - Profile Header:
- *    - Left: Circular avatar icon
+ *    - Left: Soft rounded avatar with minimalist outline silhouette
  *    - Right: "Admin" title and "T clock Owner" role/subtitle
  * - Form Fields:
- *    1. User Name: Rounded text input pre-filled with admin username
- *    2. Password: Rounded password input with eye/visibility toggle
- * - Full-width dark maroon Save button (#230704)
- * - Secure Django backend update via PATCH /api/auth/profile/
+ *    1. User Name: Borderless rounded text input with #F4F4F4 background
+ *    2. Password: Borderless rounded password input with #F4F4F4 and eye toggle
+ * - Full-width dark burgundy Save button (#230704)
  */
 export const AdminProfileModal = ({ isOpen, onClose }) => {
   const { user, fetchProfile } = useAuth();
@@ -122,8 +121,8 @@ export const AdminProfileModal = ({ isOpen, onClose }) => {
     }
   };
 
-  const displayName = user?.first_name || user?.username || 'Admin';
-  const displayRole = user?.role === 'admin' ? 'T clock Owner' : 'T clock Owner';
+  const displayName = user?.username ? user.username.charAt(0).toUpperCase() + user.username.slice(1) : (user?.first_name || 'Admin');
+  const displayRole = 'T clock Owner';
 
   return (
     <div className="admin-profile-modal-overlay" onClick={onClose}>
@@ -139,7 +138,7 @@ export const AdminProfileModal = ({ isOpen, onClose }) => {
           onClick={onClose}
           aria-label="Close"
         >
-          <X size={17} color="#8E8E93" strokeWidth={2.2} />
+          <X size={14} color="#8E8E93" strokeWidth={1.8} />
         </button>
 
         {/* Profile Header: Avatar + Name + Role */}
@@ -149,16 +148,16 @@ export const AdminProfileModal = ({ isOpen, onClose }) => {
               src={user.avatar}
               alt="Admin"
               style={{
-                width: '50px',
-                height: '50px',
+                width: '46px',
+                height: '46px',
                 borderRadius: '50%',
                 objectFit: 'cover',
                 border: '2px solid #FFFFFF',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
               }}
             />
           ) : (
-            <UserAvatarPlaceholder size={50} />
+            <UserAvatarPlaceholder size={46} />
           )}
           <div className="admin-profile-info">
             <h3 className="admin-profile-name">{displayName}</h3>
@@ -214,9 +213,9 @@ export const AdminProfileModal = ({ isOpen, onClose }) => {
                 title={showPassword ? 'Hide password' : 'Show password'}
               >
                 {showPassword ? (
-                  <EyeOff size={16} color="#6B7280" />
+                  <EyeOff size={15} color="#9CA3AF" strokeWidth={1.8} />
                 ) : (
-                  <Eye size={16} color="#6B7280" />
+                  <Eye size={15} color="#9CA3AF" strokeWidth={1.8} />
                 )}
               </button>
             </div>

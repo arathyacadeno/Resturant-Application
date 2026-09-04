@@ -77,8 +77,9 @@ import os
 import dj_database_url
 
 DATABASE_URL = os.environ.get('DATABASE_URL')
+USE_SQLITE = os.environ.get('USE_SQLITE', '').lower() in ('1', 'true', 'yes')
 
-if DATABASE_URL:
+if DATABASE_URL and not USE_SQLITE:
     # Use Supabase PostgreSQL with persistent connection pooling
     db_config = dj_database_url.config(
         default=DATABASE_URL,
