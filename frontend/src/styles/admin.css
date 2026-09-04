@@ -1227,7 +1227,7 @@
 }
 
 .admin-footer-text {
-  color:#000000;
+  color: #000000;
   font-weight: 400;
 }
 
@@ -1577,8 +1577,7 @@
   transform: translateY(-1px);
 }
 
-.admin-settle-btn:disabled {
-}
+.admin-settle-btn:disabled {}
 
 /* ═══════════════════════════════════════════════════════════════
    PRINT STYLING (Receipt Only)
@@ -2192,7 +2191,8 @@
 .admin-profile-modal-card {
   position: relative;
   width: 100%;
-  max-width: 310px;
+  max-width: 410px;
+  height: 540px;
   background: #FFFFFF;
   border-radius: 26px;
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
@@ -2225,6 +2225,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  /* margin-top: 20px; */
   margin-bottom: 26px;
   padding-right: 20px;
 }
@@ -2299,6 +2300,7 @@
   flex-direction: column;
   gap: 16px;
   width: 100%;
+  margin-top: 20px;
 }
 
 .admin-profile-form-group {
@@ -2306,6 +2308,7 @@
   flex-direction: column;
   gap: 6px;
   width: 100%;
+  margin-top: 20px;
 }
 
 .admin-profile-label {
@@ -2377,7 +2380,7 @@
   font-weight: 600;
   letter-spacing: 0.2px;
   cursor: pointer;
-  margin-top: 20px;
+  margin-top: 40px;
   box-shadow: 0 4px 14px rgba(35, 7, 4, 0.18);
   transition: all 0.15s ease;
 }
@@ -3076,7 +3079,7 @@
   gap: 8px;
   padding: 6px 14px 6px 12px;
   border-radius: 9999px;
-  background:#F5F0E1;
+  background: #F5F0E1;
   border: 1px solid #EADBCE;
   font-family: 'Inter', sans-serif;
   font-size: 14px;
@@ -4516,6 +4519,7 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -4526,6 +4530,7 @@
     opacity: 0;
     transform: scale(0.96);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -5676,7 +5681,7 @@
 
 .admin-orders-metrics-grid .admin-stat-item {
   width: 240px;
-  min-width:100px;
+  min-width: 100px;
   max-width: 280px;
   min-height: 122px;
 }
@@ -6611,7 +6616,3 @@
   font-size: 12px;
   margin-bottom: 14px;
 }
-
-
-
-

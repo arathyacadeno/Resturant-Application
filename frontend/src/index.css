@@ -1513,6 +1513,7 @@ h6 {
       opacity: 0;
       transform: scale(0.94);
     }
+
     to {
       opacity: 1;
       transform: scale(1);
@@ -4161,12 +4162,29 @@ h6 {
 }
 
 /* Top Accent Bars */
-.admin-stat-card--purple { border-left: 3.5px solid #8B5CF6; }
-.admin-stat-card--green  { border-left: 3.5px solid #22C55E; }
-.admin-stat-card--red    { border-left: 3.5px solid #EF4444; }
-.admin-stat-card--amber  { border-left: 3.5px solid #F59E0B; }
-.admin-stat-card--blue   { border-left: 3.5px solid #3B82F6; }
-.admin-stat-card--teal   { border-left: 3.5px solid #14B8A6; }
+.admin-stat-card--purple {
+  border-left: 3.5px solid #8B5CF6;
+}
+
+.admin-stat-card--green {
+  border-left: 3.5px solid #22C55E;
+}
+
+.admin-stat-card--red {
+  border-left: 3.5px solid #EF4444;
+}
+
+.admin-stat-card--amber {
+  border-left: 3.5px solid #F59E0B;
+}
+
+.admin-stat-card--blue {
+  border-left: 3.5px solid #3B82F6;
+}
+
+.admin-stat-card--teal {
+  border-left: 3.5px solid #14B8A6;
+}
 
 .admin-stat-top {
   display: flex;
@@ -4184,12 +4202,29 @@ h6 {
   justify-content: center;
 }
 
-.admin-stat-icon-wrap--purple { background: #EDE9FE; }
-.admin-stat-icon-wrap--green  { background: #DCFCE7; }
-.admin-stat-icon-wrap--red    { background: #FEE2E2; }
-.admin-stat-icon-wrap--amber  { background: #FEF3C7; }
-.admin-stat-icon-wrap--blue   { background: #DBEAFE; }
-.admin-stat-icon-wrap--teal   { background: #CCFBF1; }
+.admin-stat-icon-wrap--purple {
+  background: #EDE9FE;
+}
+
+.admin-stat-icon-wrap--green {
+  background: #DCFCE7;
+}
+
+.admin-stat-icon-wrap--red {
+  background: #FEE2E2;
+}
+
+.admin-stat-icon-wrap--amber {
+  background: #FEF3C7;
+}
+
+.admin-stat-icon-wrap--blue {
+  background: #DBEAFE;
+}
+
+.admin-stat-icon-wrap--teal {
+  background: #CCFBF1;
+}
 
 .admin-stat-symbol-blue {
   font-weight: 800;
@@ -4213,12 +4248,29 @@ h6 {
   margin-bottom: 0.15rem;
 }
 
-.admin-stat-title--purple { color: #7C3AED; }
-.admin-stat-title--green  { color: #16A34A; }
-.admin-stat-title--red    { color: #DC2626; }
-.admin-stat-title--amber  { color: #D97706; }
-.admin-stat-title--blue   { color: #2563EB; }
-.admin-stat-title--teal   { color: #0D9488; }
+.admin-stat-title--purple {
+  color: #7C3AED;
+}
+
+.admin-stat-title--green {
+  color: #16A34A;
+}
+
+.admin-stat-title--red {
+  color: #DC2626;
+}
+
+.admin-stat-title--amber {
+  color: #D97706;
+}
+
+.admin-stat-title--blue {
+  color: #2563EB;
+}
+
+.admin-stat-title--teal {
+  color: #0D9488;
+}
 
 .admin-stat-desc {
   font-size: 0.68rem;
@@ -4398,10 +4450,21 @@ h6 {
   letter-spacing: -0.02em;
 }
 
-.admin-table-card--occupied .atc-table-num { color: #B3261E; }
-.admin-table-card--available .atc-table-num { color: #15803D; }
-.admin-table-card--reserved .atc-table-num { color: #004372; }
-.admin-table-card--billing .atc-table-num { color: #B45309; }
+.admin-table-card--occupied .atc-table-num {
+  color: #B3261E;
+}
+
+.admin-table-card--available .atc-table-num {
+  color: #15803D;
+}
+
+.admin-table-card--reserved .atc-table-num {
+  color: #004372;
+}
+
+.admin-table-card--billing .atc-table-num {
+  color: #B45309;
+}
 
 .atc-actions {
   display: flex;
@@ -4703,6 +4766,7 @@ h6 {
   .admin-metrics-grid {
     grid-template-columns: repeat(3, 1fr);
   }
+
   .admin-tables-grid {
     grid-template-columns: repeat(3, 1fr);
   }
@@ -4712,6 +4776,7 @@ h6 {
   .admin-metrics-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+
   .admin-tables-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -5405,7 +5470,8 @@ h6 {
   left: 0;
   right: 0;
   width: 100%;
-  background: #230704; /* Dark Maroon */
+  background: #230704;
+  /* Dark Maroon */
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
   box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
@@ -5420,6 +5486,7 @@ h6 {
     opacity: 0;
     transform: translateY(-4px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -5609,7 +5676,8 @@ h6 {
 .admin-profile-modal-card {
   position: relative;
   width: 100%;
-  max-width: 310px;
+  max-width: 410px;
+  height: 540px;
   background: #FFFFFF;
   border-radius: 26px;
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
@@ -5643,6 +5711,7 @@ h6 {
   align-items: center;
   gap: 12px;
   margin-bottom: 26px;
+  margin-top: 20px;
   padding-right: 20px;
 }
 
@@ -5716,6 +5785,7 @@ h6 {
   flex-direction: column;
   gap: 16px;
   width: 100%;
+  margin-top: 20px;
 }
 
 .admin-profile-form-group {
@@ -5723,6 +5793,7 @@ h6 {
   flex-direction: column;
   gap: 6px;
   width: 100%;
+  margin-top: 30px;
 }
 
 .admin-profile-label {
