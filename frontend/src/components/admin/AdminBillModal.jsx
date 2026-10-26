@@ -204,7 +204,7 @@ export const AdminBillModal = ({
             {/* ── Centered White Receipt Card ── */}
             <div className="admin-receipt-card" id="admin-bill-preview">
               <div className="admin-receipt-header">
-                <h3 className="admin-receipt-name">T CLOCK RESTO CAFE</h3>
+                <h3 className="admin-receipt-name">CEDAR HEARTH</h3>
                 <p className="admin-receipt-tagline">Time for Tea, Time for Taste</p>
                 <div className="admin-receipt-address">
                   Main Road, Calicut, Kerala<br />
@@ -280,8 +280,7 @@ export const AdminBillModal = ({
               </div>
 
               <div className="admin-receipt-footer">
-                Thank you for visiting T Clock<br />
-                Resto Cafe! 🌿
+                Thank you for visiting Cedar Hearth! 🌿
               </div>
             </div>
 

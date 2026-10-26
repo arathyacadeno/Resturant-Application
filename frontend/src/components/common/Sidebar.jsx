@@ -23,7 +23,7 @@ export const Sidebar = () => {
         <div className="admin-brand-logo-wrap" style={{ width: '44px', height: '44px', minWidth: '44px', maxWidth: '44px', minHeight: '44px', maxHeight: '44px', borderRadius: '50%', overflow: 'hidden' }}>
           <img 
             src="/logo.png" 
-            alt="T Clock" 
+            alt="Cedar Hearth" 
             className="admin-brand-logo-img"
             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             onError={(e) => {
@@ -33,7 +33,7 @@ export const Sidebar = () => {
           />
         </div>
         <div className="admin-brand-text">
-          <h2 className="admin-brand-title">T Clock</h2>
+          <h2 className="admin-brand-title">Cedar Hearth</h2>
           <span className="admin-brand-subtitle">ADMIN PORTAL</span>
         </div>
       </div>

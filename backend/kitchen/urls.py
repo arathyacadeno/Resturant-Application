@@ -1,4 +1,4 @@
-"""T Clock — Kitchen URLs"""
+"""Cedar Hearth — Kitchen URLs"""
 
 from django.urls import path
 from . import views

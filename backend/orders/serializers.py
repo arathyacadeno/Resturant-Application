@@ -1,4 +1,4 @@
-"""T Clock — Orders serializers"""
+"""Cedar Hearth — Orders serializers"""
 
 from rest_framework import serializers
 from .models import Order, OrderItem

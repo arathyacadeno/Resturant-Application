@@ -658,11 +658,11 @@ export const BillingPage = () => {
             <div id="printable-receipt" style={{ textAlign: 'center', margin: '1rem 0', fontFamily: 'monospace', fontSize: '0.85rem' }}>
               <img
                 src="/logo.png"
-                alt="T-Clock Logo"
+                alt="Cedar Hearth Logo"
                 style={{ width: '70px', height: '70px', objectFit: 'contain', margin: '0 auto 0.5rem auto' }}
               />
               <h2 style={{ fontSize: '1.4rem', fontWeight: 900, color: '#0f172a', margin: 0 }}>
-                {settings?.name || 'T-CLOCK RESTO CAFE'}
+                {settings?.name || 'CEDAR HEARTH'}
               </h2>
               <p style={{ fontSize: '0.75rem', color: '#64748b', margin: '0.2rem 0' }}>
                 {settings?.address || 'Main Road, Calicut, Kerala'}
@@ -700,7 +700,7 @@ export const BillingPage = () => {
               </div>
 
               <p style={{ marginTop: '1rem', fontStyle: 'italic', fontSize: '0.75rem' }}>
-                {settings?.footer || 'Thank you for visiting T Clock Resto Cafe! 🌴'}
+                {settings?.footer || 'Thank you for visiting Cedar Hearth! 🌿'}
               </p>
             </div>
 
@@ -753,7 +753,7 @@ export const BillingPage = () => {
             {/* Bill Preview White Card */}
             <div className="bill-preview">
               <div className="resto-header">
-                <h3 className="resto-name">T CLOCK RESTO CAFE</h3>
+                <h3 className="resto-name">CEDAR HEARTH</h3>
                 <p className="resto-tagline">Time for Tea, Time for Taste</p>
                 <p className="resto-address">
                   Main Road, Calicut, Kerala<br />
@@ -837,7 +837,7 @@ export const BillingPage = () => {
               </div>
 
               <div className="bill-footer-msg">
-                Thank you for visiting T Clock<br />Resto Cafe! 🌿
+                Thank you for visiting Cedar Hearth! 🌿
               </div>
             </div>
 

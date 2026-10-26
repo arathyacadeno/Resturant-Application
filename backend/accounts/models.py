@@ -1,4 +1,4 @@
-"""T Clock — accounts app models"""
+"""Cedar Hearth — accounts app models"""
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
@@ -39,12 +39,12 @@ class User(AbstractUser):
 
 
 class RestaurantSettings(models.Model):
-    name = models.CharField(max_length=100, default='T CLOCK RESTO CAFE')
-    tagline = models.CharField(max_length=200, default='Time for Tea, Time for Taste', blank=True)
+    name = models.CharField(max_length=100, default='Cedar Hearth')
+    tagline = models.CharField(max_length=200, default='Exquisite Dining & Warm Hospitality', blank=True)
     address = models.TextField(default='Main Road, Calicut, Kerala')
     phone = models.CharField(max_length=20, default='+91 98765 43210')
     gstin = models.CharField(max_length=50, default='32ABCDE1234F1Z5', blank=True)
-    footer = models.CharField(max_length=200, default='Thank you for visiting T Clock Resto Cafe! 🌴', blank=True)
+    footer = models.CharField(max_length=200, default='Thank you for visiting Cedar Hearth! 🌿', blank=True)
 
     # Bill Settings
     currency_symbol = models.CharField(max_length=10, default='₹', blank=True)

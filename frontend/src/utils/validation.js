@@ -1,5 +1,5 @@
 /**
- * Validation utilities for forms across T-Clock
+ * Validation utilities for forms across Cedar Hearth
  */
 
 const COMMON_TLD_TYPOS = ['ocm', 'cmo', 'con', 'comm', 'coom', 'vom', 'xom', 'cpm', 'ckm'];

@@ -13,7 +13,7 @@ import { UserAvatarPlaceholder } from '../common/UserAvatarPlaceholder';
  * - Top-right close icon (X)
  * - Profile Header:
  *    - Left: Soft rounded avatar with minimalist outline silhouette
- *    - Right: "Admin" title and "T clock Owner" role/subtitle
+ *    - Right: "Admin" title and "Cedar Hearth Owner" role/subtitle
  * - Form Fields:
  *    1. User Name: Borderless rounded text input with #F4F4F4 background
  *    2. Password: Borderless rounded password input with #F4F4F4 and eye toggle
@@ -122,7 +122,7 @@ export const AdminProfileModal = ({ isOpen, onClose }) => {
   };
 
   const displayName = user?.username ? user.username.charAt(0).toUpperCase() + user.username.slice(1) : (user?.first_name || 'Admin');
-  const displayRole = 'T clock Owner';
+  const displayRole = 'Cedar Hearth Owner';
 
   return (
     <div className="admin-profile-modal-overlay" onClick={onClose}>

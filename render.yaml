@@ -1,4 +1,4 @@
-# Render Blueprint configuration for T-Clock Restaurant POS
+# Render Blueprint configuration for Cedar Hearth Restaurant POS
 services:
   # 1. Django Backend Web Service
   - type: web

@@ -1,4 +1,4 @@
-"""T Clock — Tables serializers"""
+"""Cedar Hearth — Tables serializers"""
 
 from rest_framework import serializers
 from .models import DiningTable, Reservation

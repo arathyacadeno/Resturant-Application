@@ -20,12 +20,12 @@ export const AdminSettingsPage = () => {
   // Settings State matching database & reference fields
   const [formData, setFormData] = useState({
     // Profile settings
-    name: 'T CLOCK RESTO CAFE',
+    name: 'Cedar Hearth',
     gstin: '32ABCDE1234F1Z5',
-    tagline: 'Time for Tea, Time for Taste',
+    tagline: 'Exquisite Dining & Warm Hospitality',
     phone: '+91 98765 43210',
     address: 'Main Road, Calicut, Kerala',
-    footer: 'Thank you for visiting T Clock Resto Cafe! 🌴',
+    footer: 'Thank you for visiting Cedar Hearth! 🌿',
     logo: null,
 
     // Bill tab settings
@@ -284,7 +284,7 @@ export const AdminSettingsPage = () => {
                         className="admin-settings-input"
                         value={formData.name}
                         onChange={(e) => handleChange('name', e.target.value)}
-                        placeholder="e.g. T CLOCK RESTO CAFE"
+                        placeholder="e.g. Cedar Hearth"
                         required
                       />
                     </div>
@@ -464,7 +464,7 @@ export const AdminSettingsPage = () => {
             <div className="admin-receipt-preview-card">
               {/* Receipt Header */}
               <div className="admin-receipt-header">
-                <h3 className="admin-receipt-title">{formData.name || 'T CLOCK RESTO CAFE'}</h3>
+                <h3 className="admin-receipt-title">{formData.name || 'Cedar Hearth'}</h3>
                 <p className="admin-receipt-tagline">{formData.tagline || 'Time for Tea, Time for Taste'}</p>
                 <p className="admin-receipt-subtext">{formData.address || 'Main Road, Calicut, Kerala'}</p>
                 <p className="admin-receipt-subtext">
@@ -531,7 +531,7 @@ export const AdminSettingsPage = () => {
 
               {/* Footer Greeting */}
               <div className="admin-receipt-footer">
-                {formData.footerGreeting || 'Thank you for visiting T Clock Resto Cafe! 🌴'}
+                {formData.footerGreeting || 'Thank you for visiting Cedar Hearth! 🌿'}
               </div>
             </div>
           )}

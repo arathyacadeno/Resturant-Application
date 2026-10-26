@@ -1,4 +1,4 @@
-"""T Clock — Menu models"""
+"""Cedar Hearth — Menu models"""
 
 from django.db import models
 

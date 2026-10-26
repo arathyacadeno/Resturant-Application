@@ -1,4 +1,4 @@
-"""Django WSGI config for T Clock project."""
+"""Django WSGI config for Cedar Hearth project."""
 
 import os
 from django.core.wsgi import get_wsgi_application

@@ -1,4 +1,4 @@
-"""T Clock — Menu views"""
+"""Cedar Hearth — Menu views"""
 
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny, IsAuthenticated

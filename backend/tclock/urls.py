@@ -1,4 +1,4 @@
-"""T Clock — Root URL Configuration"""
+"""Cedar Hearth — Root URL Configuration"""
 
 from django.contrib import admin
 from django.urls import path, include

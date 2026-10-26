@@ -1,4 +1,4 @@
-"""T Clock — Kitchen views (KDS — Kitchen Display System)"""
+"""Cedar Hearth — Kitchen views (KDS — Kitchen Display System)"""
 
 from rest_framework.views import APIView
 from rest_framework.response import Response

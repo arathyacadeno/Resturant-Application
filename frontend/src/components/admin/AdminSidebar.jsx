@@ -23,7 +23,7 @@ export const AdminSidebar = () => {
         <div className="admin-portal-brand-logo">
           <img 
             src="/logo.png" 
-            alt="T Clock" 
+            alt="Cedar Hearth" 
             onError={(e) => {
               e.target.onerror = null;
               e.target.src = '/cart.png';
@@ -31,7 +31,7 @@ export const AdminSidebar = () => {
           />
         </div>
         <div className="admin-portal-brand-text">
-          <h2 className="admin-portal-brand-title">T Clock</h2>
+          <h2 className="admin-portal-brand-title">Cedar Hearth</h2>
           <span className="admin-portal-brand-sub">ADMIN PORTAL</span>
         </div>
       </div>

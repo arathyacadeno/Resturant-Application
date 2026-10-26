@@ -1,4 +1,4 @@
-"""T Clock — Billing models"""
+"""Cedar Hearth — Billing models"""
 
 from django.db import models
 from django.utils import timezone

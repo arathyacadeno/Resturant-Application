@@ -1,4 +1,4 @@
-"""T Clock — role-based permissions"""
+"""Cedar Hearth — role-based permissions"""
 
 from rest_framework.permissions import BasePermission, IsAuthenticated
 

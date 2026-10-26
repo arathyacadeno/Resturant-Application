@@ -1,4 +1,4 @@
-"""T Clock — Billing serializers"""
+"""Cedar Hearth — Billing serializers"""
 
 from rest_framework import serializers
 from .models import Bill

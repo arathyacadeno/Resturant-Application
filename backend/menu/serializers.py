@@ -1,4 +1,4 @@
-"""T Clock — Menu serializers"""
+"""Cedar Hearth — Menu serializers"""
 
 from rest_framework import serializers
 from .models import Category, MenuItem

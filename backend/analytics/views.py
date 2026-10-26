@@ -1,4 +1,4 @@
-"""T Clock — Analytics views (Revenue & Reports)"""
+"""Cedar Hearth — Analytics views (Revenue & Reports)"""
 
 from rest_framework.views import APIView
 from rest_framework.response import Response

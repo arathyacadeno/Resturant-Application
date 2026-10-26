@@ -1,4 +1,4 @@
-"""T Clock — accounts app serializers"""
+"""Cedar Hearth — accounts app serializers"""
 
 import re
 from rest_framework import serializers

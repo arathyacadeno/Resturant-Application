@@ -103,11 +103,11 @@ export const MobileHeader = () => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
           <img
             src="/logo.png"
-            alt="T-Clock Logo"
+            alt="Cedar Hearth Logo"
             style={{ width: '36px', height: '36px', objectFit: 'contain', borderRadius: '50%' }}
           />
           <div style={{ lineHeight: 1.1 }}>
-            <div style={{ fontWeight: 800, fontSize: '1rem', color: '#0f172a', letterSpacing: '-0.02em' }}>T-CLOCK</div>
+            <div style={{ fontWeight: 800, fontSize: '0.95rem', color: '#0f172a', letterSpacing: '-0.02em' }}>CEDAR HEARTH</div>
             <div style={{ fontSize: '0.65rem', fontWeight: 700, color: '#B77D55', textTransform: 'uppercase' }}>RESTO CAFE</div>
           </div>
         </div>
@@ -128,9 +128,9 @@ export const MobileHeader = () => {
           <div className="mobile-drawer-content">
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: '1rem', marginBottom: '1rem', borderBottom: '1px solid #e2e8f0' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                <img src="/logo.png" alt="T Clock Logo" style={{ width: '40px', height: '40px', borderRadius: '50%' }} />
+                <img src="/logo.png" alt="Cedar Hearth Logo" style={{ width: '40px', height: '40px', borderRadius: '50%' }} />
                 <div>
-                  <h3 style={{ fontSize: '1.1rem', margin: 0 }}>T-CLOCK</h3>
+                  <h3 style={{ fontSize: '1.05rem', margin: 0 }}>CEDAR HEARTH</h3>
                   <span style={{ fontSize: '0.7rem', color: '#B77D55', fontWeight: 700 }}>RESTO CAFE</span>
                 </div>
               </div>

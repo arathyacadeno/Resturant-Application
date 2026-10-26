@@ -1,4 +1,4 @@
-"""T Clock — Tables URLs"""
+"""Cedar Hearth — Tables URLs"""
 
 from django.urls import path
 from . import views

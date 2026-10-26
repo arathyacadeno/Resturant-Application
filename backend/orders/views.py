@@ -1,4 +1,4 @@
-"""T Clock — Orders views"""
+"""Cedar Hearth — Orders views"""
 
 from rest_framework import generics, status
 from rest_framework.views import APIView

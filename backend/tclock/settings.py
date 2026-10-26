@@ -1,5 +1,5 @@
 """
-T Clock Restaurant POS — Django Settings
+Cedar Hearth Restaurant POS — Django Settings
 """
 
 from pathlib import Path
@@ -31,7 +31,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'cloudinary_storage',
     'cloudinary',
-    # T Clock Apps
+    # Cedar Hearth Apps
     'accounts',
     'menu',
     'tables',

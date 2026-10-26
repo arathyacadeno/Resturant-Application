@@ -1,4 +1,4 @@
-"""T Clock — accounts views"""
+"""Cedar Hearth — accounts views"""
 
 from rest_framework import generics, status
 from rest_framework.response import Response

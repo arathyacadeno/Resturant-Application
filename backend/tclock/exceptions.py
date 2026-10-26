@@ -1,5 +1,5 @@
 """
-T Clock — Custom DRF Exception Handler
+Cedar Hearth — Custom DRF Exception Handler
 Ensures all server errors and DRF exceptions return structured JSON responses instead of HTML error pages.
 """
 

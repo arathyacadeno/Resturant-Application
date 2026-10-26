@@ -1,4 +1,4 @@
-"""T Clock — Orders models"""
+"""Cedar Hearth — Orders models"""
 
 from django.db import models
 

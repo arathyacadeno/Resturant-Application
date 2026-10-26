@@ -264,7 +264,7 @@ export const LoginPage = () => {
         {/* Upper ~35% Warm Brown Hero Section */}
         <div className="staff-brown-hero">
           <div className="staff-logo-circle">
-            <img src="/logo.png" alt="T Clock Logo" className="staff-logo-img" />
+            <img src="/logo.png" alt="Cedar Hearth Logo" className="staff-logo-img" />
           </div>
 
           {/* Smooth Irregular Curved Wave SVG Bottom Edge */}
@@ -284,7 +284,7 @@ export const LoginPage = () => {
         {/* Pure White Form Section (No centered card) */}
         <div className="staff-form-section">
           <h1 className="staff-login-title">Welcome back</h1>
-          <p className="staff-login-subtitle">Your floor. Your control. Sign in to T Clock.</p>
+          <p className="staff-login-subtitle">Your floor. Your control. Sign in to Cedar Hearth.</p>
 
           {error && (
             <div className="staff-alert-badge">

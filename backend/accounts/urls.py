@@ -1,4 +1,4 @@
-"""T Clock — accounts URLs"""
+"""Cedar Hearth — accounts URLs"""
 
 from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView

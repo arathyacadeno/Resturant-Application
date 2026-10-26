@@ -1,4 +1,4 @@
-"""T Clock — Tables models"""
+"""Cedar Hearth — Tables models"""
 
 import uuid
 from django.db import models

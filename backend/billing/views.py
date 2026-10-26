@@ -1,4 +1,4 @@
-"""T Clock — Billing views"""
+"""Cedar Hearth — Billing views"""
 
 from rest_framework import generics, status
 from rest_framework.views import APIView
@@ -102,7 +102,7 @@ def _build_whatsapp_receipt(bill, order):
     """Build a customer-friendly receipt message for WhatsApp & SMS."""
     date_str = bill.created_at.strftime('%d/%m/%Y %H:%M')
     cust_name = order.customer_name or "Customer"
-    rest_name = "T Clock Resto Cafe"
+    rest_name = "Cedar Hearth"
     qr_token = order.table.qr_token if (order.table and hasattr(order.table, 'qr_token')) else ''
     invoice_url = f"http://localhost:5173/order/{qr_token}" if qr_token else "http://localhost:5173"
 
