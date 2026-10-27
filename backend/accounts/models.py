@@ -48,7 +48,7 @@ class RestaurantSettings(models.Model):
 
     # Bill Settings
     currency_symbol = models.CharField(max_length=10, default='₹', blank=True)
-    invoice_prefix = models.CharField(max_length=20, default='TC-', blank=True)
+    invoice_prefix = models.CharField(max_length=20, default='CH-', blank=True)
     tax_rate = models.DecimalField(max_digits=5, decimal_places=2, default=5.00)
     service_charge = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)
     packing_charge = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)

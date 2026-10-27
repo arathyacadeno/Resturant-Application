@@ -84,7 +84,7 @@ export const AdminRegisterPage = () => {
         <div className="admin-signup-logo-box">
           <img
             src="/logo.png"
-            alt="Tea Clock Logo"
+            alt="Cedar Hearth Logo"
             className="admin-signup-logo-img"
             onError={(e) => {
               e.target.onerror = null;
@@ -95,7 +95,7 @@ export const AdminRegisterPage = () => {
 
         {/* Headings */}
         <h1 className="admin-signup-title">Create Account</h1>
-        <p className="admin-signup-subtitle">A Taste of Tradition</p>
+        <p className="admin-signup-subtitle">Cedar Hearth · A Taste of Tradition</p>
 
         {/* Alerts */}
         {error && (

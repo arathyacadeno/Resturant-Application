@@ -30,7 +30,7 @@ export const AdminSettingsPage = () => {
 
     // Bill tab settings
     currencySymbol: '₹',
-    invoicePrefix: 'TC-',
+    invoicePrefix: 'CH-',
     taxRate: 5,
     serviceCharge: 0,
     packingCharge: 0,
@@ -60,7 +60,7 @@ export const AdminSettingsPage = () => {
           address: data.address ?? '',
           footer: data.footer ?? '',
           currencySymbol: data.currency_symbol ?? '₹',
-          invoicePrefix: data.invoice_prefix ?? 'TC-',
+          invoicePrefix: data.invoice_prefix ?? 'CH-',
           taxRate: data.tax_rate != null ? Number(data.tax_rate) : 0,
           serviceCharge: data.service_charge != null ? Number(data.service_charge) : 0,
           packingCharge: data.packing_charge != null ? Number(data.packing_charge) : 0,
@@ -310,7 +310,7 @@ export const AdminSettingsPage = () => {
                         className="admin-settings-input"
                         value={formData.tagline}
                         onChange={(e) => handleChange('tagline', e.target.value)}
-                        placeholder="e.g. Time for Tea, Time for Taste"
+                        placeholder="e.g. Exquisite Dining & Warm Hospitality"
                       />
                     </div>
 
@@ -383,7 +383,7 @@ export const AdminSettingsPage = () => {
                         className="admin-settings-input"
                         value={formData.invoicePrefix}
                         onChange={(e) => handleChange('invoicePrefix', e.target.value)}
-                        placeholder="TC-"
+                        placeholder="CH-"
                       />
                     </div>
 
@@ -464,8 +464,13 @@ export const AdminSettingsPage = () => {
             <div className="admin-receipt-preview-card">
               {/* Receipt Header */}
               <div className="admin-receipt-header">
+                <img
+                  src={logoPreview || '/logo.png'}
+                  alt="Cedar Hearth Logo"
+                  style={{ width: '48px', height: '48px', objectFit: 'contain', margin: '0 auto 0.5rem auto', display: 'block' }}
+                />
                 <h3 className="admin-receipt-title">{formData.name || 'Cedar Hearth'}</h3>
-                <p className="admin-receipt-tagline">{formData.tagline || 'Time for Tea, Time for Taste'}</p>
+                <p className="admin-receipt-tagline">{formData.tagline || 'Exquisite Dining & Warm Hospitality'}</p>
                 <p className="admin-receipt-subtext">{formData.address || 'Main Road, Calicut, Kerala'}</p>
                 <p className="admin-receipt-subtext">
                   Ph: {formData.phone || '+91 98765 43210'} · GSTIN:

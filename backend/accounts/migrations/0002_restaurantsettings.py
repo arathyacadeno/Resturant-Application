@@ -14,12 +14,12 @@ class Migration(migrations.Migration):
             name='RestaurantSettings',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(default='T CLOCK RESTO CAFE', max_length=100)),
-                ('tagline', models.CharField(blank=True, default='Time for Tea, Time for Taste', max_length=200)),
+                ('name', models.CharField(default='Cedar Hearth', max_length=100)),
+                ('tagline', models.CharField(blank=True, default='Exquisite Dining & Warm Hospitality', max_length=200)),
                 ('address', models.TextField(default='Main Road, Calicut, Kerala')),
                 ('phone', models.CharField(default='+91 98765 43210', max_length=20)),
                 ('gstin', models.CharField(blank=True, default='32ABCDE1234F1Z5', max_length=50)),
-                ('footer', models.CharField(blank=True, default='Thank you for visiting T Clock Resto Cafe! 🌴', max_length=200)),
+                ('footer', models.CharField(blank=True, default='Thank you for visiting Cedar Hearth! 🌿', max_length=200)),
             ],
         ),
     ]

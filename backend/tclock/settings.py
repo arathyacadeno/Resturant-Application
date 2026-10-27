@@ -13,7 +13,7 @@ try:
 except Exception:
     pass
 
-SECRET_KEY = 'django-insecure-tclock-pos-change-this-in-production-2024'
+SECRET_KEY = 'django-insecure-cedar-hearth-pos-production-2024'
 
 DEBUG = True
 

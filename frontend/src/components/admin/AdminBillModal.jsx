@@ -204,8 +204,13 @@ export const AdminBillModal = ({
             {/* ── Centered White Receipt Card ── */}
             <div className="admin-receipt-card" id="admin-bill-preview">
               <div className="admin-receipt-header">
+                <img
+                  src="/logo.png"
+                  alt="Cedar Hearth Logo"
+                  style={{ width: '56px', height: '56px', objectFit: 'contain', margin: '0 auto 0.5rem auto', display: 'block' }}
+                />
                 <h3 className="admin-receipt-name">CEDAR HEARTH</h3>
-                <p className="admin-receipt-tagline">Time for Tea, Time for Taste</p>
+                <p className="admin-receipt-tagline">Exquisite Dining & Warm Hospitality</p>
                 <div className="admin-receipt-address">
                   Main Road, Calicut, Kerala<br />
                   Ph: +91 98765 43210 · GSTIN:<br />

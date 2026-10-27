@@ -65,7 +65,7 @@ export const AdminLoginPage = () => {
         <div className="admin-signup-logo-box">
           <img
             src="/logo.png"
-            alt="Tea Clock Logo"
+            alt="Cedar Hearth Logo"
             className="admin-signup-logo-img"
             onError={(e) => {
               e.target.onerror = null;
@@ -75,9 +75,12 @@ export const AdminLoginPage = () => {
         </div>
 
         {/* Heading */}
-        <h1 className="admin-signup-title" style={{ marginBottom: '32px' }}>
+        <h1 className="admin-signup-title" style={{ marginBottom: '6px' }}>
           Welcome back
         </h1>
+        <p className="admin-signup-subtitle" style={{ marginBottom: '28px' }}>
+          Cedar Hearth Admin Portal
+        </p>
 
         {/* Alerts */}
         {error && (

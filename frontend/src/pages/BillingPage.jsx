@@ -753,11 +753,16 @@ export const BillingPage = () => {
             {/* Bill Preview White Card */}
             <div className="bill-preview">
               <div className="resto-header">
-                <h3 className="resto-name">CEDAR HEARTH</h3>
-                <p className="resto-tagline">Time for Tea, Time for Taste</p>
+                <img
+                  src="/logo.png"
+                  alt="Cedar Hearth Logo"
+                  style={{ width: '56px', height: '56px', objectFit: 'contain', margin: '0 auto 0.5rem auto', display: 'block' }}
+                />
+                <h3 className="resto-name">{settings?.name || 'CEDAR HEARTH'}</h3>
+                <p className="resto-tagline">{settings?.tagline || 'Exquisite Dining & Warm Hospitality'}</p>
                 <p className="resto-address">
-                  Main Road, Calicut, Kerala<br />
-                  Ph: +91 98765 43210 · GSTIN: 32ABCDE1234F1Z5
+                  {settings?.address || 'Main Road, Calicut, Kerala'}<br />
+                  Ph: {settings?.phone || '+91 98765 43210'} · GSTIN: {settings?.gstin || '32ABCDE1234F1Z5'}
                 </p>
               </div>
               <div className="bill-divider" />
