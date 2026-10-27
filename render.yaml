@@ -19,11 +19,12 @@ services:
         value: 3.10.12
 
   # 2. React Frontend Static Site
-  - type: static
+  - type: web
     name: restaurant-frontend
+    runtime: static
+    rootDir: frontend
     buildCommand: npm install && npm run build
     staticPublishPath: dist
-    rootDir: frontend
     routes:
       - type: rewrite
         source: /*
